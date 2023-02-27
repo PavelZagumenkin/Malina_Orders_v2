@@ -1,16 +1,27 @@
-# This is a sample Python script.
+# -*- coding: utf-8 -*-
+# !/usr/bin/env python
+import psycopg2
+from config import host, user, password, db_name
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+try:
+    # Подключение к БД
+    connection = psycopg2.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=db_name
+    )
 
+    # Создаем курсор
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT version();"
+        )
+        print(f"Версия сервера: {cursor.fetchone()}")
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+except Exception as _ex:
+    print("[INFO] Ошибка работы с БД", _ex)
+finally:
+    if connection:
+        connection.close()
+        print("[INFO] Соединение с БД закрыто")
