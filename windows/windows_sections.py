@@ -3,10 +3,26 @@ from ui.sections import Ui_WindowSections
 import windows.windows_authorization
 
 class WindowSections(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, role):
         super().__init__()
         self.ui = Ui_WindowSections()
         self.ui.setupUi(self)
+        print(role)
+        if role == 'user':
+            self.ui.btn_bakery.setEnabled(True)
+            self.ui.btn_pie.setEnabled(True)
+            self.ui.btn_cakes.setEnabled(True)
+        elif role == 'admin':
+            self.ui.btn_bakery.setEnabled(True)
+            self.ui.btn_pie.setEnabled(True)
+            self.ui.btn_cakes.setEnabled(True)
+            self.ui.btn_history.setEnabled(True)
+        elif role == 'superadmin':
+            self.ui.btn_bakery.setEnabled(True)
+            self.ui.btn_pie.setEnabled(True)
+            self.ui.btn_cakes.setEnabled(True)
+            self.ui.btn_history.setEnabled(True)
+            self.ui.btn_control.setEnabled(True)
         self.ui.btn_exit.clicked.connect(self.logout)
         self.ui.btn_bakery.clicked.connect(self.bakeryOpen)
 

@@ -1,4 +1,5 @@
 from PyQt6 import QtWidgets
+
 from ui.authorization import Ui_WindowAuthorization
 from handler.signals import Signals
 from requests.db_requests import Database
@@ -18,7 +19,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         # Подключаем слоты к сигналам
         self.signals.register_success_signal.connect(self.show_success_message)
         self.signals.register_failed_signal.connect(self.show_error_message)
-        self.signals.login_success_signal.connect(self.show_main_window)
+        self.signals.login_success_signal.connect(lambda role: self.show_windowSection(role))
         self.signals.login_failed_signal.connect(self.show_error_message)
 
     def register(self):
@@ -39,11 +40,15 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         password = self.ui.line_password.text()
 
         # Выполняем авторизацию в базе данных и отправляем соответствующий сигнал
-        result = self.database.login(username, password)
-        if "successful" in result:
-            self.signals.login_success_signal.emit()
+        login_result = self.database.login(username, password)
+        if isinstance(login_result, tuple) and len(login_result) == 2:
+            result, role = login_result
+            if "successful" in result:
+                self.signals.login_success_signal.emit(role)
+            else:
+                self.signals.login_failed_signal.emit(result)
         else:
-            self.signals.login_failed_signal.emit(result)
+            self.signals.login_failed_signal.emit("Error occurred while logging in.")
 
     def show_success_message(self, message):
         # Отображаем сообщение об успешной регистрации
@@ -53,9 +58,9 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         # Отображаем сообщение об ошибке
         QtWidgets.QMessageBox.critical(self, "Error", message)
 
-    def show_main_window(self):
+    def show_windowSection(self, role):
         # Отображаем главное окно приложения
         self.close()
         global windowSection
-        windowSection = windows.windows_sections.WindowSections()
+        windowSection = windows.windows_sections.WindowSections(role)
         windowSection.show()

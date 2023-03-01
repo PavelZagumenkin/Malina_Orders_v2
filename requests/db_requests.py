@@ -30,27 +30,30 @@ class Database:
 
                 hashed_password = pbkdf2_sha256.hash(password)
                 cursor.execute(Queries.register_user(), (username, hashed_password))
+                self.connection.commit()
         except Exception as e:
+            self.connection.rollback()
             return f"Error registering user: {str(e)}"
-        finally:
-            self.connection.close()
-
         return "User registered successfully"
 
     def login(self, username, password):
         try:
-            with self.connection, self.connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_user_by_username(), (username,))
                 user = cursor.fetchone()
 
                 if user is None:
-                    return "Invalid username or password"
+                    return "Invalid username or password", None
 
                 if not pbkdf2_sha256.verify(password, user[2]):
-                    return "Invalid username or password"
-        except Exception as e:
-            return f"Error logging in: {str(e)}"
-        finally:
-            self.connection.close()
+                    return "Invalid username or password", None
 
-        return "Login successful"
+                # получаем роль пользователя из таблицы user_role
+                cursor.execute(Queries.get_user_role_by_user_id(), (user[0],))
+                role_row = cursor.fetchone()
+                role = 'None' if role_row is None else role_row[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Error logging in: {str(e)}", None
+        return "Login successful", role
