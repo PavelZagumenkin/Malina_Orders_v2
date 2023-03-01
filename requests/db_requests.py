@@ -20,28 +20,37 @@ class Database:
         self.connection.close()
 
     def register(self, username, password):
+        try:
+            with self.connection, self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_user_by_username(), (username,))
+                user = cursor.fetchone()
 
-        with self.connection, self.connection.cursor() as cursor:
-            cursor.execute(Queries.get_user_by_username(), (username,))
-            user = cursor.fetchone()
+                if user is not None:
+                    return "Username already exists"
 
-            if user is not None:
-                return "Username already exists"
-
-            hashed_password = pbkdf2_sha256.hash(password)
-            cursor.execute(Queries.register_user(), (username, hashed_password))
+                hashed_password = pbkdf2_sha256.hash(password)
+                cursor.execute(Queries.register_user(), (username, hashed_password))
+        except Exception as e:
+            return f"Error registering user: {str(e)}"
+        finally:
+            self.connection.close()
 
         return "User registered successfully"
 
     def login(self, username, password):
-        with self.connection, self.connection.cursor() as cursor:
-            cursor.execute(Queries.get_user_by_username(), (username,))
-            user = cursor.fetchone()
+        try:
+            with self.connection, self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_user_by_username(), (username,))
+                user = cursor.fetchone()
 
-            if user is None:
-                return "Invalid username or password"
+                if user is None:
+                    return "Invalid username or password"
 
-            if not pbkdf2_sha256.verify(password, user[2]):
-                return "Invalid username or password"
+                if not pbkdf2_sha256.verify(password, user[2]):
+                    return "Invalid username or password"
+        except Exception as e:
+            return f"Error logging in: {str(e)}"
+        finally:
+            self.connection.close()
 
         return "Login successful"
