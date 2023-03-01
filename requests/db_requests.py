@@ -1,6 +1,6 @@
 import psycopg2
 from passlib.hash import pbkdf2_sha256
-from queries import Queries
+from requests.queries import Queries
 from config import DB_USER, DB_PASSWORD, DB_PORT, DB_HOST, DB_NAME
 
 class Database:

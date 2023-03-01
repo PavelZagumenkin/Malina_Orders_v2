@@ -12,7 +12,6 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.signals = Signals()
         self.database = Database()
         self.ui.label_login_password.setFocus()  # Фокус по умолчанию на тексте
-        self.base_line_edit = [self.ui.line_login, self.ui.line_password]
         self.ui.btn_login.clicked.connect(self.login)
         self.ui.btn_reg.clicked.connect(self.register)
 
@@ -41,7 +40,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
 
         # Выполняем авторизацию в базе данных и отправляем соответствующий сигнал
         result = self.database.login(username, password)
-        if "successfully" in result:
+        if "successful" in result:
             self.signals.login_success_signal.emit()
         else:
             self.signals.login_failed_signal.emit(result)
@@ -56,7 +55,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
 
     def show_main_window(self):
         # Отображаем главное окно приложения
-        self.hide()
+        self.close()
         global windowSection
         windowSection = windows.windows_sections.WindowSections()
         windowSection.show()

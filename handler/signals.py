@@ -1,7 +1,7 @@
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal
 
-class Signals:
-    login_success_signal = pyqtSignal(str)
+class Signals(QObject):
+    login_success_signal = pyqtSignal()
     login_failed_signal = pyqtSignal(str)
     register_success_signal = pyqtSignal(str)
     register_failed_signal = pyqtSignal(str)
