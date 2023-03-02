@@ -1,6 +1,6 @@
 @REM pyuic6 -x authorization.ui -o authorization.py
 @REM pyuic6 -x sections.ui -o sections.py
-pyuic6 -x control.ui -o control.py
+@REM pyuic6 -x control.ui -o control.py
 @REM pyuic6 -x pie.ui -o pie.py
 @REM pyuic6 -x cake.ui -o cake.py
 @REM pyuic6 -x filling.ui -o filling.py

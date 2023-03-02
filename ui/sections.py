@@ -16,7 +16,7 @@ class Ui_WindowSections(object):
         WindowSections.setMinimumSize(QtCore.QSize(370, 600))
         WindowSections.setMaximumSize(QtCore.QSize(370, 600))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("../images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         WindowSections.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(parent=WindowSections)
         self.centralwidget.setObjectName("centralwidget")
@@ -34,18 +34,18 @@ class Ui_WindowSections(object):
         self.label_title.setWordWrap(False)
         self.label_title.setObjectName("label_title")
         self.verticalLayout.addWidget(self.label_title)
-        self.btn_bakery = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.btn_bakery.setEnabled(False)
-        self.btn_bakery.setMinimumSize(QtCore.QSize(0, 65))
-        self.btn_bakery.setMaximumSize(QtCore.QSize(500, 65))
-        self.btn_bakery.setBaseSize(QtCore.QSize(0, 0))
+        self.btn_autoorders = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.btn_autoorders.setEnabled(False)
+        self.btn_autoorders.setMinimumSize(QtCore.QSize(0, 65))
+        self.btn_autoorders.setMaximumSize(QtCore.QSize(500, 65))
+        self.btn_autoorders.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(22)
         font.setBold(False)
         font.setWeight(50)
-        self.btn_bakery.setFont(font)
-        self.btn_bakery.setStyleSheet("QPushButton {\n"
+        self.btn_autoorders.setFont(font)
+        self.btn_autoorders.setStyleSheet("QPushButton {\n"
 "background-color: rgb(228, 107, 134);\n"
 "border: none;\n"
 "border-radius: 10px}\n"
@@ -59,21 +59,21 @@ class Ui_WindowSections(object):
 "border:3px solid  rgb(0, 0, 0);\n"
 "background-color: rgba(228, 107, 134, 1)\n"
 "}")
-        self.btn_bakery.setCheckable(False)
-        self.btn_bakery.setObjectName("btn_bakery")
-        self.verticalLayout.addWidget(self.btn_bakery)
-        self.btn_pie = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.btn_pie.setEnabled(False)
-        self.btn_pie.setMinimumSize(QtCore.QSize(0, 65))
-        self.btn_pie.setMaximumSize(QtCore.QSize(500, 65))
-        self.btn_pie.setBaseSize(QtCore.QSize(0, 0))
+        self.btn_autoorders.setCheckable(False)
+        self.btn_autoorders.setObjectName("btn_autoorders")
+        self.verticalLayout.addWidget(self.btn_autoorders)
+        self.btn_wage = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.btn_wage.setEnabled(False)
+        self.btn_wage.setMinimumSize(QtCore.QSize(0, 65))
+        self.btn_wage.setMaximumSize(QtCore.QSize(500, 65))
+        self.btn_wage.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(22)
         font.setBold(False)
         font.setWeight(50)
-        self.btn_pie.setFont(font)
-        self.btn_pie.setStyleSheet("QPushButton {\n"
+        self.btn_wage.setFont(font)
+        self.btn_wage.setStyleSheet("QPushButton {\n"
 "background-color: rgb(228, 107, 134);\n"
 "border: none;\n"
 "border-radius: 10px}\n"
@@ -87,21 +87,21 @@ class Ui_WindowSections(object):
 "border:3px solid  rgb(0, 0, 0);\n"
 "background-color: rgba(228, 107, 134, 1)\n"
 "}")
-        self.btn_pie.setCheckable(False)
-        self.btn_pie.setObjectName("btn_pie")
-        self.verticalLayout.addWidget(self.btn_pie)
-        self.btn_cakes = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.btn_cakes.setEnabled(False)
-        self.btn_cakes.setMinimumSize(QtCore.QSize(0, 65))
-        self.btn_cakes.setMaximumSize(QtCore.QSize(500, 65))
-        self.btn_cakes.setBaseSize(QtCore.QSize(0, 0))
+        self.btn_wage.setCheckable(False)
+        self.btn_wage.setObjectName("btn_wage")
+        self.verticalLayout.addWidget(self.btn_wage)
+        self.btn_comingsoon = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.btn_comingsoon.setEnabled(False)
+        self.btn_comingsoon.setMinimumSize(QtCore.QSize(0, 65))
+        self.btn_comingsoon.setMaximumSize(QtCore.QSize(500, 65))
+        self.btn_comingsoon.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(22)
         font.setBold(False)
         font.setWeight(50)
-        self.btn_cakes.setFont(font)
-        self.btn_cakes.setStyleSheet("QPushButton {\n"
+        self.btn_comingsoon.setFont(font)
+        self.btn_comingsoon.setStyleSheet("QPushButton {\n"
 "background-color: rgb(228, 107, 134);\n"
 "border: none;\n"
 "border-radius: 10px}\n"
@@ -115,9 +115,9 @@ class Ui_WindowSections(object):
 "border:3px solid  rgb(0, 0, 0);\n"
 "background-color: rgba(228, 107, 134, 1)\n"
 "}")
-        self.btn_cakes.setCheckable(False)
-        self.btn_cakes.setObjectName("btn_cakes")
-        self.verticalLayout.addWidget(self.btn_cakes)
+        self.btn_comingsoon.setCheckable(False)
+        self.btn_comingsoon.setObjectName("btn_comingsoon")
+        self.verticalLayout.addWidget(self.btn_comingsoon)
         self.btn_history = QtWidgets.QPushButton(parent=self.centralwidget)
         self.btn_history.setEnabled(False)
         self.btn_history.setMinimumSize(QtCore.QSize(0, 65))
@@ -210,9 +210,9 @@ class Ui_WindowSections(object):
         _translate = QtCore.QCoreApplication.translate
         WindowSections.setWindowTitle(_translate("WindowSections", "Выбор раздела"))
         self.label_title.setText(_translate("WindowSections", "Выберите раздел"))
-        self.btn_bakery.setText(_translate("WindowSections", "ВЫПЕЧКА"))
-        self.btn_pie.setText(_translate("WindowSections", "ПИРОЖНЫЕ"))
-        self.btn_cakes.setText(_translate("WindowSections", "ТОРТЫ"))
+        self.btn_autoorders.setText(_translate("WindowSections", "АВТОЗАКАЗЫ"))
+        self.btn_wage.setText(_translate("WindowSections", "ЗАРПЛАТА"))
+        self.btn_comingsoon.setText(_translate("WindowSections", "В РАЗРАБОТКЕ"))
         self.btn_history.setText(_translate("WindowSections", "ИСТОРИЯ"))
         self.btn_control.setText(_translate("WindowSections", "УПРАВЛЕНИЕ"))
         self.btn_exit.setText(_translate("WindowSections", "ВЫХОД"))

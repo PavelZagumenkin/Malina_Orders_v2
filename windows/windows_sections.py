@@ -2,6 +2,7 @@ from PyQt6 import QtWidgets
 from ui.sections import Ui_WindowSections
 from session.ActiveSession import Session
 import windows.windows_authorization
+import windows.windows_control
 
 
 class WindowSections(QtWidgets.QMainWindow):
@@ -11,25 +12,26 @@ class WindowSections(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         role = self.session.get_role()  # Получение роли пользователя из экземпляра класса Session
-        if role == 'user':
-            self.ui.btn_bakery.setEnabled(True)
-            self.ui.btn_pie.setEnabled(True)
-            self.ui.btn_cakes.setEnabled(True)
+        if role == 'logist':
+            self.ui.btn_autoorders.setEnabled(True)
+        if role == 'admin_wage':
+            self.ui.btn_wage.setEnabled(True)
         elif role == 'admin':
-            self.ui.btn_bakery.setEnabled(True)
-            self.ui.btn_pie.setEnabled(True)
-            self.ui.btn_cakes.setEnabled(True)
+            self.ui.btn_autoorders.setEnabled(True)
+            self.ui.btn_wage.setEnabled(True)
+            self.ui.btn_comingsoon.setEnabled(True)
             self.ui.btn_history.setEnabled(True)
         elif role == 'superadmin':
-            self.ui.btn_bakery.setEnabled(True)
-            self.ui.btn_pie.setEnabled(True)
-            self.ui.btn_cakes.setEnabled(True)
+            self.ui.btn_autoorders.setEnabled(True)
+            self.ui.btn_wage.setEnabled(True)
+            self.ui.btn_comingsoon.setEnabled(True)
             self.ui.btn_history.setEnabled(True)
             self.ui.btn_control.setEnabled(True)
         self.ui.btn_exit.clicked.connect(self.logout)
-        self.ui.btn_bakery.clicked.connect(self.bakeryOpen)
+        self.ui.btn_autoorders.clicked.connect(self.autoordersOpen)
+        self.ui.btn_control.clicked.connect(self.controlOpen)
 
-    # Обработка логаута
+    # Обработка выхода пользователя
     def logout(self):
         self.close()
         global windowLogin
@@ -42,9 +44,16 @@ class WindowSections(QtWidgets.QMainWindow):
         windowLogin.ui.line_password.clear()
 
     # Закрываем выбор раздела, открываем выпечку
-    def bakeryOpen(self):
+    def autoordersOpen(self):
         pass
         # self.close()
         # global WindowBakery
         # WindowBakery = Windows.WindowsBakery.WindowBakery()
         # WindowBakery.show()
+
+    # Закрываем выбор раздела, открываем выпечку
+    def controlOpen(self):
+        self.close()
+        global WindowControl
+        WindowControl = windows.windows_control.WindowControl()
+        WindowControl.show()

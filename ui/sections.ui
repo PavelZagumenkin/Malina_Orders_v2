@@ -66,7 +66,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_bakery">
+     <widget class="QPushButton" name="btn_autoorders">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -113,7 +113,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ВЫПЕЧКА</string>
+       <string>АВТОЗАКАЗЫ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -121,7 +121,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_pie">
+     <widget class="QPushButton" name="btn_wage">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -168,7 +168,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ПИРОЖНЫЕ</string>
+       <string>ЗАРПЛАТА</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -176,7 +176,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_cakes">
+     <widget class="QPushButton" name="btn_comingsoon">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -223,7 +223,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ТОРТЫ</string>
+       <string>В РАЗРАБОТКЕ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
