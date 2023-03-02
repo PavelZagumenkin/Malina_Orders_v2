@@ -49,7 +49,7 @@ class Database:
                     return "Invalid username or password", None
 
                 # получаем роль пользователя из таблицы user_role
-                cursor.execute(Queries.get_user_role_by_user_id(), (user[0],))
+                cursor.execute(Queries.get_user_role_by_username(), (username,))
                 role_row = cursor.fetchone()
                 role = 'None' if role_row is None else role_row[0]
                 self.connection.commit()

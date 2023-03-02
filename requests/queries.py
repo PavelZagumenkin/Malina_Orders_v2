@@ -13,7 +13,7 @@ class Queries:
         '''
 
     @staticmethod
-    def get_user_role_by_user_id():
+    def get_user_role_by_username():
         return '''
-        SELECT role FROM user_role WHERE user_id = %s;
+        SELECT role FROM users_role WHERE username = %s;
         '''

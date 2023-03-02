@@ -154,7 +154,6 @@ class Ui_WindowAuthorization(object):
         _translate = QtCore.QCoreApplication.translate
         WindowAuthorization.setWindowTitle(_translate("WindowAuthorization", "Малина 64"))
         self.btn_login.setText(_translate("WindowAuthorization", "Начать работу"))
-        self.btn_login.setShortcut(_translate("WindowAuthorization", "Return"))
         self.line_login.setPlaceholderText(_translate("WindowAuthorization", "Логин"))
         self.label_autor_text.setText(_translate("WindowAuthorization", "Автор логиcтических расчетов Китов А.О. \n"
 " Разработчик Загуменкин П.И."))
@@ -163,7 +162,6 @@ class Ui_WindowAuthorization(object):
         self.lable_suppot_text.setText(_translate("WindowAuthorization", "По всем вопросам работы программы \n"
 " обращаться в Отдел построения"))
         self.btn_reg.setText(_translate("WindowAuthorization", "Регистрация"))
-        self.btn_reg.setShortcut(_translate("WindowAuthorization", "Return"))
 
 
 if __name__ == "__main__":

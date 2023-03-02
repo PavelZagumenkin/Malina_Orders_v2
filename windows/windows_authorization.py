@@ -1,4 +1,5 @@
 from PyQt6 import QtWidgets
+from PyQt6.QtCore import Qt
 
 from ui.authorization import Ui_WindowAuthorization
 from handler.signals import Signals
@@ -14,6 +15,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.database = Database()
         self.ui.label_login_password.setFocus()  # Фокус по умолчанию на тексте
         self.ui.btn_login.clicked.connect(self.login)
+        self.ui.btn_login.setDefault(True)  # Делаем кнопку btn_login активной при нажатии Enter
         self.ui.btn_reg.clicked.connect(self.register)
 
         # Подключаем слоты к сигналам
@@ -64,3 +66,9 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         global windowSection
         windowSection = windows.windows_sections.WindowSections(role)
         windowSection.show()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+            self.ui.btn_login.click()  # Имитируем нажатие кнопки btn_login
+
+
