@@ -1,13 +1,16 @@
 from PyQt6 import QtWidgets
 from ui.sections import Ui_WindowSections
+from session.ActiveSession import Session
 import windows.windows_authorization
 
+
 class WindowSections(QtWidgets.QMainWindow):
-    def __init__(self, role):
+    def __init__(self):
         super().__init__()
         self.ui = Ui_WindowSections()
         self.ui.setupUi(self)
-        print(role)
+        self.session = Session.get_instance()  # Получение экземпляра класса Session
+        role = self.session.get_role()  # Получение роли пользователя из экземпляра класса Session
         if role == 'user':
             self.ui.btn_bakery.setEnabled(True)
             self.ui.btn_pie.setEnabled(True)
