@@ -23,7 +23,7 @@ class Ui_WindowControl(object):
         WindowControl.setMouseTracking(False)
         WindowControl.setTabletTracking(False)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         WindowControl.setWindowIcon(icon)
         WindowControl.setStyleSheet("background: #fff")
         self.centralwidget = QtWidgets.QWidget(parent=WindowControl)
@@ -225,7 +225,7 @@ class Ui_WindowControl(object):
         self.btn_logs_editing.setShortcut(_translate("WindowControl", "Return"))
         self.btn_release_updates.setText(_translate("WindowControl", "Выпуск обновлений"))
         self.btn_release_updates.setShortcut(_translate("WindowControl", "Return"))
-        self.btn_back.setText(_translate("WindowControl", "К выбору раздела"))
+        self.btn_back.setText(_translate("WindowControl", "К ВЫБОРУ РАЗДЕЛА"))
         self.btn_back.setShortcut(_translate("WindowControl", "Return"))
 
 
