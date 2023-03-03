@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtCore import Qt
 from ui.authorization import Ui_WindowAuthorization
 from handler.signals import Signals
@@ -23,6 +23,19 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.signals.register_failed_signal.connect(self.show_error_message)
         self.signals.login_success_signal.connect(self.show_windowSection)
         self.signals.login_failed_signal.connect(self.show_error_message)
+
+        # Устанавливаем иконку
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
+
+        # Добавляем картинку
+        self.label_logo_721 = QtWidgets.QLabel(parent=self.ui.centralwidget)
+        self.label_logo_721.setGeometry(QtCore.QRect(0, 0, 731, 721))
+        self.label_logo_721.setText("")
+        self.label_logo_721.setPixmap(QtGui.QPixmap("images/logo_721.png"))
+        self.label_logo_721.setScaledContents(False)
+        self.label_logo_721.setObjectName("label_logo_721")
 
     def register(self):
         # Получаем данные из полей ввода

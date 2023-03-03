@@ -207,7 +207,6 @@ class Ui_WindowControl(object):
         self.btn_back.setObjectName("btn_back")
         self.verticalLayout.addWidget(self.btn_back)
         WindowControl.setCentralWidget(self.centralwidget)
-
         self.retranslateUi(WindowControl)
         QtCore.QMetaObject.connectSlotsByName(WindowControl)
 

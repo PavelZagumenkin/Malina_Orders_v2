@@ -1,9 +1,8 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtGui
 from ui.sections import Ui_WindowSections
 from session.ActiveSession import Session
 import windows.windows_authorization
 import windows.windows_control
-
 
 class WindowSections(QtWidgets.QMainWindow):
     def __init__(self):
@@ -30,6 +29,9 @@ class WindowSections(QtWidgets.QMainWindow):
         self.ui.btn_exit.clicked.connect(self.logout)
         self.ui.btn_autoorders.clicked.connect(self.autoordersOpen)
         self.ui.btn_control.clicked.connect(self.controlOpen)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
 
     # Обработка выхода пользователя
     def logout(self):
@@ -42,6 +44,7 @@ class WindowSections(QtWidgets.QMainWindow):
         windowLogin.ui.label_login_password.setText('Введите логин и пароль')
         windowLogin.ui.line_login.clear()
         windowLogin.ui.line_password.clear()
+
 
     # Закрываем выбор раздела, открываем выпечку
     def autoordersOpen(self):
