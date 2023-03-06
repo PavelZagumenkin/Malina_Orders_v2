@@ -47,8 +47,8 @@
    <widget class="QPushButton" name="btn_back">
     <property name="geometry">
      <rect>
-      <x>1020</x>
-      <y>10</y>
+      <x>1030</x>
+      <y>650</y>
       <width>231</width>
       <height>51</height>
      </rect>
@@ -95,7 +95,7 @@ background-color: rgba(228, 107, 134, 1)
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>981</width>
+      <width>1261</width>
       <height>51</height>
      </rect>
     </property>
@@ -117,8 +117,8 @@ background-color: rgba(228, 107, 134, 1)
      <rect>
       <x>10</x>
       <y>80</y>
-      <width>1261</width>
-      <height>631</height>
+      <width>271</width>
+      <height>171</height>
      </rect>
     </property>
     <attribute name="horizontalHeaderShowSortIndicator" stdset="0">

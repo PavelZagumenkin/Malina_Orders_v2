@@ -10,6 +10,7 @@ class WindowAutoOrders(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
+        self.ui.btn_back.clicked.connect(self.show_windowSection)
 
     # Закрываем выбор раздела, открываем выпечку
     def show_windowSection(self):
