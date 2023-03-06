@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WindowUserControl</class>
- <widget class="QMainWindow" name="WindowUserControl">
+ <class>tableWindow</class>
+ <widget class="QMainWindow" name="tableWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -38,7 +38,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Управление пользователями</string>
+   <string>Таблица</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background: #fff</string>
@@ -106,11 +106,24 @@ background-color: rgba(228, 107, 134, 1)
      </font>
     </property>
     <property name="text">
-     <string>Панель управления пользователями</string>
+     <string>ТЕКСТ</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignHCenter|Qt::AlignTop</set>
     </property>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>1261</width>
+      <height>631</height>
+     </rect>
+    </property>
+    <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+     <bool>true</bool>
+    </attribute>
    </widget>
   </widget>
  </widget>

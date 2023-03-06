@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'usersControl.ui'
+# Form implementation generated from reading ui file 'tableWindow.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #
@@ -9,21 +9,21 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_WindowUserControl(object):
-    def setupUi(self, WindowUserControl):
-        WindowUserControl.setObjectName("WindowUserControl")
-        WindowUserControl.resize(1280, 720)
-        WindowUserControl.setMinimumSize(QtCore.QSize(1280, 720))
-        WindowUserControl.setMaximumSize(QtCore.QSize(1280, 720))
+class Ui_tableWindow(object):
+    def setupUi(self, tableWindow):
+        tableWindow.setObjectName("tableWindow")
+        tableWindow.resize(1280, 720)
+        tableWindow.setMinimumSize(QtCore.QSize(1280, 720))
+        tableWindow.setMaximumSize(QtCore.QSize(1280, 720))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(14)
-        WindowUserControl.setFont(font)
-        WindowUserControl.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
-        WindowUserControl.setMouseTracking(False)
-        WindowUserControl.setTabletTracking(False)
-        WindowUserControl.setStyleSheet("background: #fff")
-        self.centralwidget = QtWidgets.QWidget(WindowUserControl)
+        tableWindow.setFont(font)
+        tableWindow.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        tableWindow.setMouseTracking(False)
+        tableWindow.setTabletTracking(False)
+        tableWindow.setStyleSheet("background: #fff")
+        self.centralwidget = QtWidgets.QWidget(tableWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.btn_back = QtWidgets.QPushButton(self.centralwidget)
         self.btn_back.setGeometry(QtCore.QRect(1020, 10, 231, 51))
@@ -58,24 +58,30 @@ class Ui_WindowUserControl(object):
         self.label_windowName.setFont(font)
         self.label_windowName.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignTop)
         self.label_windowName.setObjectName("label_windowName")
-        WindowUserControl.setCentralWidget(self.centralwidget)
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(10, 80, 1261, 631))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.tableWidget.horizontalHeader().setSortIndicatorShown(True)
+        tableWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(WindowUserControl)
-        QtCore.QMetaObject.connectSlotsByName(WindowUserControl)
+        self.retranslateUi(tableWindow)
+        QtCore.QMetaObject.connectSlotsByName(tableWindow)
 
-    def retranslateUi(self, WindowUserControl):
+    def retranslateUi(self, tableWindow):
         _translate = QtCore.QCoreApplication.translate
-        WindowUserControl.setWindowTitle(_translate("WindowUserControl", "Управление пользователями"))
-        self.btn_back.setText(_translate("WindowUserControl", "НАЗАД"))
-        self.btn_back.setShortcut(_translate("WindowUserControl", "Return"))
-        self.label_windowName.setText(_translate("WindowUserControl", "Панель управления пользователями"))
+        tableWindow.setWindowTitle(_translate("tableWindow", "Таблица"))
+        self.btn_back.setText(_translate("tableWindow", "НАЗАД"))
+        self.btn_back.setShortcut(_translate("tableWindow", "Return"))
+        self.label_windowName.setText(_translate("tableWindow", "ТЕКСТ"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    WindowUserControl = QtWidgets.QMainWindow()
-    ui = Ui_WindowUserControl()
-    ui.setupUi(WindowUserControl)
-    WindowUserControl.show()
+    tableWindow = QtWidgets.QMainWindow()
+    ui = Ui_tableWindow()
+    ui.setupUi(tableWindow)
+    tableWindow.show()
     sys.exit(app.exec())

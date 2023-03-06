@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets, QtGui
-from ui.usersControl import Ui_WindowUserControl
+from ui.tableWindow import Ui_tableWindow
 from requests.db_requests import Database
 from handler.signals import Signals
 import windows.windows_control
@@ -7,11 +7,12 @@ import windows.windows_control
 class WindowUsersControl(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_WindowUserControl()
+        self.ui = Ui_tableWindow()
         self.ui.setupUi(self)
         self.signals = Signals()
         self.database = Database()
         self.ui.btn_back.clicked.connect(self.show_windowControl)
+
 
         # Подключаем слоты к сигналам
         # self.signals.register_success_signal.connect(self.show_success_message)
