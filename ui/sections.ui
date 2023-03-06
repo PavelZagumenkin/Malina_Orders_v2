@@ -25,10 +25,6 @@
   <property name="windowTitle">
    <string>Выбор раздела</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../images/icon.ico</normaloff>../images/icon.ico</iconset>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>

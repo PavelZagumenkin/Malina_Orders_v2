@@ -3,6 +3,7 @@ from ui.sections import Ui_WindowSections
 from session.ActiveSession import Session
 import windows.windows_authorization
 import windows.windows_control
+import windows.windows_autoOrders
 
 class WindowSections(QtWidgets.QMainWindow):
     def __init__(self):
@@ -27,8 +28,8 @@ class WindowSections(QtWidgets.QMainWindow):
             self.ui.btn_history.setEnabled(True)
             self.ui.btn_control.setEnabled(True)
         self.ui.btn_exit.clicked.connect(self.logout)
-        self.ui.btn_autoorders.clicked.connect(self.autoordersOpen)
-        self.ui.btn_control.clicked.connect(self.controlOpen)
+        self.ui.btn_autoorders.clicked.connect(self.show_autoorders)
+        self.ui.btn_control.clicked.connect(self.show_control)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
@@ -47,15 +48,14 @@ class WindowSections(QtWidgets.QMainWindow):
 
 
     # Закрываем выбор раздела, открываем выпечку
-    def autoordersOpen(self):
-        pass
-        # self.close()
-        # global WindowBakery
-        # WindowBakery = Windows.WindowsBakery.WindowBakery()
-        # WindowBakery.show()
+    def show_autoorders(self):
+        self.close()
+        global WindowAutoOrders
+        WindowAutoOrders = windows.windows_autoOrders.WindowAutoOrders()
+        WindowAutoOrders.show()
 
     # Закрываем выбор раздела, открываем выпечку
-    def controlOpen(self):
+    def show_control(self):
         self.close()
         global WindowControl
         WindowControl = windows.windows_control.WindowControl()
