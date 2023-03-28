@@ -40,8 +40,8 @@
   <property name="windowTitle">
    <string>Таблица</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background: #fff</string>
+  <property name="autoFillBackground">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="btn_back">

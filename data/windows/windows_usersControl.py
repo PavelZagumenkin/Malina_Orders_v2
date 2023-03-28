@@ -30,6 +30,13 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Даем название столбцам
         self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
         self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
+        font = QtGui.QFont()
+        font.setFamily("Trebuchet MS")
+        font.setBold(False)
+        font.setWeight(13)
+        font.setPointSize(9)
+        self.ui.tableWidget.horizontalHeader().setFont(font)
+        self.ui.tableWidget.verticalHeader().setFont(font)
 
         # Устанавливаем ширину столбцов
         self.ui.tableWidget.setColumnWidth(0, 250)
@@ -58,7 +65,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
         # Создаем поле для ввода логина
         self.line_login = QtWidgets.QLineEdit(self.ui.centralwidget)
-        self.line_login.setGeometry(QtCore.QRect(1030, 300, 231, 51))
+        self.line_login.setGeometry(QtCore.QRect(910, 120, 346, 51))
         self.line_login.setFont(font)
         self.line_login.setTabletTracking(False)
         self.line_login.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
@@ -75,7 +82,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
         # Создаем поле для ввода пароля
         self.line_password = QtWidgets.QLineEdit(self.ui.centralwidget)
-        self.line_password.setGeometry(QtCore.QRect(1030, 400, 231, 51))
+        self.line_password.setGeometry(QtCore.QRect(910, 186, 346, 51))
         self.line_password.setFont(font)
         self.line_password.setTabletTracking(False)
         self.line_password.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
@@ -90,23 +97,21 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
         # Создаем поле для ввода уровня прав
         self.line_role = QtWidgets.QComboBox(self.ui.centralwidget)
-        self.line_role.setGeometry(QtCore.QRect(1030, 470, 231, 51))
+        self.line_role.setGeometry(QtCore.QRect(910, 252, 346, 51))
+        self.line_role.setStyleSheet("padding-left: 15")
+        self.line_role.setObjectName("line_role")
         self.line_role.setFont(font)
-        self.line_role.setTabletTracking(False)
-        self.line_role.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.line_role.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.DefaultContextMenu)
+        self.line_role.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
         self.line_role.setInputMethodHints(
-            QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+             QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
         self.listRole = ['Логист', 'Супервайзер', 'Администратор', 'Супер Админ']
         self.line_role.addItems(self.listRole)
-        self.line_role.setObjectName("line_role")
-        self.line_role.setPlaceholderText('123')
 
         # Создаем кнопку регистрации нового пользователя
         self.btn_reg = QtWidgets.QPushButton(self.ui.centralwidget)
 
         # Распологаем кнопку Регистрация
-        self.btn_reg.setGeometry(QtCore.QRect(1030, 550, 231, 51))
+        self.btn_reg.setGeometry(QtCore.QRect(910, 318, 346, 51))
 
         # Настраиваем визуал кнопки регистрации
         font.setPointSize(16)
@@ -137,6 +142,10 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Подключаем слоты к сигналам
         # self.signals.register_success_signal.connect(self.show_success_message)
         # self.signals.register_failed_signal.connect(self.show_error_message)
+
+        # Распологаем кнопку "Назад"
+        self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
+
 
         # Устанавливаем иконку
         icon = QtGui.QIcon()
