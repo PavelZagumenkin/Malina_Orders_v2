@@ -1,9 +1,10 @@
 from PyQt6 import QtWidgets, QtGui
-from ui.sections import Ui_WindowSections
-from session.ActiveSession import Session
-import windows.windows_authorization
-import windows.windows_control
-import windows.windows_autoOrders
+from data.ui.sections import Ui_WindowSections
+from data.active_session import Session
+import data.windows.windows_authorization
+import data.windows.windows_control
+import data.windows.windows_autoOrders
+
 
 class WindowSections(QtWidgets.QMainWindow):
     def __init__(self):
@@ -31,14 +32,14 @@ class WindowSections(QtWidgets.QMainWindow):
         self.ui.btn_autoorders.clicked.connect(self.show_autoorders)
         self.ui.btn_control.clicked.connect(self.show_control)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
     # Обработка выхода пользователя
     def logout(self):
         self.close()
         global windowLogin
-        windowLogin = windows.windows_authorization.WindowAuthorization()
+        windowLogin = data.windows.windows_authorization.WindowAuthorization()
         windowLogin.show()
         windowLogin.ui.label_login_password.setFocus()  # Фокус по умолчанию на тексте
         windowLogin.ui.label_login_password.setStyleSheet("color: rgb(0, 0, 0)")
@@ -46,17 +47,16 @@ class WindowSections(QtWidgets.QMainWindow):
         windowLogin.ui.line_login.clear()
         windowLogin.ui.line_password.clear()
 
-
     # Закрываем выбор раздела, открываем выпечку
     def show_autoorders(self):
         self.close()
         global WindowAutoOrders
-        WindowAutoOrders = windows.windows_autoOrders.WindowAutoOrders()
+        WindowAutoOrders = data.windows.windows_autoOrders.WindowAutoOrders()
         WindowAutoOrders.show()
 
     # Закрываем выбор раздела, открываем выпечку
     def show_control(self):
         self.close()
         global WindowControl
-        WindowControl = windows.windows_control.WindowControl()
+        WindowControl = data.windows.windows_control.WindowControl()
         WindowControl.show()

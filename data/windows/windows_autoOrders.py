@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets, QtGui
-import windows.windows_sections
-from ui.autoOrders import Ui_WindowAutoOrders
+import data.windows.windows_sections
+from data.ui.autoOrders import Ui_WindowAutoOrders
+
 
 class WindowAutoOrders(QtWidgets.QMainWindow):
     def __init__(self):
@@ -8,7 +9,7 @@ class WindowAutoOrders(QtWidgets.QMainWindow):
         self.ui = Ui_WindowAutoOrders()
         self.ui.setupUi(self)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
         self.ui.btn_back.clicked.connect(self.show_windowSection)
 
@@ -16,5 +17,5 @@ class WindowAutoOrders(QtWidgets.QMainWindow):
     def show_windowSection(self):
         self.close()
         global windowSection
-        windowSection = windows.windows_sections.WindowSections()
+        windowSection = data.windows.windows_sections.WindowSections()
         windowSection.show()

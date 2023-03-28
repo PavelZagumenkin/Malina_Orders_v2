@@ -1,6 +1,6 @@
 import sys
 from PyQt6 import QtWidgets
-from windows.windows_authorization import WindowAuthorization
+from data.windows.windows_authorization import WindowAuthorization
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

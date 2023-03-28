@@ -1,10 +1,10 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtCore import Qt
-from ui.authorization import Ui_WindowAuthorization
-from handler.signals import Signals
-from requests.db_requests import Database
-from session.ActiveSession import Session
-import windows.windows_sections
+from data.ui.authorization import Ui_WindowAuthorization
+from data.requests.db_requests import Database
+from data.signals import Signals
+from data.active_session import Session
+import data.windows.windows_sections
 
 class WindowAuthorization(QtWidgets.QMainWindow):
     def __init__(self):
@@ -26,14 +26,14 @@ class WindowAuthorization(QtWidgets.QMainWindow):
 
         # Устанавливаем иконку
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
         # Добавляем картинку
         self.label_logo_721 = QtWidgets.QLabel(parent=self.ui.centralwidget)
         self.label_logo_721.setGeometry(QtCore.QRect(0, 0, 731, 721))
         self.label_logo_721.setText("")
-        self.label_logo_721.setPixmap(QtGui.QPixmap("images/logo_721.png"))
+        self.label_logo_721.setPixmap(QtGui.QPixmap("data/images/logo_721.png"))
         self.label_logo_721.setScaledContents(False)
         self.label_logo_721.setObjectName("label_logo_721")
 
@@ -58,7 +58,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         login_result = self.database.login(username, password)
         if isinstance(login_result, tuple) and len(login_result) == 2:
             result, role = login_result
-            if "successful" in result:
+            if "Авторизация успешна" in result:
                 self.session.set_role(role)  # сохраняем роль пользователя в объекте UserSession
                 self.signals.login_success_signal.emit()
             else:
@@ -78,7 +78,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         # Отображаем главное окно приложения
         self.close()
         global windowSection
-        windowSection = windows.windows_sections.WindowSections()
+        windowSection = data.windows.windows_sections.WindowSections()
         windowSection.show()
 
     def keyPressEvent(self, event):

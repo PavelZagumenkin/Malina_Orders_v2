@@ -1,6 +1,6 @@
 import psycopg2
 from passlib.hash import pbkdf2_sha256
-from requests.queries import Queries
+from data.requests.queries import Queries
 from config import DB_USER, DB_PASSWORD, DB_PORT, DB_HOST, DB_NAME
 
 class Database:
@@ -56,4 +56,4 @@ class Database:
         except Exception as e:
             self.connection.rollback()
             return f"Error logging in: {str(e)}", None
-        return "Login successful", role
+        return "Авторизация успешна", role

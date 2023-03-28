@@ -1,7 +1,8 @@
 from PyQt6 import QtWidgets, QtGui
-from ui.control import Ui_WindowControl
-import windows.windows_sections
-import windows.windows_usersControl
+from data.ui.control import Ui_WindowControl
+import data.windows.windows_sections
+import data.windows.windows_usersControl
+
 
 class WindowControl(QtWidgets.QMainWindow):
     def __init__(self):
@@ -11,19 +12,17 @@ class WindowControl(QtWidgets.QMainWindow):
         self.ui.btn_back.clicked.connect(self.show_windowSection)
         self.ui.btn_control_users.clicked.connect(self.show_windowUserControl)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
     def show_windowSection(self):
         self.close()
         global windowSection
-        windowSection = windows.windows_sections.WindowSections()
+        windowSection = data.windows.windows_sections.WindowSections()
         windowSection.show()
 
     def show_windowUserControl(self):
         self.close()
         global windowUserControl
-        windowUserControl = windows.windows_usersControl.WindowUsersControl()
+        windowUserControl = data.windows.windows_usersControl.WindowUsersControl()
         windowUserControl.show()
-
-

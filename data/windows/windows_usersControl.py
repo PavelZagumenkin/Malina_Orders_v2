@@ -1,8 +1,9 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
-from ui.tableWindow import Ui_tableWindow
-from requests.db_requests import Database
-from handler.signals import Signals
-import windows.windows_control
+from data.ui.tableWindow import Ui_tableWindow
+from data.requests.db_requests import Database
+from data.signals import Signals
+import data.windows.windows_control
+
 
 class WindowUsersControl(QtWidgets.QMainWindow):
     def __init__(self):
@@ -139,7 +140,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
         # Устанавливаем иконку
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
     def register(self):
@@ -149,6 +150,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # password = self.ui.line_password.text()
 
         # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
+
     #     result = self.database.register(username, password)
     #     if "successfully" in result:
     #         self.signals.register_success_signal.emit(result)
@@ -167,7 +169,5 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Отображаем главное окно приложения
         self.close()
         global windowControl
-        windowControl = windows.windows_control.WindowControl()
+        windowControl = data.windows.windows_control.WindowControl()
         windowControl.show()
-
-
