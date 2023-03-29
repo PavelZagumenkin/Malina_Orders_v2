@@ -117,31 +117,6 @@ class Ui_WindowAuthorization(object):
         self.lable_suppot_text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.lable_suppot_text.setWordWrap(True)
         self.lable_suppot_text.setObjectName("lable_suppot_text")
-        self.btn_reg = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_reg.setGeometry(QtCore.QRect(820, 460, 351, 71))
-        font = QtGui.QFont()
-        font.setFamily("Trebuchet MS")
-        font.setPointSize(22)
-        font.setBold(False)
-        font.setWeight(50)
-        self.btn_reg.setFont(font)
-        self.btn_reg.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.btn_reg.setStyleSheet("QPushButton {\n"
-"background-color: rgb(228, 107, 134);\n"
-"border: none;\n"
-"border-radius: 10px}\n"
-"\n"
-"QPushButton:hover {\n"
-"border: 1px solid  rgb(0, 0, 0);\n"
-"background-color: rgba(228, 107, 134, 0.9)\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"border:3px solid  rgb(0, 0, 0);\n"
-"background-color: rgba(228, 107, 134, 1)\n"
-"}")
-        self.btn_reg.setCheckable(False)
-        self.btn_reg.setObjectName("btn_reg")
         WindowAuthorization.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(WindowAuthorization)
@@ -158,7 +133,6 @@ class Ui_WindowAuthorization(object):
         self.label_login_password.setText(_translate("WindowAuthorization", "Введите логин и пароль"))
         self.lable_suppot_text.setText(_translate("WindowAuthorization", "По всем вопросам работы программы \n"
 " обращаться в Отдел построения"))
-        self.btn_reg.setText(_translate("WindowAuthorization", "Регистрация"))
 
 
 if __name__ == "__main__":

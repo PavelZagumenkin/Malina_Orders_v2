@@ -286,49 +286,6 @@ background-color: rgba(228, 107, 134, 1)
      <number>10</number>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_reg">
-    <property name="geometry">
-     <rect>
-      <x>820</x>
-      <y>460</y>
-      <width>351</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Trebuchet MS</family>
-      <pointsize>22</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::StrongFocus</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-background-color: rgb(228, 107, 134);
-border: none;
-border-radius: 10px}
-
-QPushButton:hover {
-border: 1px solid  rgb(0, 0, 0);
-background-color: rgba(228, 107, 134, 0.9)
-}
-
-QPushButton:pressed {
-border:3px solid  rgb(0, 0, 0);
-background-color: rgba(228, 107, 134, 1)
-}</string>
-    </property>
-    <property name="text">
-     <string>Регистрация</string>
-    </property>
-    <property name="checkable">
-     <bool>false</bool>
-    </property>
-   </widget>
   </widget>
  </widget>
  <resources/>

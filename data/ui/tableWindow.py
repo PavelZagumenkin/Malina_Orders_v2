@@ -23,6 +23,7 @@ class Ui_tableWindow(object):
         tableWindow.setMouseTracking(False)
         tableWindow.setTabletTracking(False)
         tableWindow.setAutoFillBackground(False)
+        tableWindow.setStyleSheet("background-color: #fff")
         self.centralwidget = QtWidgets.QWidget(tableWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.btn_back = QtWidgets.QPushButton(self.centralwidget)

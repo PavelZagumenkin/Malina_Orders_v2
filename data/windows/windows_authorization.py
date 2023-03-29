@@ -16,11 +16,8 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         self.ui.label_login_password.setFocus()  # Фокус по умолчанию на тексте
         self.ui.btn_login.clicked.connect(self.login)
-        self.ui.btn_reg.clicked.connect(self.register)
 
         # Подключаем слоты к сигналам
-        self.signals.register_success_signal.connect(self.show_success_message)
-        self.signals.register_failed_signal.connect(self.show_error_message)
         self.signals.login_success_signal.connect(self.show_windowSection)
         self.signals.login_failed_signal.connect(self.show_error_message)
 
@@ -36,18 +33,6 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.label_logo_721.setPixmap(QtGui.QPixmap("data/images/logo_721.png"))
         self.label_logo_721.setScaledContents(False)
         self.label_logo_721.setObjectName("label_logo_721")
-
-    def register(self):
-        # Получаем данные из полей ввода
-        username = self.ui.line_login.text()
-        password = self.ui.line_password.text()
-
-        # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
-        result = self.database.register(username, password)
-        if "successfully" in result:
-            self.signals.register_success_signal.emit(result)
-        else:
-            self.signals.register_failed_signal.emit(result)
 
     def login(self):
         # Получаем данные из полей ввода
@@ -65,10 +50,6 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                 self.signals.login_failed_signal.emit(result)
         else:
             self.signals.login_failed_signal.emit("Error occurred while logging in.")
-
-    def show_success_message(self, message):
-        # Отображаем сообщение об успешной регистрации
-        QtWidgets.QMessageBox.information(self, "Success", message)
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке

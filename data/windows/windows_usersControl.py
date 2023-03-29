@@ -12,22 +12,12 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.signals = Signals()
         self.database = Database()
-
-        # Подключаем кнопку НАЗАД к функции
         self.ui.btn_back.clicked.connect(self.show_windowControl)
-
-        # Изменяем основной текст в окне
         self.ui.label_windowName.setText('Панель управления пользователями')
-
-        # Задаем размеры таблицы
         self.ui.tableWidget.setMaximumWidth(887)
         self.ui.tableWidget.setMinimumWidth(887)
-
-        # Устанавливаем количество столбцов и строк в таблице
         self.ui.tableWidget.setRowCount(2)
         self.ui.tableWidget.setColumnCount(5)
-
-        # Даем название столбцам
         self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
         self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
         font = QtGui.QFont()
@@ -37,16 +27,22 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         font.setPointSize(9)
         self.ui.tableWidget.horizontalHeader().setFont(font)
         self.ui.tableWidget.verticalHeader().setFont(font)
-
-        # Устанавливаем ширину столбцов
         self.ui.tableWidget.setColumnWidth(0, 250)
         self.ui.tableWidget.setColumnWidth(1, 250)
         self.ui.tableWidget.setColumnWidth(2, 250)
         self.ui.tableWidget.setColumnWidth(3, 60)
         self.ui.tableWidget.setColumnWidth(4, 60)
 
-        # Располагаем кнопку НАЗАД
-        self.ui.btn_back.setGeometry(QtCore.QRect(1030, 650, 231, 51))
+
+        # Подключаем слоты к сигналам
+        self.signals.register_success_signal.connect(self.show_success_message)
+        self.signals.register_failed_signal.connect(self.show_error_message)
+
+
+        # Устанавливаем иконку
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
 
         # Текст с подсказкой о вводе логина и пароля
         font = QtGui.QFont()
@@ -98,8 +94,8 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Создаем поле для ввода уровня прав
         self.line_role = QtWidgets.QComboBox(self.ui.centralwidget)
         self.line_role.setGeometry(QtCore.QRect(910, 252, 346, 51))
-        self.line_role.setStyleSheet("padding-left: 15")
         self.line_role.setObjectName("line_role")
+        self.line_role.setStyleSheet(open('data/css/style.css').read())
         self.line_role.setFont(font)
         self.line_role.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
         self.line_role.setInputMethodHints(
@@ -109,70 +105,43 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
         # Создаем кнопку регистрации нового пользователя
         self.btn_reg = QtWidgets.QPushButton(self.ui.centralwidget)
-
-        # Распологаем кнопку Регистрация
         self.btn_reg.setGeometry(QtCore.QRect(910, 318, 346, 51))
-
-        # Настраиваем визуал кнопки регистрации
         font.setPointSize(16)
         font.setBold(False)
         font.setWeight(50)
         self.btn_reg.setFont(font)
         self.btn_reg.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.btn_reg.setStyleSheet("QPushButton {\n"
-                                   "background-color: rgb(228, 107, 134);\n"
-                                   "border: none;\n"
-                                   "border-radius: 10px}\n"
-                                   "\n"
-                                   "QPushButton:hover {\n"
-                                   "border: 1px solid  rgb(0, 0, 0);\n"
-                                   "background-color: rgba(228, 107, 134, 0.9)\n"
-                                   "}\n"
-                                   "\n"
-                                   "QPushButton:pressed {\n"
-                                   "border:3px solid  rgb(0, 0, 0);\n"
-                                   "background-color: rgba(228, 107, 134, 1)\n"
-                                   "}")
-        self.btn_reg.setCheckable(False)
+        self.btn_reg.setStyleSheet(open('data/css/style.css').read())
         self.btn_reg.setObjectName("btn_reg")
-
-        # Меняем текст на кнопке регистрации
+        self.btn_reg.setCheckable(False)
         self.btn_reg.setText('РЕГИСТРАЦИЯ')
-
-        # Подключаем слоты к сигналам
-        # self.signals.register_success_signal.connect(self.show_success_message)
-        # self.signals.register_failed_signal.connect(self.show_error_message)
 
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
 
 
-        # Устанавливаем иконку
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        self.setWindowIcon(icon)
 
     def register(self):
-        pass
         # Получаем данные из полей ввода
-        # username = self.ui.line_login.text()
-        # password = self.ui.line_password.text()
+        username = self.line_login.text()
+        password = self.line_password.text()
+        role = self.line_role.currentText()
 
         # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
 
-    #     result = self.database.register(username, password)
-    #     if "successfully" in result:
-    #         self.signals.register_success_signal.emit(result)
-    #     else:
-    #         self.signals.register_failed_signal.emit(result)
-    #
-    # def show_success_message(self, message):
-    #     # Отображаем сообщение об успешной регистрации
-    #     QtWidgets.QMessageBox.information(self, "Success", message)
-    #
-    # def show_error_message(self, message):
-    #     # Отображаем сообщение об ошибке
-    #     QtWidgets.QMessageBox.critical(self, "Error", message)
+        result = self.database.register(username, password, role)
+        if "successfully" in result:
+            self.signals.register_success_signal.emit(result)
+        else:
+            self.signals.register_failed_signal.emit(result)
+
+    def show_success_message(self, message):
+        # Отображаем сообщение об успешной регистрации
+        QtWidgets.QMessageBox.information(self, "Success", message)
+
+    def show_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.critical(self, "Error", message)
 
     def show_windowControl(self):
         # Отображаем главное окно приложения
