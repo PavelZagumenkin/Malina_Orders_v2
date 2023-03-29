@@ -19,22 +19,23 @@ class Database:
     def __exit__(self, exc_type, exc_value, traceback):
         self.connection.close()
 
-    def register(self, username, password):
+    def register(self, username, password, role):
         try:
             with self.connection, self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_user_by_username(), (username,))
                 user = cursor.fetchone()
 
                 if user is not None:
-                    return "Username already exists"
+                    return "Такой логин уже существует"
 
                 hashed_password = pbkdf2_sha256.hash(password)
                 cursor.execute(Queries.register_user(), (username, hashed_password))
+                cursor.execute(Queries.register_role(), (username, role))
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
-            return f"Error registering user: {str(e)}"
-        return "User registered successfully"
+            return f"Ошибка регистрации пользователя: {str(e)}"
+        return f"Пользователь {username} с правами {role} успешно зарегистрирован"
 
     def login(self, username, password):
         try:
@@ -43,10 +44,10 @@ class Database:
                 user = cursor.fetchone()
 
                 if user is None:
-                    return "Invalid username or password", None
+                    return "Неверный логин или пароль", None
 
                 if not pbkdf2_sha256.verify(password, user[2]):
-                    return "Invalid username or password", None
+                    return "Неверный логин или пароль", None
 
                 # получаем роль пользователя из таблицы user_role
                 cursor.execute(Queries.get_user_role_by_username(), (username,))
@@ -55,5 +56,5 @@ class Database:
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
-            return f"Error logging in: {str(e)}", None
+            return f"Ошибка авторизации: {str(e)}", None
         return "Авторизация успешна", role

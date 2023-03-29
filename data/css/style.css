@@ -4,33 +4,33 @@
     border-top: 1px solid #ECECEC;
     border-left: 1px solid #ECECEC;
     border-right: 1px solid #ECECEC;
-    }
+}
 
 #line_role::drop-down {
     border: 0px;
-    }
+}
 
 #line_role::down-arrow {
     image: url(data/images/down-chevron.ico);
     width: 12px;
     height: 12px;
     margin-right: 15px;
-    }
+}
 
 #line_role::on {
     border: 4px solid #c2dbfe;
-    }
+}
 
 #line_role QListView {
     border: 1px solid rgba(0, 0, 0, 10%);
     padding: 5px;
     background-color: #fff;
     outline: 0px;
-    }
+}
 
 #line_role QListView::item {
     padding-left: 10px;
-    }
+}
 
 QPushButton#btn_reg {
     background-color: rgb(228, 107, 134);
@@ -41,9 +41,9 @@ QPushButton#btn_reg {
 QPushButton#btn_reg:hover {
     border: 1px solid  rgb(0, 0, 0);
     background-color: rgba(228, 107, 134, 0.9);
-    }
+}
 
 QPushButton#btn_reg:pressed {
     border:3px solid  rgb(0, 0, 0);
     background-color: rgba(228, 107, 134, 1);
-    }
+}

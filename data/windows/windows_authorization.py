@@ -47,13 +47,20 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                 self.session.set_role(role)  # сохраняем роль пользователя в объекте UserSession
                 self.signals.login_success_signal.emit()
             else:
-                self.signals.login_failed_signal.emit(result)
+                if len(username) == 0:
+                    self.signals.login_failed_signal.emit("Введите логин")
+                elif len(password) == 0:
+                    self.signals.login_failed_signal.emit("Введите пароль")
+                else:
+                    self.signals.login_failed_signal.emit(result)
         else:
-            self.signals.login_failed_signal.emit("Error occurred while logging in.")
+            self.signals.login_failed_signal.emit('Ошибка Базы данных')
+
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке
-        QtWidgets.QMessageBox.critical(self, "Error", message)
+        self.ui.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
+        self.ui.label_login_password.setText(message)
 
     def show_windowSection(self):
         # Отображаем главное окно приложения

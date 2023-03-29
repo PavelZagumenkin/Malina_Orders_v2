@@ -115,6 +115,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.btn_reg.setObjectName("btn_reg")
         self.btn_reg.setCheckable(False)
         self.btn_reg.setText('РЕГИСТРАЦИЯ')
+        self.btn_reg.clicked.connect(self.register)
 
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
@@ -125,15 +126,30 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Получаем данные из полей ввода
         username = self.line_login.text()
         password = self.line_password.text()
-        role = self.line_role.currentText()
-
-        # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
-
-        result = self.database.register(username, password, role)
-        if "successfully" in result:
-            self.signals.register_success_signal.emit(result)
+        if self.line_role.currentText() == "Логист":
+            role = 'logist'
+        elif self.line_role.currentText() == "Супервайзер":
+            role = 'admin_wage'
+        elif self.line_role.currentText() == "Администратор":
+            role = 'admin'
+        elif self.line_role.currentText() == "Супер Админ":
+            role = 'superadmin'
         else:
-            self.signals.register_failed_signal.emit(result)
+            role = ''
+
+        if len(username) == 0:
+            self.signals.register_failed_signal.emit("Введите логин")
+        elif len(password) == 0:
+            self.signals.register_failed_signal.emit("Введите пароль")
+        elif len(role) == 0:
+            self.signals.register_failed_signal.emit('Не заданы права пользователя')
+        else:
+            # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
+            result = self.database.register(username, password, role)
+            if "успешно зарегистрирован" in result:
+                self.signals.register_success_signal.emit(result)
+            else:
+                self.signals.register_failed_signal.emit(result)
 
     def show_success_message(self, message):
         # Отображаем сообщение об успешной регистрации
@@ -141,7 +157,8 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке
-        QtWidgets.QMessageBox.critical(self, "Error", message)
+        self.label_login_password.setText(message)
+        self.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
 
     def show_windowControl(self):
         # Отображаем главное окно приложения
