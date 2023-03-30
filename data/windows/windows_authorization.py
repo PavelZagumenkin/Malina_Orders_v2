@@ -19,7 +19,8 @@ class WindowAuthorization(QtWidgets.QMainWindow):
 
         # Подключаем слоты к сигналам
         self.signals.login_success_signal.connect(self.show_windowSection)
-        self.signals.login_failed_signal.connect(self.show_error_message)
+        self.signals.login_failed_signal.connect(self.show_error_login)
+        self.signals.error_DB_signal.connect(self.show_error_message)
 
         # Устанавливаем иконку
         icon = QtGui.QIcon()
@@ -52,15 +53,22 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                 elif len(password) == 0:
                     self.signals.login_failed_signal.emit("Введите пароль")
                 else:
-                    self.signals.login_failed_signal.emit(result)
+                    if 'Ошибка работы' in result:
+                        self.signals.error_DB_signal.emit(result)
+                    else:
+                        self.signals.login_failed_signal.emit(result)
         else:
-            self.signals.login_failed_signal.emit('Ошибка Базы данных')
+            self.signals.error_DB_signal.emit('Ошибка Базы данных')
 
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке
-        self.ui.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
+        QtWidgets.QMessageBox.information(self, "Error", message)
+
+    def show_error_login(self, message):
+        # Отображаем сообщение об ошибке
         self.ui.label_login_password.setText(message)
+        self.ui.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
 
     def show_windowSection(self):
         # Отображаем главное окно приложения

@@ -18,19 +18,17 @@
 }
 
 #line_role::on {
-    border: 4px solid #c2dbfe;
+    border: 2px solid #c2dbfe;
 }
 
 #line_role QListView {
     border: 1px solid rgba(0, 0, 0, 10%);
     padding: 5px;
+    padding-left: 10px;
     background-color: #fff;
     outline: 0px;
 }
 
-#line_role QListView::item {
-    padding-left: 10px;
-}
 
 QPushButton#btn_reg {
     background-color: rgb(228, 107, 134);

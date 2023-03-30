@@ -16,7 +16,10 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.ui.label_windowName.setText('Панель управления пользователями')
         self.ui.tableWidget.setMaximumWidth(887)
         self.ui.tableWidget.setMinimumWidth(887)
-        self.ui.tableWidget.setRowCount(2)
+        self.ui.tableWidget.setMinimumHeight(550)
+        self.ui.tableWidget.setMaximumHeight(550)
+        self.ui.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.ui.tableWidget.setRowCount(self.get_count_rows())
         self.ui.tableWidget.setColumnCount(5)
         self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
         self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
@@ -27,16 +30,17 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         font.setPointSize(9)
         self.ui.tableWidget.horizontalHeader().setFont(font)
         self.ui.tableWidget.verticalHeader().setFont(font)
-        self.ui.tableWidget.setColumnWidth(0, 250)
-        self.ui.tableWidget.setColumnWidth(1, 250)
-        self.ui.tableWidget.setColumnWidth(2, 250)
+        self.ui.tableWidget.setColumnWidth(0, 245)
+        self.ui.tableWidget.setColumnWidth(1, 245)
+        self.ui.tableWidget.setColumnWidth(2, 240)
         self.ui.tableWidget.setColumnWidth(3, 60)
         self.ui.tableWidget.setColumnWidth(4, 60)
 
 
         # Подключаем слоты к сигналам
         self.signals.register_success_signal.connect(self.show_success_message)
-        self.signals.register_failed_signal.connect(self.show_error_message)
+        self.signals.register_failed_signal.connect(self.show_error_registration)
+        self.signals.error_DB_signal.connect(self.show_error_message)
 
 
         # Устанавливаем иконку
@@ -149,13 +153,20 @@ class WindowUsersControl(QtWidgets.QMainWindow):
             if "успешно зарегистрирован" in result:
                 self.signals.register_success_signal.emit(result)
             else:
-                self.signals.register_failed_signal.emit(result)
+                if 'Ошибка работы' in result:
+                    self.signals.error_DB_signal.emit(result)
+                else:
+                    self.signals.register_failed_signal.emit(result)
 
     def show_success_message(self, message):
         # Отображаем сообщение об успешной регистрации
         QtWidgets.QMessageBox.information(self, "Success", message)
 
     def show_error_message(self, message):
+        # Отображаем сообщение об успешной регистрации
+        QtWidgets.QMessageBox.information(self, "Error", message)
+
+    def show_error_registration(self, message):
         # Отображаем сообщение об ошибке
         self.label_login_password.setText(message)
         self.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
@@ -166,3 +177,11 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         global windowControl
         windowControl = data.windows.windows_control.WindowControl()
         windowControl.show()
+
+    def get_count_rows(self):
+        count_rows = self.database.count_row_in_DB_user_role()
+        if isinstance(count_rows, int):
+            return count_rows
+        else:
+            self.signals.register_failed_signal.emit(count_rows)
+            return 0

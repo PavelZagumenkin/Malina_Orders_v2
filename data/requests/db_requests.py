@@ -34,7 +34,7 @@ class Database:
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
-            return f"Ошибка регистрации пользователя: {str(e)}"
+            return f"Ошибка работы с БД: {str(e)}"
         return f"Пользователь {username} с правами {role} успешно зарегистрирован"
 
     def login(self, username, password):
@@ -56,5 +56,16 @@ class Database:
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
-            return f"Ошибка авторизации: {str(e)}", None
+            return f"Ошибка работы с БД: {str(e)}", None
         return "Авторизация успешна", role
+
+    def count_row_in_DB_user_role(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_rows_user_role())
+                count_rows = cursor.fetchone()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return count_rows
