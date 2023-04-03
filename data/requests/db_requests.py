@@ -69,3 +69,14 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return count_rows
+
+    def get_users_role(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_users_role())
+                result = cursor.fetchall()
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

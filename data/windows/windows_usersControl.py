@@ -1,4 +1,5 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6.QtWidgets import QTableWidgetItem
 from data.ui.tableWindow import Ui_tableWindow
 from data.requests.db_requests import Database
 from data.signals import Signals
@@ -14,34 +15,12 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.database = Database()
         self.ui.btn_back.clicked.connect(self.show_windowControl)
         self.ui.label_windowName.setText('Панель управления пользователями')
-        self.ui.tableWidget.setMaximumWidth(887)
-        self.ui.tableWidget.setMinimumWidth(887)
-        self.ui.tableWidget.setMinimumHeight(550)
-        self.ui.tableWidget.setMaximumHeight(550)
-        self.ui.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.ui.tableWidget.setRowCount(self.get_count_rows())
-        self.ui.tableWidget.setColumnCount(5)
-        self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
-        self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
-        font = QtGui.QFont()
-        font.setFamily("Trebuchet MS")
-        font.setBold(False)
-        font.setWeight(13)
-        font.setPointSize(9)
-        self.ui.tableWidget.horizontalHeader().setFont(font)
-        self.ui.tableWidget.verticalHeader().setFont(font)
-        self.ui.tableWidget.setColumnWidth(0, 245)
-        self.ui.tableWidget.setColumnWidth(1, 245)
-        self.ui.tableWidget.setColumnWidth(2, 240)
-        self.ui.tableWidget.setColumnWidth(3, 60)
-        self.ui.tableWidget.setColumnWidth(4, 60)
-
+        self.create_table()
 
         # Подключаем слоты к сигналам
         self.signals.register_success_signal.connect(self.show_success_message)
         self.signals.register_failed_signal.connect(self.show_error_registration)
         self.signals.error_DB_signal.connect(self.show_error_message)
-
 
         # Устанавливаем иконку
         icon = QtGui.QIcon()
@@ -125,6 +104,30 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
 
 
+    def create_table(self):
+        self.ui.tableWidget.setMaximumWidth(887)
+        self.ui.tableWidget.setMinimumWidth(887)
+        self.ui.tableWidget.setMinimumHeight(590)
+        self.ui.tableWidget.setMaximumHeight(590)
+        self.ui.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.ui.tableWidget.setRowCount(self.get_count_rows())
+        self.ui.tableWidget.setColumnCount(5)
+        self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
+        self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
+        font = QtGui.QFont()
+        font.setFamily("Trebuchet MS")
+        font.setBold(False)
+        font.setWeight(13)
+        font.setPointSize(9)
+        self.ui.tableWidget.horizontalHeader().setFont(font)
+        self.ui.tableWidget.verticalHeader().setFont(font)
+        self.ui.tableWidget.setColumnWidth(0, 245)
+        self.ui.tableWidget.setColumnWidth(1, 235)
+        self.ui.tableWidget.setColumnWidth(2, 230)
+        self.ui.tableWidget.setColumnWidth(3, 70)
+        self.ui.tableWidget.setColumnWidth(4, 70)
+        self.add_data_in_table()
+
 
     def register(self):
         # Получаем данные из полей ввода
@@ -161,6 +164,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
     def show_success_message(self, message):
         # Отображаем сообщение об успешной регистрации
         QtWidgets.QMessageBox.information(self, "Success", message)
+        self.create_table()
 
     def show_error_message(self, message):
         # Отображаем сообщение об успешной регистрации
@@ -185,3 +189,27 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         else:
             self.signals.register_failed_signal.emit(count_rows)
             return 0
+
+    def add_data_in_table(self):
+        result = self.database.get_users_role()
+        if len(result) >= 1:
+            if isinstance(result, list):
+                for row in range(len(result)):
+                    self.button_reset_password = QtWidgets.QPushButton()
+                    self.button_save_changes = QtWidgets.QPushButton()
+                    self.button_delete_user = QtWidgets.QPushButton()
+                    self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(result[row][1]))
+                    self.ui.tableWidget.setCellWidget(row, 1, self.button_reset_password)
+                    self.ui.tableWidget.cellWidget(row, 1).setText('Сбросить пароль')
+                    self.ui.tableWidget.cellWidget(row, 1).setStyleSheet(open('data/css/style.css').read())
+                    self.ui.tableWidget.setItem(row, 2, QTableWidgetItem(result[row][2]))
+                    self.ui.tableWidget.setCellWidget(row, 3, self.button_save_changes)
+                    self.ui.tableWidget.cellWidget(row, 3).setText('Сохранить')
+                    self.ui.tableWidget.cellWidget(row, 3).setStyleSheet(open('data/css/style.css').read())
+                    self.ui.tableWidget.setCellWidget(row, 4, self.button_delete_user)
+                    self.ui.tableWidget.cellWidget(row, 4).setText('Удалить')
+                    self.ui.tableWidget.cellWidget(row, 4).setStyleSheet(open('data/css/style.css').read())
+            else:
+                self.signals.error_DB_signal.emit(result)
+        else:
+            self.signals.error_DB_signal.emit('Пользователей не найдено!')

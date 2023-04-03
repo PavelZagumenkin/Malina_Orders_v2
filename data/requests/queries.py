@@ -35,3 +35,10 @@ class Queries:
         return '''
         SELECT COUNT(*) FROM users_role;
         '''
+
+    @staticmethod
+    # Получить количество строк в таблице user_role
+    def get_users_role():
+        return '''
+        SELECT * FROM users_role;
+        '''

@@ -115,7 +115,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>Настройки подключения к БД</string>
+       <string>ПОДКЛЮЧЕНИЕ К БД</string>
       </property>
       <property name="shortcut">
        <string>Return</string>
@@ -167,7 +167,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>Пользователи</string>
+       <string>ПОЛЬЗОВАТЕЛИ</string>
       </property>
       <property name="shortcut">
        <string>Return</string>
@@ -219,7 +219,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>Редактор данных</string>
+       <string>РЕДАКТОР ДАННЫХ</string>
       </property>
       <property name="shortcut">
        <string>Return</string>
@@ -271,7 +271,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>Логи</string>
+       <string>ЛОГИ</string>
       </property>
       <property name="shortcut">
        <string>Return</string>
@@ -323,7 +323,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>Выпуск обновлений</string>
+       <string>ВЫПУСК ОБНОВЛЕНИЙ</string>
       </property>
       <property name="shortcut">
        <string>Return</string>
