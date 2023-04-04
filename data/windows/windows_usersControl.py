@@ -16,6 +16,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.ui.btn_back.clicked.connect(self.show_windowControl)
         self.ui.label_windowName.setText('Панель управления пользователями')
         self.create_table()
+        self.create_form_registration()
 
         # Подключаем слоты к сигналам
         self.signals.register_success_signal.connect(self.show_success_message)
@@ -28,24 +29,57 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.setWindowIcon(icon)
 
         # Текст с подсказкой о вводе логина и пароля
-        font = QtGui.QFont()
-        font.setFamily("Trebuchet MS")
-        font.setBold(False)
-        font.setWeight(50)
-        font.setPointSize(14)
+        self.font = QtGui.QFont()
+        self.font.setFamily("Trebuchet MS")
+        self.font.setBold(False)
+        self.font.setWeight(50)
+        self.font.setPointSize(14)
         self.label_login_password = QtWidgets.QLabel(self.ui.centralwidget)
         self.label_login_password.setGeometry(QtCore.QRect(897, 80, 372, 20))
-        self.label_login_password.setFont(font)
+        self.label_login_password.setFont(self.font)
         self.label_login_password.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_login_password.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_login_password.setObjectName("label_login_password")
         self.label_login_password.setText("Введите данные для регистрации")
         self.label_login_password.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
+        # Распологаем кнопку "Назад"
+        self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
+
+    def create_table(self):
+        self.ui.tableWidget.setMaximumWidth(887)
+        self.ui.tableWidget.setMinimumWidth(887)
+        self.ui.tableWidget.setMinimumHeight(590)
+        self.ui.tableWidget.setMaximumHeight(590)
+        self.ui.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.ui.tableWidget.setRowCount(self.get_count_rows())
+        self.ui.tableWidget.setColumnCount(5)
+        self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
+        self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
+        self.font_table = QtGui.QFont()
+        self.font_table.setFamily("Trebuchet MS")
+        self.font_table.setBold(False)
+        self.font_table.setWeight(13)
+        self.font_table.setPointSize(9)
+        self.ui.tableWidget.horizontalHeader().setFont(self.font_table)
+        self.ui.tableWidget.verticalHeader().setFont(self.font_table)
+        self.ui.tableWidget.setColumnWidth(0, 240)
+        self.ui.tableWidget.setColumnWidth(1, 235)
+        self.ui.tableWidget.setColumnWidth(2, 230)
+        self.ui.tableWidget.setColumnWidth(3, 70)
+        self.ui.tableWidget.setColumnWidth(4, 70)
+        self.add_data_in_table()
+
+    def create_form_registration(self):
         # Создаем поле для ввода логина
         self.line_login = QtWidgets.QLineEdit(self.ui.centralwidget)
         self.line_login.setGeometry(QtCore.QRect(910, 120, 346, 51))
-        self.line_login.setFont(font)
+        self.font = QtGui.QFont()
+        self.font.setFamily("Trebuchet MS")
+        self.font.setBold(False)
+        self.font.setWeight(50)
+        self.font.setPointSize(14)
+        self.line_login.setFont(self.font)
         self.line_login.setTabletTracking(False)
         self.line_login.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.line_login.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.DefaultContextMenu)
@@ -62,7 +96,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Создаем поле для ввода пароля
         self.line_password = QtWidgets.QLineEdit(self.ui.centralwidget)
         self.line_password.setGeometry(QtCore.QRect(910, 186, 346, 51))
-        self.line_password.setFont(font)
+        self.line_password.setFont(self.font)
         self.line_password.setTabletTracking(False)
         self.line_password.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.line_password.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.DefaultContextMenu)
@@ -76,58 +110,29 @@ class WindowUsersControl(QtWidgets.QMainWindow):
 
         # Создаем поле для ввода уровня прав
         self.line_role = QtWidgets.QComboBox(self.ui.centralwidget)
+        self.line_role.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.NoInsert)
         self.line_role.setGeometry(QtCore.QRect(910, 252, 346, 51))
         self.line_role.setObjectName("line_role")
         self.line_role.setStyleSheet(open('data/css/style.css').read())
-        self.line_role.setFont(font)
-        self.line_role.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
-        self.line_role.setInputMethodHints(
-             QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+        self.line_role.setFont(self.font)
         self.listRole = ['Логист', 'Супервайзер', 'Администратор', 'Супер Админ']
         self.line_role.addItems(self.listRole)
 
         # Создаем кнопку регистрации нового пользователя
         self.btn_reg = QtWidgets.QPushButton(self.ui.centralwidget)
         self.btn_reg.setGeometry(QtCore.QRect(910, 318, 346, 51))
-        font.setPointSize(16)
-        font.setBold(False)
-        font.setWeight(50)
-        self.btn_reg.setFont(font)
+        font_button = QtGui.QFont()
+        font_button.setFamily("Trebuchet MS")
+        font_button.setPointSize(16)
+        font_button.setBold(False)
+        font_button.setWeight(50)
+        self.btn_reg.setFont(font_button)
         self.btn_reg.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.btn_reg.setStyleSheet(open('data/css/style.css').read())
         self.btn_reg.setObjectName("btn_reg")
         self.btn_reg.setCheckable(False)
         self.btn_reg.setText('РЕГИСТРАЦИЯ')
         self.btn_reg.clicked.connect(self.register)
-
-        # Распологаем кнопку "Назад"
-        self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
-
-
-    def create_table(self):
-        self.ui.tableWidget.setMaximumWidth(887)
-        self.ui.tableWidget.setMinimumWidth(887)
-        self.ui.tableWidget.setMinimumHeight(590)
-        self.ui.tableWidget.setMaximumHeight(590)
-        self.ui.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.ui.tableWidget.setRowCount(self.get_count_rows())
-        self.ui.tableWidget.setColumnCount(5)
-        self.columnName = ['ЛОГИН', 'ПАРОЛЬ', 'УРОВЕНЬ ПРАВ', 'SAVE', 'DELETE']
-        self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
-        font = QtGui.QFont()
-        font.setFamily("Trebuchet MS")
-        font.setBold(False)
-        font.setWeight(13)
-        font.setPointSize(9)
-        self.ui.tableWidget.horizontalHeader().setFont(font)
-        self.ui.tableWidget.verticalHeader().setFont(font)
-        self.ui.tableWidget.setColumnWidth(0, 245)
-        self.ui.tableWidget.setColumnWidth(1, 235)
-        self.ui.tableWidget.setColumnWidth(2, 230)
-        self.ui.tableWidget.setColumnWidth(3, 70)
-        self.ui.tableWidget.setColumnWidth(4, 70)
-        self.add_data_in_table()
-
 
     def register(self):
         # Получаем данные из полей ввода
@@ -195,15 +200,39 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         if len(result) >= 1:
             if isinstance(result, list):
                 for row in range(len(result)):
+                    font = QtGui.QFont()
+                    font.setFamily("Trebuchet MS")
+                    font.setBold(False)
+                    font.setWeight(50)
+                    font.setPointSize(10)
                     self.button_reset_password = QtWidgets.QPushButton()
                     self.button_save_changes = QtWidgets.QPushButton()
                     self.button_delete_user = QtWidgets.QPushButton()
+                    self.line_role_table = QtWidgets.QComboBox()
+                    self.line_role_table.setObjectName("line_role")
+                    self.line_role_table.setStyleSheet(open('data/css/style.css').read())
+                    self.line_role_table.setFont(font)
+                    self.line_role_table.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_role_table.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.listRole_table = ['Логист', 'Супервайзер', 'Администратор', 'Супер Админ']
+                    self.line_role_table.addItems(self.listRole_table)
+                    role_in_DB = 'Логист'
+                    if result[row][2] == 'logist':
+                        role_in_DB = 'Логист'
+                    elif result[row][2] == 'admin_wage':
+                        role_in_DB = 'Супервайзер'
+                    elif result[row][2] == 'admin':
+                        role_in_DB = 'Администратор'
+                    elif result[row][2] == 'superadmin':
+                        role_in_DB = 'Супер Админ'
                     self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(result[row][1]))
                     self.ui.tableWidget.setCellWidget(row, 1, self.button_reset_password)
                     self.ui.tableWidget.cellWidget(row, 1).setText('Сбросить пароль')
                     self.ui.tableWidget.cellWidget(row, 1).setStyleSheet(open('data/css/style.css').read())
                     self.ui.tableWidget.cellWidget(row, 1).clicked.connect(self.reset_password)
-                    self.ui.tableWidget.setItem(row, 2, QTableWidgetItem(result[row][2]))
+                    self.ui.tableWidget.setCellWidget(row, 2, self.line_role_table)
+                    self.ui.tableWidget.cellWidget(row, 2).setCurrentText(role_in_DB)
                     self.ui.tableWidget.setCellWidget(row, 3, self.button_save_changes)
                     self.ui.tableWidget.cellWidget(row, 3).setText('Сохранить')
                     self.ui.tableWidget.cellWidget(row, 3).setStyleSheet(open('data/css/style.css').read())
@@ -231,4 +260,5 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                     self.signals.error_DB_signal.emit(result)
         else:
             return
+
 

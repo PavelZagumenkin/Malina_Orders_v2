@@ -51,3 +51,12 @@ class Queries:
         SET password = %s
         WHERE username = %s;
         '''
+
+    @staticmethod
+    # Установить новый пароль
+    def new_role():
+        return '''
+        UPDATE users_role
+        SET role = %s
+        WHERE username = %s;
+        '''
