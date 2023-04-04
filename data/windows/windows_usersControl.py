@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
-from PyQt6.QtWidgets import QTableWidgetItem
+from PyQt6.QtWidgets import QTableWidgetItem, QInputDialog
 from data.ui.tableWindow import Ui_tableWindow
 from data.requests.db_requests import Database
 from data.signals import Signals
@@ -202,6 +202,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                     self.ui.tableWidget.setCellWidget(row, 1, self.button_reset_password)
                     self.ui.tableWidget.cellWidget(row, 1).setText('Сбросить пароль')
                     self.ui.tableWidget.cellWidget(row, 1).setStyleSheet(open('data/css/style.css').read())
+                    self.ui.tableWidget.cellWidget(row, 1).clicked.connect(self.reset_password)
                     self.ui.tableWidget.setItem(row, 2, QTableWidgetItem(result[row][2]))
                     self.ui.tableWidget.setCellWidget(row, 3, self.button_save_changes)
                     self.ui.tableWidget.cellWidget(row, 3).setText('Сохранить')
@@ -213,3 +214,21 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                 self.signals.error_DB_signal.emit(result)
         else:
             self.signals.error_DB_signal.emit('Пользователей не найдено!')
+
+    def reset_password(self):
+        buttonClicked = self.sender()
+        index = self.ui.tableWidget.indexAt(buttonClicked.pos())
+        username = self.ui.tableWidget.item(index.row(), 0).text()
+        new_pass, ok = QInputDialog.getText(self, 'Сброс пароля', f'Введите новы пароль для пользователя {username}:')
+        if ok:
+            result = self.database.update_password(username, new_pass)
+            if "успешно изменен" in result:
+                self.signals.register_success_signal.emit(result)
+            else:
+                if 'Ошибка работы' in result:
+                    self.signals.error_DB_signal.emit(result)
+                else:
+                    self.signals.error_DB_signal.emit(result)
+        else:
+            return
+

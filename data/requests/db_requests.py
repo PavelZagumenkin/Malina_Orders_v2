@@ -1,4 +1,6 @@
 import psycopg2
+import hashlib
+import os
 from passlib.hash import pbkdf2_sha256
 from data.requests.queries import Queries
 from config import DB_USER, DB_PASSWORD, DB_PORT, DB_HOST, DB_NAME
@@ -42,7 +44,6 @@ class Database:
             with self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_user_by_username(), (username,))
                 user = cursor.fetchone()
-
                 if user is None:
                     return "Неверный логин или пароль", None
 
@@ -80,3 +81,14 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def update_password(self, username, new_pass):
+        try:
+            with self.connection.cursor() as cursor:
+                hashed_password = pbkdf2_sha256.hash(new_pass)
+                cursor.execute(Queries.new_password(), (hashed_password, username))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Пароль пользователя {username} успешно изменен."

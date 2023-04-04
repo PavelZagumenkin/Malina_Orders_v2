@@ -37,8 +37,17 @@ class Queries:
         '''
 
     @staticmethod
-    # Получить количество строк в таблице user_role
+    # Получить роль пользователя в таблице user_role
     def get_users_role():
         return '''
         SELECT * FROM users_role;
+        '''
+
+    @staticmethod
+    # Установить новый пароль
+    def new_password():
+        return '''
+        UPDATE users
+        SET password = %s
+        WHERE username = %s;
         '''
