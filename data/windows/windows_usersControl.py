@@ -217,6 +217,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                         QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
                     self.listRole_table = ['Логист', 'Супервайзер', 'Администратор', 'Супер Админ']
                     self.line_role_table.addItems(self.listRole_table)
+                    self.line_role_table.wheelEvent = lambda event: None
                     role_in_DB = 'Логист'
                     if result[row][2] == 'logist':
                         role_in_DB = 'Логист'
