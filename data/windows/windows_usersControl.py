@@ -237,6 +237,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                     self.ui.tableWidget.setCellWidget(row, 3, self.button_save_changes)
                     self.ui.tableWidget.cellWidget(row, 3).setText('Сохранить')
                     self.ui.tableWidget.cellWidget(row, 3).setStyleSheet(open('data/css/style.css').read())
+                    self.ui.tableWidget.cellWidget(row, 3).clicked.connect(self.update_user_role)
                     self.ui.tableWidget.setCellWidget(row, 4, self.button_delete_user)
                     self.ui.tableWidget.cellWidget(row, 4).setText('Удалить')
                     self.ui.tableWidget.cellWidget(row, 4).setStyleSheet(open('data/css/style.css').read())
@@ -260,6 +261,32 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                 else:
                     self.signals.error_DB_signal.emit(result)
         else:
+            return
+
+    def update_user_role(self):
+        buttonClicked = self.sender()
+        index = self.ui.tableWidget.indexAt(buttonClicked.pos())
+        username = self.ui.tableWidget.item(index.row(), 0).text()
+        role = self.ui.tableWidget.cellWidget(index.row(), 2).currentText()
+        if role == "Логист":
+            new_role = 'logist'
+        elif role == "Супервайзер":
+            new_role = 'admin_wage'
+        elif role == "Администратор":
+            new_role = 'admin'
+        elif role == "Супер Админ":
+            new_role = 'superadmin'
+        else:
+            new_role = ''
+
+        result = self.database.update_user_role(username, new_role)
+        if "успешно изменены" in result:
+            self.signals.register_success_signal.emit(result)
+        else:
+            if 'Ошибка работы' in result:
+                self.signals.error_DB_signal.emit(result)
+            else:
+                self.signals.error_DB_signal.emit(result)
             return
 
 

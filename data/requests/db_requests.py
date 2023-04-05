@@ -92,3 +92,13 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return f"Пароль пользователя {username} успешно изменен."
+
+    def update_user_role(self, username, new_role):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.new_role(), (new_role, username))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Права пользователя {username} успешно изменены на {new_role}."
