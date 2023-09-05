@@ -3,7 +3,7 @@ class Session:
 
     def __init__(self):
         if Session.__instance is not None:
-            raise Exception("Cannot create multiple instances of Session class")
+            raise Exception("Невозможно создать несколько экземпляров класса Session")
         else:
             Session.__instance = self
             # self.session = None
@@ -21,8 +21,12 @@ class Session:
     # def get_session(self):
     #     return self.session
 
-    def set_role(self, role):
+    def set_username_role(self, username, role):
+        self.username = username
         self.role = role
 
     def get_role(self):
         return self.role
+
+    def get_username(self):
+        return self.username

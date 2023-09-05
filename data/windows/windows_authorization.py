@@ -5,6 +5,7 @@ from data.requests.db_requests import Database
 from data.signals import Signals
 from data.active_session import Session
 import data.windows.windows_sections
+import datetime
 
 class WindowAuthorization(QtWidgets.QMainWindow):
     def __init__(self):
@@ -45,8 +46,15 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         if isinstance(login_result, tuple) and len(login_result) == 2:
             result, role = login_result
             if "Авторизация успешна" in result:
-                self.session.set_role(role)  # сохраняем роль пользователя в объекте UserSession
-                self.signals.login_success_signal.emit()
+                logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
+                                      f"Пользователь {username} выполнил вход в систему.")
+                if "Лог записан" in logs_result:
+                    self.session.set_username_role(username, role)  # сохраняем роль пользователя в объекте UserSession
+                    self.signals.login_success_signal.emit()
+                elif 'Ошибка работы' in logs_result:
+                    self.signals.error_DB_signal.emit(logs_result)
+                else:
+                    self.signals.login_failed_signal.emit(logs_result)
             else:
                 if len(username) == 0:
                     self.signals.login_failed_signal.emit("Введите логин")
@@ -63,7 +71,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке
-        QtWidgets.QMessageBox.information(self, "Error", message)
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
     def show_error_login(self, message):
         # Отображаем сообщение об ошибке

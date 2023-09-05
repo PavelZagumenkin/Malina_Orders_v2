@@ -102,3 +102,45 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return f"Права пользователя {username} успешно изменены на {new_role}."
+
+    def delete_user(self, username):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.delete_user(), (username, username))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Пользователь {username} успешно удален из БД."
+
+    def add_log(self, date, time, log):
+        try:
+            with self.connection, self.connection.cursor() as cursor:
+                cursor.execute(Queries.log_entry(), (date, time, log))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return "Лог записан"
+
+    def count_row_in_DB_logs(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_rows_logs())
+                count_rows = cursor.fetchone()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return count_rows
+
+    def get_logs(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_logs())
+                result = cursor.fetchall()
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

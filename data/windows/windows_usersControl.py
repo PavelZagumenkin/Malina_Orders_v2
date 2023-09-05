@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
-from PyQt6.QtWidgets import QTableWidgetItem, QInputDialog
+from PyQt6.QtWidgets import QTableWidgetItem, QInputDialog, QMessageBox
 from data.ui.tableWindow import Ui_tableWindow
 from data.requests.db_requests import Database
 from data.signals import Signals
@@ -46,6 +46,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
 
+
     def create_table(self):
         self.ui.tableWidget.setMaximumWidth(887)
         self.ui.tableWidget.setMinimumWidth(887)
@@ -69,6 +70,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.ui.tableWidget.setColumnWidth(3, 70)
         self.ui.tableWidget.setColumnWidth(4, 70)
         self.add_data_in_table()
+
 
     def create_form_registration(self):
         # Создаем поле для ввода логина
@@ -115,7 +117,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.line_role.setObjectName("line_role")
         self.line_role.setStyleSheet(open('data/css/style.css').read())
         self.line_role.setFont(self.font)
-        self.listRole = ['Логист', 'Супервайзер', 'Администратор', 'Супер Админ']
+        self.listRole = ['Оператор', 'Логист', 'Супервайзер', 'Менеджер', 'Администратор']
         self.line_role.addItems(self.listRole)
 
         # Создаем кнопку регистрации нового пользователя
@@ -134,66 +136,6 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.btn_reg.setText('РЕГИСТРАЦИЯ')
         self.btn_reg.clicked.connect(self.register)
 
-    def register(self):
-        # Получаем данные из полей ввода
-        username = self.line_login.text()
-        password = self.line_password.text()
-        if self.line_role.currentText() == "Логист":
-            role = 'logist'
-        elif self.line_role.currentText() == "Супервайзер":
-            role = 'admin_wage'
-        elif self.line_role.currentText() == "Администратор":
-            role = 'admin'
-        elif self.line_role.currentText() == "Супер Админ":
-            role = 'superadmin'
-        else:
-            role = ''
-
-        if len(username) == 0:
-            self.signals.register_failed_signal.emit("Введите логин")
-        elif len(password) == 0:
-            self.signals.register_failed_signal.emit("Введите пароль")
-        elif len(role) == 0:
-            self.signals.register_failed_signal.emit('Не заданы права пользователя')
-        else:
-            # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
-            result = self.database.register(username, password, role)
-            if "успешно зарегистрирован" in result:
-                self.signals.register_success_signal.emit(result)
-            else:
-                if 'Ошибка работы' in result:
-                    self.signals.error_DB_signal.emit(result)
-                else:
-                    self.signals.register_failed_signal.emit(result)
-
-    def show_success_message(self, message):
-        # Отображаем сообщение об успешной регистрации
-        QtWidgets.QMessageBox.information(self, "Success", message)
-        self.create_table()
-
-    def show_error_message(self, message):
-        # Отображаем сообщение об успешной регистрации
-        QtWidgets.QMessageBox.information(self, "Error", message)
-
-    def show_error_registration(self, message):
-        # Отображаем сообщение об ошибке
-        self.label_login_password.setText(message)
-        self.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
-
-    def show_windowControl(self):
-        # Отображаем главное окно приложения
-        self.close()
-        global windowControl
-        windowControl = data.windows.windows_control.WindowControl()
-        windowControl.show()
-
-    def get_count_rows(self):
-        count_rows = self.database.count_row_in_DB_user_role()
-        if isinstance(count_rows, int):
-            return count_rows
-        else:
-            self.signals.register_failed_signal.emit(count_rows)
-            return 0
 
     def add_data_in_table(self):
         result = self.database.get_users_role()
@@ -215,18 +157,20 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                     self.line_role_table.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
                     self.line_role_table.setInputMethodHints(
                         QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
-                    self.listRole_table = ['Логист', 'Супервайзер', 'Администратор', 'Супер Админ']
+                    self.listRole_table = ['Оператор', 'Логист', 'Супервайзер', 'Менеджер', 'Администратор']
                     self.line_role_table.addItems(self.listRole_table)
                     self.line_role_table.wheelEvent = lambda event: None
                     role_in_DB = 'Логист'
-                    if result[row][2] == 'logist':
+                    if result[row][2] == 'operator':
+                        role_in_DB = 'Оператор'
+                    elif result[row][2] == 'logist':
                         role_in_DB = 'Логист'
-                    elif result[row][2] == 'admin_wage':
+                    elif result[row][2] == 'supervisor':
                         role_in_DB = 'Супервайзер'
-                    elif result[row][2] == 'admin':
-                        role_in_DB = 'Администратор'
+                    elif result[row][2] == 'manager':
+                        role_in_DB = 'Менеджер'
                     elif result[row][2] == 'superadmin':
-                        role_in_DB = 'Супер Админ'
+                        role_in_DB = 'Администратор'
                     self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(result[row][1]))
                     self.ui.tableWidget.setCellWidget(row, 1, self.button_reset_password)
                     self.ui.tableWidget.cellWidget(row, 1).setText('Сбросить пароль')
@@ -241,16 +185,86 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                     self.ui.tableWidget.setCellWidget(row, 4, self.button_delete_user)
                     self.ui.tableWidget.cellWidget(row, 4).setText('Удалить')
                     self.ui.tableWidget.cellWidget(row, 4).setStyleSheet(open('data/css/style.css').read())
+                    self.ui.tableWidget.cellWidget(row, 4).clicked.connect(self.dialog_delete_user)
             else:
                 self.signals.error_DB_signal.emit(result)
         else:
             self.signals.error_DB_signal.emit('Пользователей не найдено!')
 
+
+    def show_success_message(self, message):
+        # Отображаем сообщение об успешной регистрации
+        QtWidgets.QMessageBox.information(self, "Успешно", message)
+        self.create_table()
+
+
+    def show_error_message(self, message):
+        # Отображаем сообщение об ошибке в БД
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_error_registration(self, message):
+        # Отображаем сообщение об ошибке
+        self.label_login_password.setText(message)
+        self.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
+
+
+    def show_windowControl(self):
+        # Отображаем главное окно приложения
+        self.close()
+        global windowControl
+        windowControl = data.windows.windows_control.WindowControl()
+        windowControl.show()
+
+
+    def get_count_rows(self):
+        count_rows = self.database.count_row_in_DB_user_role()
+        if isinstance(count_rows, int):
+            return count_rows
+        else:
+            self.signals.register_failed_signal.emit(count_rows)
+            return 0
+
+    def register(self):
+        # Получаем данные из полей ввода
+        username = self.line_login.text()
+        password = self.line_password.text()
+        if self.line_role.currentText() == "Оператор":
+            role = 'operator'
+        elif self.line_role.currentText() == "Логист":
+            role = 'logist'
+        elif self.line_role.currentText() == "Супервайзер":
+            role = 'supervisor'
+        elif self.line_role.currentText() == "Менеджер":
+            role = 'manager'
+        elif self.line_role.currentText() == "Администратор":
+            role = 'superadmin'
+        else:
+            role = ''
+
+        if len(username) == 0:
+            self.signals.register_failed_signal.emit("Введите логин")
+        elif len(password) == 0:
+            self.signals.register_failed_signal.emit("Введите пароль")
+        elif len(role) == 0:
+            self.signals.register_failed_signal.emit('Не заданы права пользователя')
+        else:
+            # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
+            result = self.database.register(username, password, role)
+            if "успешно зарегистрирован" in result:
+                self.signals.register_success_signal.emit(result)
+            else:
+                if 'Ошибка работы' in result:
+                    self.signals.error_DB_signal.emit(result)
+                else:
+                    self.signals.register_failed_signal.emit(result)
+
+
     def reset_password(self):
         buttonClicked = self.sender()
         index = self.ui.tableWidget.indexAt(buttonClicked.pos())
         username = self.ui.tableWidget.item(index.row(), 0).text()
-        new_pass, ok = QInputDialog.getText(self, 'Сброс пароля', f'Введите новы пароль для пользователя {username}:')
+        new_pass, ok = QInputDialog.getText(self, 'Сброс пароля', f'Введите новый пароль для пользователя {username}:')
         if ok:
             result = self.database.update_password(username, new_pass)
             if "успешно изменен" in result:
@@ -263,22 +277,24 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         else:
             return
 
+
     def update_user_role(self):
         buttonClicked = self.sender()
         index = self.ui.tableWidget.indexAt(buttonClicked.pos())
         username = self.ui.tableWidget.item(index.row(), 0).text()
         role = self.ui.tableWidget.cellWidget(index.row(), 2).currentText()
-        if role == "Логист":
+        if role == "Оператор":
+            new_role = 'operator'
+        elif role == "Логист":
             new_role = 'logist'
         elif role == "Супервайзер":
-            new_role = 'admin_wage'
+            new_role = 'supervisor'
+        elif role == "Менеджер":
+            new_role = 'manager'
         elif role == "Администратор":
-            new_role = 'admin'
-        elif role == "Супер Админ":
             new_role = 'superadmin'
         else:
             new_role = ''
-
         result = self.database.update_user_role(username, new_role)
         if "успешно изменены" in result:
             self.signals.register_success_signal.emit(result)
@@ -290,3 +306,28 @@ class WindowUsersControl(QtWidgets.QMainWindow):
             return
 
 
+    def dialog_delete_user(self):
+        buttonClicked = self.sender()
+        index = self.ui.tableWidget.indexAt(buttonClicked.pos())
+        username = self.ui.tableWidget.item(index.row(), 0).text()
+        dialogBox = QMessageBox()
+        dialogBox.setText(f"Вы действительно хотите пользователя {username}")
+        dialogBox.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
+        dialogBox.setWindowTitle('Удаление пользователя!')
+        dialogBox.setIcon(QMessageBox.Icon.Critical)
+        dialogBox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        dialogBox.buttonClicked.connect(lambda button: self.delete_user(button, username))
+        dialogBox.exec()
+
+
+    def delete_user(self, button_clicked, username):
+        if button_clicked.text() == "OK":
+            result = self.database.delete_user(username)
+            if "успешно удален из БД" in result:
+                self.signals.register_success_signal.emit(result)
+            else:
+                if 'Ошибка работы' in result:
+                    self.signals.error_DB_signal.emit(result)
+                else:
+                    self.signals.error_DB_signal.emit(result)
+                return

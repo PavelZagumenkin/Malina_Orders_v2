@@ -4,6 +4,9 @@ from data.active_session import Session
 import data.windows.windows_authorization
 import data.windows.windows_control
 import data.windows.windows_autoOrders
+from data.requests.db_requests import Database
+from data.signals import Signals
+import datetime
 
 
 class WindowSections(QtWidgets.QMainWindow):
@@ -11,13 +14,17 @@ class WindowSections(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = Ui_WindowSections()
         self.ui.setupUi(self)
+        self.signals = Signals()
+        self.database = Database()
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         role = self.session.get_role()  # Получение роли пользователя из экземпляра класса Session
-        if role == 'logist':
+        if role == 'operator':
             self.ui.btn_autoorders.setEnabled(True)
-        if role == 'admin_wage':
+        elif role == 'logist':
+            self.ui.btn_autoorders.setEnabled(True)
+        elif role == 'supervisor':
             self.ui.btn_wage.setEnabled(True)
-        elif role == 'admin':
+        elif role == 'manager':
             self.ui.btn_autoorders.setEnabled(True)
             self.ui.btn_wage.setEnabled(True)
             self.ui.btn_comingsoon.setEnabled(True)
@@ -37,6 +44,15 @@ class WindowSections(QtWidgets.QMainWindow):
 
     # Обработка выхода пользователя
     def logout(self):
+        username = self.session.get_username()  # Получение имени пользователя из экземпляра класса Session
+        logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
+                                            f"Пользователь {username} вышел из системы.")
+        if "Лог записан" in logs_result:
+            self.signals.login_success_signal.emit()
+        elif 'Ошибка работы' in logs_result:
+            self.signals.error_DB_signal.emit(logs_result)
+        else:
+            self.signals.login_failed_signal.emit(logs_result)
         self.close()
         global windowLogin
         windowLogin = data.windows.windows_authorization.WindowAuthorization()

@@ -37,7 +37,7 @@ class Queries:
         '''
 
     @staticmethod
-    # Получить роль пользователя в таблице user_role
+    # Получить роли всех пользователей с именами в таблице user_role
     def get_users_role():
         return '''
         SELECT * FROM users_role;
@@ -53,10 +53,43 @@ class Queries:
         '''
 
     @staticmethod
-    # Установить новый пароль
+    # Установить новую роль
     def new_role():
         return '''
         UPDATE users_role
         SET role = %s
         WHERE username = %s;
+        '''
+
+    @staticmethod
+    # Удалить пользователя из БД
+    def delete_user():
+        return '''
+        DELETE FROM users_role
+        WHERE username = %s;
+        
+        DELETE FROM users
+        WHERE username = %s;
+        '''
+
+    @staticmethod
+    # Запись лога
+    def log_entry():
+        return '''
+        INSERT INTO logs (date, time, log)
+        VALUES (%s, %s, %s);
+        '''
+
+    @staticmethod
+    # Получить количество строк в таблице logs
+    def get_rows_logs():
+        return '''
+        SELECT COUNT(*) FROM logs;
+        '''
+
+    @staticmethod
+    # Получить все логи
+    def get_logs():
+        return '''
+        SELECT * FROM logs;
         '''
