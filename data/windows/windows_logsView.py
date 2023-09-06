@@ -25,20 +25,22 @@ class WindowLogsView(QtWidgets.QMainWindow):
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
-        # Текст с подсказкой о вводе логина и пароля
+        # Текст с подсказкой о периоде
         self.font = QtGui.QFont()
         self.font.setFamily("Trebuchet MS")
         self.font.setBold(False)
         self.font.setWeight(50)
         self.font.setPointSize(14)
-        self.label_login_password = QtWidgets.QLabel(self.ui.centralwidget)
-        self.label_login_password.setGeometry(QtCore.QRect(897, 80, 372, 20))
-        self.label_login_password.setFont(self.font)
-        self.label_login_password.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_login_password.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_login_password.setObjectName("label_login_password")
-        self.label_login_password.setText("Введите данные для регистрации")
-        self.label_login_password.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label_period_poisk = QtWidgets.QLabel(self.ui.centralwidget)
+        self.label_period_poisk.setGeometry(QtCore.QRect(897, 80, 372, 20))
+        self.label_period_poisk.setFont(self.font)
+        self.label_period_poisk.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label_period_poisk.setObjectName("label_period_poisk")
+        self.label_period_poisk.setText("Укажите период")
+        self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        # Поля для выбора периода
+        # self.start_day = QtWidgets.QD
 
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
@@ -61,11 +63,9 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.font_table.setPointSize(9)
         self.ui.tableWidget.horizontalHeader().setFont(self.font_table)
         self.ui.tableWidget.verticalHeader().setFont(self.font_table)
-        self.ui.tableWidget.setColumnWidth(0, 240)
-        self.ui.tableWidget.setColumnWidth(1, 235)
-        self.ui.tableWidget.setColumnWidth(2, 230)
-        self.ui.tableWidget.setColumnWidth(3, 70)
-        self.ui.tableWidget.setColumnWidth(4, 70)
+        self.ui.tableWidget.setColumnWidth(0, 100)
+        self.ui.tableWidget.setColumnWidth(1, 100)
+        self.ui.tableWidget.setColumnWidth(2, 645)
         self.add_data_in_table()
 
 
