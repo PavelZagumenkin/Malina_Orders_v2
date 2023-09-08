@@ -40,7 +40,32 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.label_period_poisk.setText("Укажите период")
         self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         # Поля для выбора периода
-        # self.start_day = QtWidgets.QD
+        self.start_day = QtWidgets.QDateEdit(self.ui.centralwidget)
+        self.start_day.setGeometry(QtCore.QRect(910, 120, 150, 41))
+        self.start_day.setObjectName("dateEdit_startDay")
+        self.start_day.setStyleSheet(open('data/css/QDateEdit.qss').read())
+        self.start_day.setFont(self.font)
+        self.start_day.setCalendarPopup(True)
+        self.start_day.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
+        self.start_day.setDate(QtCore.QDate.currentDate())
+        self.label_tire = QtWidgets.QLabel(self.ui.centralwidget)
+        self.label_tire.setGeometry(QtCore.QRect(1060, 120, 46, 41))
+        self.label_tire.setFont(self.font)
+        self.label_tire.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.label_tire.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label_tire.setObjectName("label_tire")
+        self.label_tire.setText("-")
+        self.label_tire.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.end_day = QtWidgets.QDateEdit(self.ui.centralwidget)
+        self.end_day.setGeometry(QtCore.QRect(1106, 120, 150, 41))
+        self.end_day.setObjectName("dateEdit_endDay")
+        self.end_day.setStyleSheet(open('data/css/QDateEdit.qss').read())
+        self.end_day.setFont(self.font)
+        self.end_day.setCalendarPopup(True)
+        self.end_day.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
+        self.end_day.setDate(QtCore.QDate.currentDate())
+
+
 
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
