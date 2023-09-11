@@ -25,51 +25,96 @@ class WindowLogsView(QtWidgets.QMainWindow):
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
-        # Текст с подсказкой о периоде
+        # Настройка стиля
         self.font = QtGui.QFont()
         self.font.setFamily("Trebuchet MS")
         self.font.setBold(False)
         self.font.setWeight(50)
         self.font.setPointSize(14)
+        # Текст с подсказкой о периоде
         self.label_period_poisk = QtWidgets.QLabel(self.ui.centralwidget)
         self.label_period_poisk.setGeometry(QtCore.QRect(897, 80, 372, 20))
         self.label_period_poisk.setFont(self.font)
         self.label_period_poisk.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_period_poisk.setObjectName("label_period_poisk")
+        self.label_period_poisk.setObjectName("label_period")
         self.label_period_poisk.setText("Укажите период")
         self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        # Поля для выбора периода
+        # Начальная дата периода
         self.start_day = QtWidgets.QDateEdit(self.ui.centralwidget)
-        self.start_day.setGeometry(QtCore.QRect(910, 120, 150, 41))
+        self.start_day.setGeometry(QtCore.QRect(910, 110, 150, 41))
         self.start_day.setObjectName("dateEdit_startDay")
         self.start_day.setStyleSheet(open('data/css/QDateEdit.qss').read())
         self.start_day.setFont(self.font)
         self.start_day.setCalendarPopup(True)
         self.start_day.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
-        self.start_day.setDate(QtCore.QDate.currentDate())
+        self.start_day.setDate(QtCore.QDate.currentDate().addDays(-6))
+        self.start_day.userDateChanged['QDate'].connect(self.setEndDay)
+        # Тире между датами
         self.label_tire = QtWidgets.QLabel(self.ui.centralwidget)
-        self.label_tire.setGeometry(QtCore.QRect(1060, 120, 46, 41))
+        self.label_tire.setGeometry(QtCore.QRect(1060, 110, 46, 41))
         self.label_tire.setFont(self.font)
         self.label_tire.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.label_tire.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_tire.setObjectName("label_tire")
         self.label_tire.setText("-")
         self.label_tire.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        # Конечная дата периода
         self.end_day = QtWidgets.QDateEdit(self.ui.centralwidget)
-        self.end_day.setGeometry(QtCore.QRect(1106, 120, 150, 41))
+        self.end_day.setGeometry(QtCore.QRect(1106, 110, 150, 41))
         self.end_day.setObjectName("dateEdit_endDay")
         self.end_day.setStyleSheet(open('data/css/QDateEdit.qss').read())
         self.end_day.setFont(self.font)
         self.end_day.setCalendarPopup(True)
         self.end_day.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
         self.end_day.setDate(QtCore.QDate.currentDate())
-
-
+        self.end_day.userDateChanged['QDate'].connect(self.setStartDay)
+        # Текст с подсказкой о поиске
+        self.label_period_poisk = QtWidgets.QLabel(self.ui.centralwidget)
+        self.label_period_poisk.setGeometry(QtCore.QRect(897, 170, 372, 20))
+        self.label_period_poisk.setFont(self.font)
+        self.label_period_poisk.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label_period_poisk.setObjectName("label_poisk")
+        self.label_period_poisk.setText("Введите фразу для поиска")
+        self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        # Поле ввода текста для поиска
+        self.line_find = QtWidgets.QLineEdit(self.ui.centralwidget)
+        self.line_find.setGeometry(QtCore.QRect(910, 200, 346, 51))
+        self.line_find.setFont(self.font)
+        self.line_find.setTabletTracking(False)
+        self.line_find.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.line_find.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.DefaultContextMenu)
+        self.line_find.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.line_find.setInputMethodHints(QtCore.Qt.InputMethodHint.ImhNone)
+        self.line_find.setMaxLength(24)
+        self.line_find.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
+        self.line_find.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.line_find.setCursorMoveStyle(QtCore.Qt.CursorMoveStyle.LogicalMoveStyle)
+        self.line_find.setClearButtonEnabled(False)
+        self.line_find.setObjectName("line_find")
+        self.line_find.setPlaceholderText("Что найти?")
+        # Кнопка фильтра
+        self.find_button = QtWidgets.QPushButton(self.ui.centralwidget)
+        self.find_button.setGeometry(QtCore.QRect(910, 270, 346, 51))
+        self.find_button.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.find_button.setFont(self.font)
+        self.find_button.setStyleSheet(open('data/css/QPushButton.qss').read())
+        self.find_button.setObjectName("find_button")
+        self.find_button.setText("ФИЛЬТР")
+        self.find_button.setCheckable(False)
+        # self.find_button.clicked.connect(self.register)
 
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
 
+    def setEndDay(self):
+        if self.start_day.date() > self.end_day.date():
+            self.end_day.setDate(self.start_day.date())
+
+    def setStartDay(self):
+        if self.start_day.date() > self.end_day.date():
+            self.start_day.setDate(self.end_day.date())
 
     def create_table(self):
         self.ui.tableWidget.setMaximumWidth(887)
