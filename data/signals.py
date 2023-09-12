@@ -6,3 +6,4 @@ class Signals(QObject):
     register_success_signal = pyqtSignal(str)
     register_failed_signal = pyqtSignal(str)
     error_DB_signal = pyqtSignal(str)
+    delete_log_signal = pyqtSignal(str)

@@ -123,10 +123,10 @@ class Database:
             return f"Ошибка работы с БД: {str(e)}"
         return "Лог записан"
 
-    def count_row_in_DB_logs(self):
+    def count_row_in_DB_logs(self, start_day, end_day):
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(Queries.get_rows_logs())
+                cursor.execute(Queries.get_rows_logs(), (start_day, end_day))
                 count_rows = cursor.fetchone()[0]
                 self.connection.commit()
         except Exception as e:
@@ -134,13 +134,23 @@ class Database:
             return f"Ошибка работы с БД: {str(e)}"
         return count_rows
 
-    def get_logs(self):
+    def get_logs(self, start_day, end_day):
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(Queries.get_logs())
+                cursor.execute(Queries.get_logs(), (start_day, end_day))
                 result = cursor.fetchall()
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def delete_logs(self, start_day, end_day):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.delete_logs(), (start_day, end_day))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Логи с {start_day} по {end_day} успешно удалены из БД."

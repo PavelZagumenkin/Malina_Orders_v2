@@ -15,9 +15,10 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.database = Database()
         self.ui.btn_back.clicked.connect(self.show_windowControl)
         self.ui.label_windowName.setText('Панель просмотра логов')
-        self.create_table()
+
 
         # Подключаем слоты к сигналам
+        self.signals.delete_log_signal.connect(self.show_success_message)
         self.signals.error_DB_signal.connect(self.show_error_message)
 
         # Устанавливаем иконку
@@ -69,18 +70,28 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.end_day.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
         self.end_day.setDate(QtCore.QDate.currentDate())
         self.end_day.userDateChanged['QDate'].connect(self.setStartDay)
+        # Кнопка удаления логов за период
+        self.find_button = QtWidgets.QPushButton(self.ui.centralwidget)
+        self.find_button.setGeometry(QtCore.QRect(910, 170, 346, 51))
+        self.find_button.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.find_button.setFont(self.font)
+        self.find_button.setStyleSheet(open('data/css/QPushButton.qss').read())
+        self.find_button.setObjectName("find_button")
+        self.find_button.setText("УДАЛИТЬ ЛОГИ")
+        self.find_button.setCheckable(False)
+        self.find_button.clicked.connect(self.dialog_delete_logs)
         # Текст с подсказкой о поиске
-        self.label_period_poisk = QtWidgets.QLabel(self.ui.centralwidget)
-        self.label_period_poisk.setGeometry(QtCore.QRect(897, 170, 372, 20))
-        self.label_period_poisk.setFont(self.font)
-        self.label_period_poisk.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_period_poisk.setObjectName("label_poisk")
-        self.label_period_poisk.setText("Введите фразу для поиска")
-        self.label_period_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label_poisk = QtWidgets.QLabel(self.ui.centralwidget)
+        self.label_poisk.setGeometry(QtCore.QRect(897, 240, 372, 20))
+        self.label_poisk.setFont(self.font)
+        self.label_poisk.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.label_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label_poisk.setObjectName("label_poisk")
+        self.label_poisk.setText("Введите фразу для поиска")
+        self.label_poisk.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         # Поле ввода текста для поиска
         self.line_find = QtWidgets.QLineEdit(self.ui.centralwidget)
-        self.line_find.setGeometry(QtCore.QRect(910, 200, 346, 51))
+        self.line_find.setGeometry(QtCore.QRect(910, 270, 346, 51))
         self.line_find.setFont(self.font)
         self.line_find.setTabletTracking(False)
         self.line_find.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
@@ -94,27 +105,41 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.line_find.setClearButtonEnabled(False)
         self.line_find.setObjectName("line_find")
         self.line_find.setPlaceholderText("Что найти?")
-        # Кнопка фильтра
+        # Кнопка поиска
         self.find_button = QtWidgets.QPushButton(self.ui.centralwidget)
-        self.find_button.setGeometry(QtCore.QRect(910, 270, 346, 51))
+        self.find_button.setGeometry(QtCore.QRect(910, 330, 346, 51))
         self.find_button.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.find_button.setFont(self.font)
         self.find_button.setStyleSheet(open('data/css/QPushButton.qss').read())
         self.find_button.setObjectName("find_button")
-        self.find_button.setText("ФИЛЬТР")
+        self.find_button.setText("ПОИСК")
         self.find_button.setCheckable(False)
-        # self.find_button.clicked.connect(self.register)
+        self.find_button.clicked.connect(self.find_log)
+        # Кнопка сброса поиска
+        self.cansel_find_button = QtWidgets.QPushButton(self.ui.centralwidget)
+        self.cansel_find_button.setGeometry(QtCore.QRect(910, 390, 346, 51))
+        self.cansel_find_button.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.cansel_find_button.setFont(self.font)
+        self.cansel_find_button.setStyleSheet(open('data/css/QPushButton.qss').read())
+        self.cansel_find_button.setObjectName("cansel_find_button")
+        self.cansel_find_button.setText("ОТМЕНИТЬ ПОИСК")
+        self.cansel_find_button.setCheckable(False)
+        self.cansel_find_button.clicked.connect(self.cansel_find_log)
 
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
+        # Создаем таблицу логов
+        self.create_table()
 
     def setEndDay(self):
         if self.start_day.date() > self.end_day.date():
             self.end_day.setDate(self.start_day.date())
+        self.create_table()
 
     def setStartDay(self):
         if self.start_day.date() > self.end_day.date():
             self.start_day.setDate(self.end_day.date())
+        self.create_table()
 
     def create_table(self):
         self.ui.tableWidget.setMaximumWidth(887)
@@ -135,12 +160,12 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.ui.tableWidget.verticalHeader().setFont(self.font_table)
         self.ui.tableWidget.setColumnWidth(0, 100)
         self.ui.tableWidget.setColumnWidth(1, 100)
-        self.ui.tableWidget.setColumnWidth(2, 645)
+        self.ui.tableWidget.setColumnWidth(2, 639)
         self.add_data_in_table()
 
 
     def add_data_in_table(self):
-        result = self.database.get_logs()
+        result = self.database.get_logs(self.start_day.date().toString("yyyy-MM-dd"), self.end_day.date().toString("yyyy-MM-dd"))
         if len(result) >= 1:
             if isinstance(result, list):
                 for row in range(len(result)):
@@ -155,12 +180,7 @@ class WindowLogsView(QtWidgets.QMainWindow):
             else:
                 self.signals.error_DB_signal.emit(result)
         else:
-            self.signals.error_DB_signal.emit('Пользователей не найдено!')
-
-
-    def show_error_message(self, message):
-        # Отображаем сообщение об ошибке в БД
-        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+            self.signals.error_DB_signal.emit('Логи не найдены!')
 
 
     def show_windowControl(self):
@@ -172,36 +192,65 @@ class WindowLogsView(QtWidgets.QMainWindow):
 
 
     def get_count_rows(self):
-        count_rows = self.database.count_row_in_DB_logs()
+        count_rows = self.database.count_row_in_DB_logs(self.start_day.date().toString("yyyy-MM-dd"), self.end_day.date().toString("yyyy-MM-dd"))
         if isinstance(count_rows, int):
             return count_rows
         else:
             self.signals.register_failed_signal.emit(count_rows)
             return 0
 
+    def find_log(self):
+        find_text = self.line_find.text()
+        if len(find_text) == 0:
+            self.label_poisk.setStyleSheet('color: rgba(228, 107, 134, 1)')
+        else:
+            self.label_poisk.setStyleSheet('color: rgba(256, 256, 256, 1)')
+            for row in range(self.ui.tableWidget.rowCount()):
+                self.ui.tableWidget.setRowHidden(row, False)
+            for row in range(self.ui.tableWidget.rowCount()):
+                item = self.ui.tableWidget.item(row, 2)  # Предполагается, что нужное слово находится в третьей колонке
+                if item and find_text not in item.text():
+                    self.ui.tableWidget.setRowHidden(row, True)
+                else:
+                    self.ui.tableWidget.setRowHidden(row, False)
 
-    # def dialog_delete_user(self):
-    #     buttonClicked = self.sender()
-    #     index = self.ui.tableWidget.indexAt(buttonClicked.pos())
-    #     username = self.ui.tableWidget.item(index.row(), 0).text()
-    #     dialogBox = QMessageBox()
-    #     dialogBox.setText(f"Вы действительно хотите пользователя {username}")
-    #     dialogBox.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
-    #     dialogBox.setWindowTitle('Удаление пользователя!')
-    #     dialogBox.setIcon(QMessageBox.Icon.Critical)
-    #     dialogBox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
-    #     dialogBox.buttonClicked.connect(lambda button: self.delete_user(button, username))
-    #     dialogBox.exec()
-    #
-    #
-    # def delete_user(self, button_clicked, username):
-    #     if button_clicked.text() == "OK":
-    #         result = self.database.delete_user(username)
-    #         if "успешно удален из БД" in result:
-    #             self.signals.register_success_signal.emit(result)
-    #         else:
-    #             if 'Ошибка работы' in result:
-    #                 self.signals.error_DB_signal.emit(result)
-    #             else:
-    #                 self.signals.error_DB_signal.emit(result)
-    #             return
+    def cansel_find_log(self):
+        self.line_find.clear()
+        for row in range(self.ui.tableWidget.rowCount()):
+            self.ui.tableWidget.setRowHidden(row, False)
+
+
+    def dialog_delete_logs(self):
+        # delete_logs = self.database.delete_logs_in_DB(self.start_day.date().toString("yyyy-MM-dd"), self.end_day.date().toString("yyyy-MM-dd"))
+        start_day = self.start_day.date().toString("yyyy-MM-dd")
+        end_day = self.end_day.date().toString("yyyy-MM-dd")
+        dialogBox = QMessageBox()
+        dialogBox.setText(f"Вы действительно хотите удалить логи с {start_day} по {end_day}?")
+        dialogBox.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
+        dialogBox.setWindowTitle('Удаление логов!')
+        dialogBox.setIcon(QMessageBox.Icon.Critical)
+        dialogBox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        dialogBox.buttonClicked.connect(lambda button: self.delete_logs(button, start_day, end_day))
+        dialogBox.exec()
+
+
+    def delete_logs(self, button_clicked, start_day, end_day):
+        if button_clicked.text() == "OK":
+            result = self.database.delete_logs(start_day, end_day)
+            if "успешно удалены из БД" in result:
+                self.signals.delete_log_signal.emit(result)
+            else:
+                if 'Ошибка работы' in result:
+                    self.signals.error_DB_signal.emit(result)
+                else:
+                    self.signals.error_DB_signal.emit(result)
+                return
+
+    def show_success_message(self, message):
+        # Отображаем сообщение об успешной регистрации
+        QtWidgets.QMessageBox.information(self, "Успешно", message)
+        self.create_table()
+
+    def show_error_message(self, message):
+        # Отображаем сообщение об ошибке в БД
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)

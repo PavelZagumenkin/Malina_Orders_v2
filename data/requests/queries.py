@@ -84,12 +84,23 @@ class Queries:
     # Получить количество строк в таблице logs
     def get_rows_logs():
         return '''
-        SELECT COUNT(*) FROM logs;
+        SELECT COUNT(*)
+        FROM logs
+        WHERE date >= %s AND date <= %s;
         '''
 
     @staticmethod
     # Получить все логи
     def get_logs():
         return '''
-        SELECT * FROM logs;
+        SELECT * FROM logs
+        WHERE date >= %s AND date <= %s;
+        '''
+
+    @staticmethod
+    # Удалить логи из БД за период
+    def delete_logs():
+        return '''
+        DELETE FROM logs
+        WHERE date BETWEEN %s AND %s;
         '''
