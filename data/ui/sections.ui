@@ -62,7 +62,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_autoorders">
+     <widget class="QPushButton" name="btn_logistics">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -109,7 +109,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>АВТОЗАКАЗЫ</string>
+       <string>ЛОГИСТИКА</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -117,7 +117,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_wage">
+     <widget class="QPushButton" name="btn_trade">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -164,7 +164,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ЗАРПЛАТА</string>
+       <string>ТОРГОВЛЯ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -172,7 +172,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_comingsoon">
+     <widget class="QPushButton" name="btn_production">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -219,7 +219,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>В РАЗРАБОТКЕ</string>
+       <string>ПРОИЗВОДСТВО</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -227,7 +227,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_history">
+     <widget class="QPushButton" name="btn_office">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -274,7 +274,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ИСТОРИЯ</string>
+       <string>ОФИС</string>
       </property>
       <property name="checkable">
        <bool>false</bool>

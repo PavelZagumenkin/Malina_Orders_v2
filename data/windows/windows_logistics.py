@@ -1,45 +1,31 @@
 from PyQt6 import QtWidgets, QtGui
-from data.ui.control import Ui_WindowControl
 import data.windows.windows_sections
-import data.windows.windows_usersControl
-import data.windows.windows_logsView
+from data.ui.logistics import Ui_WindowLogistics
 from data.requests.db_requests import Database
-from data.signals import Signals
-from data.active_session import Session
 import datetime
+from data.active_session import Session
+from data.signals import Signals
 
-class WindowControl(QtWidgets.QMainWindow):
+
+class WindowLogistics(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_WindowControl()
+        self.ui = Ui_WindowLogistics()
         self.ui.setupUi(self)
         self.signals = Signals()
         self.database = Database()
         self.session = Session.get_instance()  # Получение экземпляра класса Session
-        self.ui.btn_back.clicked.connect(self.show_windowSection)
-        self.ui.btn_control_users.clicked.connect(self.show_windowUserControl)
-        self.ui.btn_logs_editing.clicked.connect(self.show_windowLogsView)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
+        self.ui.btn_back.clicked.connect(self.show_windowSection)
 
+    # Закрываем выбор раздела, открываем выпечку
     def show_windowSection(self):
         self.close()
         global windowSection
         windowSection = data.windows.windows_sections.WindowSections()
         windowSection.show()
-
-    def show_windowUserControl(self):
-        self.close()
-        global windowUserControl
-        windowUserControl = data.windows.windows_usersControl.WindowUsersControl()
-        windowUserControl.show()
-
-    def show_windowLogsView(self):
-        self.close()
-        global windowLogsView
-        windowLogsView = data.windows.windows_logsView.WindowLogsView()
-        windowLogsView.show()
 
     def closeEvent(self, event):
         if event.spontaneous():

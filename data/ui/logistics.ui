@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WindowAutoOrders</class>
- <widget class="QMainWindow" name="WindowAutoOrders">
+ <class>WindowLogistics</class>
+ <widget class="QMainWindow" name="WindowLogistics">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -62,7 +62,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_bakery">
+     <widget class="QPushButton" name="btn_autoorders">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -109,7 +109,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ВЫПЕЧКА</string>
+       <string>АВТОЗАКАЗЫ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -117,7 +117,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_pie">
+     <widget class="QPushButton" name="btn_comingsoon4">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -164,7 +164,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ПИРОЖНЫЕ</string>
+       <string>В РАЗРАБОТКЕ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -172,7 +172,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_cake">
+     <widget class="QPushButton" name="btn_comingsoon1">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -219,7 +219,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>ТОРТЫ</string>
+       <string>В РАЗРАБОТКЕ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -227,7 +227,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_filling">
+     <widget class="QPushButton" name="btn_comingsoon2">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -274,7 +274,7 @@ background-color: rgba(228, 107, 134, 1)
 }</string>
       </property>
       <property name="text">
-       <string>НАЧИНКИ</string>
+       <string>В РАЗРАБОТКЕ</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -282,7 +282,7 @@ background-color: rgba(228, 107, 134, 1)
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_pass">
+     <widget class="QPushButton" name="btn_comingsoon3">
       <property name="enabled">
        <bool>true</bool>
       </property>
