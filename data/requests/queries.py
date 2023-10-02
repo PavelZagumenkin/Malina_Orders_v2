@@ -104,3 +104,10 @@ class Queries:
         DELETE FROM logs
         WHERE date BETWEEN %s AND %s;
         '''
+
+    @staticmethod
+    # Получить имя пользователя из БД
+    def get_version():
+        return '''
+         SELECT * FROM version;
+         '''

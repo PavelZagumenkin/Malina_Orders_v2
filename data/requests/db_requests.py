@@ -21,6 +21,19 @@ class Database:
     def __exit__(self, exc_type, exc_value, traceback):
         self.connection.close()
 
+    def check_version(self, version):
+        try:
+            with self.connection, self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_version())
+                actual_version = cursor.fetchone()[0]
+                if actual_version == version:
+                    return "Текущая версия актуальна!", actual_version
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Необходимо обновить приложение до версии {actual_version}!", actual_version
+
     def register(self, username, password, role):
         try:
             with self.connection, self.connection.cursor() as cursor:
