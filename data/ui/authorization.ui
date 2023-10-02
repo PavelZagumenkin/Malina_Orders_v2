@@ -291,7 +291,7 @@ background-color: rgba(228, 107, 134, 1)
      <rect>
       <x>820</x>
       <y>660</y>
-      <width>181</width>
+      <width>171</width>
       <height>31</height>
      </rect>
     </property>
@@ -310,15 +310,15 @@ background-color: rgba(228, 107, 134, 1)
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
     <property name="margin">
-     <number>5</number>
+     <number>0</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_version_number">
     <property name="geometry">
      <rect>
-      <x>1000</x>
+      <x>1010</x>
       <y>660</y>
-      <width>181</width>
+      <width>171</width>
       <height>31</height>
      </rect>
     </property>
@@ -337,7 +337,7 @@ background-color: rgba(228, 107, 134, 1)
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
     <property name="margin">
-     <number>5</number>
+     <number>0</number>
     </property>
    </widget>
   </widget>
