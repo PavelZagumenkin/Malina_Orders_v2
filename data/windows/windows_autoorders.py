@@ -1,18 +1,17 @@
 from PyQt6 import QtWidgets, QtGui
-import data.windows.windows_sections
-import data.windows.windows_autoorders
-import data.windows.windows_konditerskie
-from data.ui.logistics import Ui_WindowLogistics
+import data.windows.windows_logistics
+import data.windows.windows_bakery
+from data.ui.autoorders import Ui_WindowAutoOrders
 from data.requests.db_requests import Database
-import datetime
 from data.active_session import Session
 from data.signals import Signals
+import datetime
 
 
-class WindowLogistics(QtWidgets.QMainWindow):
+class WindowAutoorders(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_WindowLogistics()
+        self.ui = Ui_WindowAutoOrders()
         self.ui.setupUi(self)
         self.signals = Signals()
         self.database = Database()
@@ -20,28 +19,21 @@ class WindowLogistics(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
-        self.ui.btn_autoorders.clicked.connect(self.show_windowAutoorders)
-        self.ui.btn_konditerskie.clicked.connect(self.show_windowKonditerskie)
-        self.ui.btn_back.clicked.connect(self.show_windowSection)
+        self.ui.btn_bakery.clicked.connect(self.show_windowBakery)
+        self.ui.btn_back.clicked.connect(self.show_windowLogistik)
 
-    def show_windowAutoorders(self):
+    def show_windowBakery(self):
         self.close()
-        global windowAutoorders
-        windowAutoorders = data.windows.windows_autoorders.WindowAutoorders()
-        windowAutoorders.show()
+        global windowBakery
+        windowBakery = data.windows.windows_bakery.WindowBakery()
+        windowBakery.show()
 
-    def show_windowKonditerskie(self):
+    # Закрываем выбор раздела, открываем окно выбора раздела логистики
+    def show_windowLogistik(self):
         self.close()
-        global windowKonditerskie
-        windowKonditerskie = data.windows.windows_konditerskie.WindowKonditerskie()
-        windowKonditerskie.show()
-
-    # Закрываем выбор раздела, открываем окно выбора секции
-    def show_windowSection(self):
-        self.close()
-        global windowSection
-        windowSection = data.windows.windows_sections.WindowSections()
-        windowSection.show()
+        global windowLogistik
+        windowLogistik = data.windows.windows_logistics.WindowLogistics()
+        windowLogistik.show()
 
     def closeEvent(self, event):
         if event.spontaneous():

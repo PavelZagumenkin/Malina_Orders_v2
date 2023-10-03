@@ -111,3 +111,10 @@ class Queries:
         return '''
          SELECT * FROM version;
          '''
+
+    @staticmethod
+    # Получить количество строк в таблице user_role
+    def get_rows_konditerskie():
+        return '''
+        SELECT COUNT(*) FROM konditerskie;
+        '''

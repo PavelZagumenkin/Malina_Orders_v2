@@ -167,3 +167,14 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return f"Логи с {start_day} по {end_day} успешно удалены из БД."
+
+    def count_row_in_DB_konditerskie(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_rows_konditerskie())
+                count_rows = cursor.fetchone()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return count_rows

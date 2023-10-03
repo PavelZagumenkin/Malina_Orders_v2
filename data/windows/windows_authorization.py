@@ -21,7 +21,6 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         self.ui.label_login_password.setFocus()  # Фокус по умолчанию на тексте
         self.ui.btn_login.clicked.connect(self.login)
-        self.ui.label_version_number.setText('0.9')
 
 
         # Подключаем слоты к сигналам
