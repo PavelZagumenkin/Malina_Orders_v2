@@ -11,6 +11,8 @@ import requests
 import subprocess
 import sys
 
+
+
 class WindowAuthorization(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -21,18 +23,14 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         self.ui.label_login_password.setFocus()  # Фокус по умолчанию на тексте
         self.ui.btn_login.clicked.connect(self.login)
-
-
         # Подключаем слоты к сигналам
-        self.signals.login_success_signal.connect(self.show_windowSection)
-        self.signals.login_failed_signal.connect(self.show_error_login)
-        self.signals.error_DB_signal.connect(self.show_error_message)
-
+        self.signals.success_signal.connect(self.show_success_message)
+        self.signals.failed_signal.connect(self.show_error_message)
+        self.signals.error_DB_signal.connect(self.show_DB_error_message)
         # Устанавливаем иконку
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
-
         # Добавляем картинку
         self.label_logo_721 = QtWidgets.QLabel(parent=self.ui.centralwidget)
         self.label_logo_721.setGeometry(QtCore.QRect(0, 0, 731, 721))
@@ -44,12 +42,13 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.progress_bar.setGeometry(140, 200, 1000, 50)  # Устанавливаем положение и размеры прогресс-бара
         self.progress_bar.hide()
 
+
     def check_update(self):
         version = self.ui.label_version_number.text()
         update_result, actual_version = self.database.check_version(version)
         if "Необходимо обновить приложение до версии" in update_result:
-            print(f"Обновить до версии {actual_version}")
             self.dialog_need_update(actual_version)
+
 
     def dialog_need_update(self, actual_version):
         self.setEnabled(False)
@@ -61,6 +60,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         self.dialogBox_need_update.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
         self.dialogBox_need_update.buttonClicked.connect(self.upload_file_update)
         self.dialogBox_need_update.exec()
+
 
     def upload_file_update(self, button):
         if button.text() == "OK":
@@ -81,18 +81,17 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                     downloaded_size += len(data)
                     progress = int((downloaded_size / total_size) * 100)
                     self.progress_bar.setValue(progress)
-                    print(f'Загружено {downloaded_size / 1024:.2f} КБ из {total_size / 1024:.2f} КБ')
 
             # Проверяем, что файл успешно скачан
             if total_size > 0 and downloaded_size == total_size:
-                print('\nФайл успешно скачан.')
+                print('\nФайл обновлений успешно скачан.')
             else:
-                print(
-                    f'\nОшибка при скачивании файла. Загружено {downloaded_size / 1024:.2f} КБ из {total_size / 1024:.2f} КБ')
+                self.signals.failed_signal.emit(f'\nОшибка при скачивании файла. Загружено {downloaded_size / 1024:.2f} КБ из {total_size / 1024:.2f} КБ')
             self.progress_bar.hide()
             self.start_update(file_name)
         else:
             sys.exit()
+
 
     def start_update(self, file_name):
         # Запуск исполняемого файла
@@ -100,14 +99,13 @@ class WindowAuthorization(QtWidgets.QMainWindow):
             subprocess.Popen([file_name])
             sys.exit()
         except Exception as e:
-            print(f'Произошла ошибка при запуске файла: {e}')
+            self.signals.failed_signal.emit(f'Произошла ошибка при запуске файла: {e}')
 
 
     def login(self):
         # Получаем данные из полей ввода
         username = self.ui.line_login.text()
         password = self.ui.line_password.text()
-
         # Выполняем авторизацию в базе данных и отправляем соответствующий сигнал
         login_result = self.database.login(username, password)
         if isinstance(login_result, tuple) and len(login_result) == 2:
@@ -117,33 +115,43 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                                       f"Пользователь {username} выполнил вход в систему.")
                 if "Лог записан" in logs_result:
                     self.session.set_username_role(username, role)  # сохраняем роль пользователя в объекте UserSession
-                    self.signals.login_success_signal.emit()
+                    self.signals.success_signal.emit(result)
                 elif 'Ошибка работы' in logs_result:
                     self.signals.error_DB_signal.emit(logs_result)
                 else:
-                    self.signals.login_failed_signal.emit(logs_result)
+                    self.signals.failed_signal.emit(logs_result)
             else:
                 if len(username) == 0:
-                    self.signals.login_failed_signal.emit("Введите логин")
+                    self.signals.failed_signal.emit("Введите логин")
                 elif len(password) == 0:
-                    self.signals.login_failed_signal.emit("Введите пароль")
+                    self.signals.failed_signal.emit("Введите пароль")
                 else:
                     if 'Ошибка работы' in result:
                         self.signals.error_DB_signal.emit(result)
                     else:
-                        self.signals.login_failed_signal.emit(result)
+                        self.signals.failed_signal.emit(result)
         else:
             self.signals.error_DB_signal.emit('Ошибка Базы данных')
 
 
+    def show_success_message(self, message):
+        if "Авторизация успешна" in message:
+            self.show_windowSection()
+
+
     def show_error_message(self, message):
+        if "Введите логин" in message or "Введите пароль" in message:
+            self.ui.label_login_password.setText(message)
+            self.ui.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
+        else:
+            # Отображаем сообщение об ошибке
+            QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_DB_error_message(self, message):
         # Отображаем сообщение об ошибке
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
-    def show_error_login(self, message):
-        # Отображаем сообщение об ошибке
-        self.ui.label_login_password.setText(message)
-        self.ui.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
 
     def show_windowSection(self):
         # Отображаем главное окно приложения
@@ -151,6 +159,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         global windowSection
         windowSection = data.windows.windows_sections.WindowSections()
         windowSection.show()
+
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:

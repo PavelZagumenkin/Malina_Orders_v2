@@ -9,6 +9,7 @@ from data.signals import Signals
 import datetime
 
 
+
 class WindowSections(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -38,6 +39,11 @@ class WindowSections(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
+        # Подключаем слоты к сигналам
+        self.signals.success_signal.connect(self.show_success_message)
+        self.signals.failed_signal.connect(self.show_error_message)
+        self.signals.error_DB_signal.connect(self.show_DB_error_message)
+
 
     # Обработка выхода пользователя
     def logout(self):
@@ -45,11 +51,11 @@ class WindowSections(QtWidgets.QMainWindow):
         logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                             f"Пользователь {username} вышел из системы.")
         if "Лог записан" in logs_result:
-            self.signals.login_success_signal.emit()
+            self.signals.success_signal.emit(logs_result)
         elif 'Ошибка работы' in logs_result:
             self.signals.error_DB_signal.emit(logs_result)
         else:
-            self.signals.login_failed_signal.emit(logs_result)
+            self.signals.failed_signal.emit(logs_result)
         self.close()
         global windowLogin
         windowLogin = data.windows.windows_authorization.WindowAuthorization()
@@ -60,12 +66,14 @@ class WindowSections(QtWidgets.QMainWindow):
         windowLogin.ui.line_login.clear()
         windowLogin.ui.line_password.clear()
 
+
     # Закрываем выбор раздела, открываем выпечку
     def show_logistics(self):
         self.close()
         global WindowLogistics
         WindowLogistics = data.windows.windows_logistics.WindowLogistics()
         WindowLogistics.show()
+
 
     # Закрываем выбор раздела, открываем выпечку
     def show_control(self):
@@ -74,15 +82,30 @@ class WindowSections(QtWidgets.QMainWindow):
         WindowControl = data.windows.windows_control.WindowControl()
         WindowControl.show()
 
+
+    def show_success_message(self, message):
+        pass
+
+
+    def show_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_DB_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
     def closeEvent(self, event):
         if event.spontaneous():
             username = self.session.get_username()  # Получение имени пользователя из экземпляра класса Session
             logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                             f"Пользователь {username} вышел из системы.")
             if "Лог записан" in logs_result:
-                self.signals.login_success_signal.emit()
+                self.signals.success_signal.emit(logs_result)
             elif 'Ошибка работы' in logs_result:
                 self.signals.error_DB_signal.emit(logs_result)
             else:
-                self.signals.login_failed_signal.emit(logs_result)
+                self.signals.failed_signal.emit(logs_result)
         event.accept()
