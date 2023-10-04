@@ -22,6 +22,11 @@ class WindowControl(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
+        # Подключаем слоты к сигналам
+        self.signals.success_signal.connect(self.show_success_message)
+        self.signals.failed_signal.connect(self.show_error_message)
+        self.signals.error_DB_signal.connect(self.show_DB_error_message)
+
 
     def show_windowSection(self):
         self.close()
@@ -29,11 +34,13 @@ class WindowControl(QtWidgets.QMainWindow):
         windowSection = data.windows.windows_sections.WindowSections()
         windowSection.show()
 
+
     def show_windowUserControl(self):
         self.close()
         global windowUserControl
         windowUserControl = data.windows.windows_usersControl.WindowUsersControl()
         windowUserControl.show()
+
 
     def show_windowLogsView(self):
         self.close()
@@ -41,15 +48,30 @@ class WindowControl(QtWidgets.QMainWindow):
         windowLogsView = data.windows.windows_logsView.WindowLogsView()
         windowLogsView.show()
 
+
+    def show_success_message(self, message):
+        pass
+
+
+    def show_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_DB_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
     def closeEvent(self, event):
         if event.spontaneous():
             username = self.session.get_username()  # Получение имени пользователя из экземпляра класса Session
             logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                             f"Пользователь {username} вышел из системы.")
             if "Лог записан" in logs_result:
-                self.signals.login_success_signal.emit()
+                self.signals.success_signal.emit(logs_result)
             elif 'Ошибка работы' in logs_result:
                 self.signals.error_DB_signal.emit(logs_result)
             else:
-                self.signals.login_failed_signal.emit(logs_result)
+                self.signals.failed_signal.emit(logs_result)
         event.accept()
