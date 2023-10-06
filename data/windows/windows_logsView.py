@@ -18,17 +18,14 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         self.ui.btn_back.clicked.connect(self.show_windowControl)
         self.ui.label_windowName.setText('Панель просмотра логов')
-
-
         # Подключаем слоты к сигналам
-        self.signals.delete_log_signal.connect(self.show_success_message)
-        self.signals.error_DB_signal.connect(self.show_error_message)
-
+        self.signals.success_signal.connect(self.show_success_message)
+        self.signals.failed_signal.connect(self.show_error_message)
+        self.signals.error_DB_signal.connect(self.show_DB_error_message)
         # Устанавливаем иконку
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
-
         # Настройка стиля
         self.font = QtGui.QFont()
         self.font.setFamily("Trebuchet MS")
@@ -128,21 +125,23 @@ class WindowLogsView(QtWidgets.QMainWindow):
         self.cansel_find_button.setText("ОТМЕНИТЬ ПОИСК")
         self.cansel_find_button.setCheckable(False)
         self.cansel_find_button.clicked.connect(self.cansel_find_log)
-
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
         # Создаем таблицу логов
         self.create_table()
+
 
     def setEndDay(self):
         if self.start_day.date() > self.end_day.date():
             self.end_day.setDate(self.start_day.date())
         self.create_table()
 
+
     def setStartDay(self):
         if self.start_day.date() > self.end_day.date():
             self.start_day.setDate(self.end_day.date())
         self.create_table()
+
 
     def create_table(self):
         self.ui.tableWidget.setMaximumWidth(887)
@@ -199,8 +198,9 @@ class WindowLogsView(QtWidgets.QMainWindow):
         if isinstance(count_rows, int):
             return count_rows
         else:
-            self.signals.register_failed_signal.emit(count_rows)
+            self.signals.failed_signal.emit(count_rows)
             return 0
+
 
     def find_log(self):
         find_text = self.line_find.text()
@@ -216,6 +216,7 @@ class WindowLogsView(QtWidgets.QMainWindow):
                     self.ui.tableWidget.setRowHidden(row, True)
                 else:
                     self.ui.tableWidget.setRowHidden(row, False)
+
 
     def cansel_find_log(self):
         self.line_find.clear()
@@ -241,22 +242,34 @@ class WindowLogsView(QtWidgets.QMainWindow):
         if button_clicked.text() == "OK":
             result = self.database.delete_logs(start_day, end_day)
             if "успешно удалены из БД" in result:
-                self.signals.delete_log_signal.emit(result)
+                self.signals.success_signal.emit(result)
             else:
                 if 'Ошибка работы' in result:
                     self.signals.error_DB_signal.emit(result)
                 else:
-                    self.signals.error_DB_signal.emit(result)
+                    self.signals.failed_signal.emit(result)
                 return
 
+
     def show_success_message(self, message):
-        # Отображаем сообщение об успешной регистрации
-        QtWidgets.QMessageBox.information(self, "Успешно", message)
-        self.create_table()
+        if "успешно удалены из БД" in message:
+            # Отображаем сообщение об успешной регистрации
+            QtWidgets.QMessageBox.information(self, "Успешно", message)
+            self.create_table()
+        else:
+            pass
+
+
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке в БД
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_DB_error_message(self, message):
+        # Отображаем сообщение об ошибке в БД
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
 
     def closeEvent(self, event):
         if event.spontaneous():
@@ -264,9 +277,9 @@ class WindowLogsView(QtWidgets.QMainWindow):
             logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                             f"Пользователь {username} вышел из системы.")
             if "Лог записан" in logs_result:
-                self.signals.login_success_signal.emit()
+                self.signals.success_signal.emit(logs_result)
             elif 'Ошибка работы' in logs_result:
                 self.signals.error_DB_signal.emit(logs_result)
             else:
-                self.signals.login_failed_signal.emit(logs_result)
+                self.signals.failed_signal.emit(logs_result)
         event.accept()

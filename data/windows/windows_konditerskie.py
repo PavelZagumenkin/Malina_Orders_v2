@@ -94,12 +94,18 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         windowLogistik.show()
 
     def show_success_message(self, message):
-        # Отображаем сообщение об успешной регистрации
-        QtWidgets.QMessageBox.information(self, "Успешно", message)
-        self.create_table()
+        if "успешно" in message:
+            # Отображаем сообщение об успешной операции
+            QtWidgets.QMessageBox.information(self, "Успешно", message)
+        else:
+            self.create_table()
 
     def show_error_message(self, message):
         # Отображаем сообщение об ошибке в БД
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+    def show_DB_error_message(self, message):
+        # Отображаем сообщение об ошибке
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
     def closeEvent(self, event):
@@ -108,9 +114,9 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
             logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                             f"Пользователь {username} вышел из системы.")
             if "Лог записан" in logs_result:
-                self.signals.login_success_signal.emit()
+                self.signals.success_signal.emit(logs_result)
             elif 'Ошибка работы' in logs_result:
                 self.signals.error_DB_signal.emit(logs_result)
             else:
-                self.signals.login_failed_signal.emit(logs_result)
+                self.signals.failed_signal.emit(logs_result)
         event.accept()

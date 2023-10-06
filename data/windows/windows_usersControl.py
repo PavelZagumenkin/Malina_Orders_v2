@@ -17,19 +17,14 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         self.ui.btn_back.clicked.connect(self.show_windowControl)
         self.ui.label_windowName.setText('Панель управления пользователями')
-        self.create_table()
-        self.create_form_registration()
-
         # Подключаем слоты к сигналам
-        self.signals.register_success_signal.connect(self.show_success_message)
-        self.signals.register_failed_signal.connect(self.show_error_registration)
-        self.signals.error_DB_signal.connect(self.show_error_message)
-
+        self.signals.success_signal.connect(self.show_success_message)
+        self.signals.failed_signal.connect(self.show_error_message)
+        self.signals.error_DB_signal.connect(self.show_DB_error_message)
         # Устанавливаем иконку
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
-
         # Текст с подсказкой о вводе логина и пароля
         self.font = QtGui.QFont()
         self.font.setFamily("Trebuchet MS")
@@ -44,9 +39,10 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.label_login_password.setObjectName("label_login_password")
         self.label_login_password.setText("Введите данные для регистрации")
         self.label_login_password.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-
         # Распологаем кнопку "Назад"
         self.ui.btn_back.setGeometry(QtCore.QRect(910, 620, 346, 51))
+        self.create_table()
+        self.create_form_registration()
 
 
     def create_table(self):
@@ -96,7 +92,6 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.line_login.setClearButtonEnabled(False)
         self.line_login.setObjectName("line_login")
         self.line_login.setPlaceholderText("Введите логин")
-
         # Создаем поле для ввода пароля
         self.line_password = QtWidgets.QLineEdit(self.ui.centralwidget)
         self.line_password.setGeometry(QtCore.QRect(910, 186, 346, 51))
@@ -111,7 +106,6 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.line_password.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.line_password.setObjectName("line_password")
         self.line_password.setPlaceholderText("Введите пароль")
-
         # Создаем поле для ввода уровня прав
         self.line_role = QtWidgets.QComboBox(self.ui.centralwidget)
         self.line_role.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.NoInsert)
@@ -121,7 +115,6 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         self.line_role.setFont(self.font)
         self.listRole = ['Оператор', 'Логист', 'Супервайзер', 'Менеджер', 'Администратор']
         self.line_role.addItems(self.listRole)
-
         # Создаем кнопку регистрации нового пользователя
         self.btn_reg = QtWidgets.QPushButton(self.ui.centralwidget)
         self.btn_reg.setGeometry(QtCore.QRect(910, 318, 346, 51))
@@ -191,24 +184,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
             else:
                 self.signals.error_DB_signal.emit(result)
         else:
-            self.signals.error_DB_signal.emit('Пользователей не найдено!')
-
-
-    def show_success_message(self, message):
-        # Отображаем сообщение об успешной регистрации
-        QtWidgets.QMessageBox.information(self, "Успешно", message)
-        self.create_table()
-
-
-    def show_error_message(self, message):
-        # Отображаем сообщение об ошибке в БД
-        QtWidgets.QMessageBox.information(self, "Ошибка", message)
-
-
-    def show_error_registration(self, message):
-        # Отображаем сообщение об ошибке
-        self.label_login_password.setText(message)
-        self.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
+            self.signals.failed_signal.emit('Пользователей не найдено!')
 
 
     def show_windowControl(self):
@@ -224,7 +200,7 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         if isinstance(count_rows, int):
             return count_rows
         else:
-            self.signals.register_failed_signal.emit(count_rows)
+            self.signals.error_DB_signal.emit(count_rows)
             return 0
 
     def register(self):
@@ -245,21 +221,21 @@ class WindowUsersControl(QtWidgets.QMainWindow):
             role = ''
 
         if len(username) == 0:
-            self.signals.register_failed_signal.emit("Введите логин")
+            self.signals.failed_signal.emit("Введите логин")
         elif len(password) == 0:
-            self.signals.register_failed_signal.emit("Введите пароль")
+            self.signals.failed_signal.emit("Введите пароль")
         elif len(role) == 0:
-            self.signals.register_failed_signal.emit('Не заданы права пользователя')
+            self.signals.failed_signal.emit("Не заданы права пользователя")
         else:
             # Выполняем регистрацию в базе данных и отправляем соответствующий сигнал
             result = self.database.register(username, password, role)
             if "успешно зарегистрирован" in result:
-                self.signals.register_success_signal.emit(result)
+                self.signals.success_signal.emit(result)
             else:
                 if 'Ошибка работы' in result:
                     self.signals.error_DB_signal.emit(result)
                 else:
-                    self.signals.register_failed_signal.emit(result)
+                    self.signals.failed_signal.emit(result)
 
 
     def reset_password(self):
@@ -270,12 +246,12 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         if ok:
             result = self.database.update_password(username, new_pass)
             if "успешно изменен" in result:
-                self.signals.register_success_signal.emit(result)
+                self.signals.success_signal.emit(result)
             else:
                 if 'Ошибка работы' in result:
                     self.signals.error_DB_signal.emit(result)
                 else:
-                    self.signals.error_DB_signal.emit(result)
+                    self.signals.failed_signal.emit(result)
         else:
             return
 
@@ -299,12 +275,12 @@ class WindowUsersControl(QtWidgets.QMainWindow):
             new_role = ''
         result = self.database.update_user_role(username, new_role)
         if "успешно изменены" in result:
-            self.signals.register_success_signal.emit(result)
+            self.signals.success_signal.emit(result)
         else:
             if 'Ошибка работы' in result:
                 self.signals.error_DB_signal.emit(result)
             else:
-                self.signals.error_DB_signal.emit(result)
+                self.signals.failed_signal.emit(result)
             return
 
 
@@ -326,13 +302,38 @@ class WindowUsersControl(QtWidgets.QMainWindow):
         if button_clicked.text() == "OK":
             result = self.database.delete_user(username)
             if "успешно удален из БД" in result:
-                self.signals.register_success_signal.emit(result)
+                self.signals.success_signal.emit(result)
             else:
                 if 'Ошибка работы' in result:
                     self.signals.error_DB_signal.emit(result)
                 else:
-                    self.signals.error_DB_signal.emit(result)
+                    self.signals.failed_signal.emit(result)
                 return
+
+
+    def show_success_message(self, message):
+        if "успешно зарегистрирован" in message or "успешно изменен" in message or "успешно изменены" in message or "успешно удален из БД" in message:
+            # Отображаем сообщение об успешной регистрации
+            QtWidgets.QMessageBox.information(self, "Успешно", message)
+            self.create_table()
+        else:
+            pass
+
+
+    def show_error_message(self, message):
+        if "Введите логин" in message or "Введите пароль" in message or "Не заданы права пользователя" in message:
+            # Отображаем сообщение об ошибке
+            self.label_login_password.setText(message)
+            self.label_login_password.setStyleSheet('color: rgba(228, 107, 134, 1)')
+        else:
+            # Отображаем сообщение об ошибке
+            QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_DB_error_message(self, message):
+        # Отображаем сообщение об ошибке в БД
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
 
     def closeEvent(self, event):
         if event.spontaneous():
@@ -340,9 +341,9 @@ class WindowUsersControl(QtWidgets.QMainWindow):
             logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                             f"Пользователь {username} вышел из системы.")
             if "Лог записан" in logs_result:
-                self.signals.login_success_signal.emit()
+                self.signals.success_signal.emit(logs_result)
             elif 'Ошибка работы' in logs_result:
                 self.signals.error_DB_signal.emit(logs_result)
             else:
-                self.signals.login_failed_signal.emit(logs_result)
+                self.signals.failed_signal.emit(logs_result)
         event.accept()
