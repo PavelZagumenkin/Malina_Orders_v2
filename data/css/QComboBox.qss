@@ -1,4 +1,4 @@
-#line_role {
+#line_type_konditerskoi, #line_role #line_type{
     padding-left: 15px;
     border-bottom: 1px solid #000000;
     border-top: 1px solid #ECECEC;
@@ -6,22 +6,22 @@
     border-right: 1px solid #ECECEC;
 }
 
-#line_role::drop-down {
+#line_type_konditerskoi::drop-down, #line_role::drop-down, #line_type::drop-down{
     border: none;
 }
 
-#line_role::down-arrow {
+#line_type_konditerskoi::down-arrow, #line_role::down-arrow, #line_type::down-arrow {
     image: url(data/images/down-chevron.ico);
     width: 12px;
     height: 12px;
     margin-right: 15px;
 }
 
-#line_role::on {
+#line_type_konditerskoi::on, #line_role::on, line_type::on {
     border: 2px solid #c2dbfe;
 }
 
-#line_role QListView {
+#line_type_konditerskoi QListView, #line_role QListView, #line_type QListView {
     border: 1px solid rgba(0, 0, 0, 10%);
     padding: 5px;
     padding-left: 10px;

@@ -178,3 +178,32 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return count_rows
+
+    def register_konditerskay(self, konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables):
+        try:
+            with self.connection, self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_konditerskay_by_name(), (konditerskay_name,))
+                konditerskay = cursor.fetchone()
+                if konditerskay is not None:
+                    return "Такая кондитерская уже существует"
+                cursor.execute(Queries.register_konditerskay_in_DB(), (konditerskay_name, konditerskay_type, bakery, ice_sklad, tualet, tables, vhod_group))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        if konditerskay_type == 0:
+            type = 'Дисконт'
+        else:
+            type = 'Магазин'
+        return f"Кондитерская {konditerskay_name} типа {type} успешно зарегистрирована"
+
+    def get_konditerskie(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_konditerskie_on_DB())
+                result = cursor.fetchall()
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

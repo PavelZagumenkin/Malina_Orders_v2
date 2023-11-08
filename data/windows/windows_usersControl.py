@@ -155,7 +155,6 @@ class WindowUsersControl(QtWidgets.QMainWindow):
                     self.listRole_table = ['Оператор', 'Логист', 'Супервайзер', 'Менеджер', 'Администратор']
                     self.line_role_table.addItems(self.listRole_table)
                     self.line_role_table.wheelEvent = lambda event: None
-                    role_in_DB = 'Логист'
                     if result[row][2] == 'operator':
                         role_in_DB = 'Оператор'
                     elif result[row][2] == 'logist':

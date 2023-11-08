@@ -118,3 +118,25 @@ class Queries:
         return '''
         SELECT COUNT(*) FROM konditerskie;
         '''
+
+    @staticmethod
+    # Получить имя пользователя из БД
+    def get_konditerskay_by_name():
+        return '''
+        SELECT * FROM konditerskie WHERE name = %s;
+        '''
+
+    @staticmethod
+    # Регистрация новой кондитерской
+    def register_konditerskay_in_DB():
+        return '''
+        INSERT INTO konditerskie (name, type, bakery, ice_sklad, tualet, stoliki, enable, vhod_group)
+        VALUES (%s, %s, %s, %s, %s, %s, 1, %s);
+        '''
+
+    @staticmethod
+    # Получить роли всех пользователей с именами в таблице user_role
+    def get_konditerskie_on_DB():
+        return '''
+        SELECT * FROM konditerskie;
+        '''
