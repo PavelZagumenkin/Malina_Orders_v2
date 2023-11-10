@@ -130,13 +130,28 @@ class Queries:
     # Регистрация новой кондитерской
     def register_konditerskay_in_DB():
         return '''
-        INSERT INTO konditerskie (name, type, bakery, ice_sklad, tualet, stoliki, enable, vhod_group)
-        VALUES (%s, %s, %s, %s, %s, %s, 1, %s);
+        INSERT INTO konditerskie (name, type, bakery, ice_sklad, vhod_group, tualet, stoliki, enable)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, 1);
         '''
 
     @staticmethod
-    # Получить роли всех пользователей с именами в таблице user_role
+    # Получить список кондитерских со всеми данными
     def get_konditerskie_on_DB():
         return '''
         SELECT * FROM konditerskie;
+        '''
+
+    @staticmethod
+    # Установить новую роль
+    def update_konditerskay_in_DB():
+        return '''
+        UPDATE konditerskie
+        SET type = %s,
+            bakery = %s,
+            ice_sklad = %s,
+            vhod_group = %s,
+            tualet = %s,
+            stoliki = %s,
+            enable = %s
+        WHERE name = %s;
         '''

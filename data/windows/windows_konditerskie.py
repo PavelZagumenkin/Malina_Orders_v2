@@ -71,14 +71,14 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         self.ui.tableWidget.horizontalHeader().setFont(self.font_table)
         self.ui.tableWidget.verticalHeader().setFont(self.font_table)
         self.ui.tableWidget.setColumnWidth(0, 200)
-        self.ui.tableWidget.setColumnWidth(1, 130)
-        self.ui.tableWidget.setColumnWidth(2, 50)
+        self.ui.tableWidget.setColumnWidth(1, 100)
+        self.ui.tableWidget.setColumnWidth(2, 60)
         self.ui.tableWidget.setColumnWidth(3, 110)
         self.ui.tableWidget.setColumnWidth(4, 60)
         self.ui.tableWidget.setColumnWidth(5, 60)
         self.ui.tableWidget.setColumnWidth(6, 70)
         self.ui.tableWidget.setColumnWidth(7, 75)
-        self.ui.tableWidget.setColumnWidth(8, 110)
+        self.ui.tableWidget.setColumnWidth(8, 115)
         self.add_data_in_table()
 
 
@@ -111,7 +111,7 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         self.line_type.setObjectName("line_type_konditerskoi")
         self.line_type.setStyleSheet(open('data/css/QComboBox.qss').read())
         self.line_type.setFont(self.font)
-        self.listType = ['Магазин', 'Дисконт']
+        self.listType = ['Дисконт', 'Магазин']
         self.line_type.addItems(self.listType)
         self.line_type.currentIndexChanged.connect(self.on_line_type_changed)
         # Создаем чек-боксы пунктов
@@ -188,12 +188,62 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
                     font.setWeight(50)
                     font.setPointSize(10)
                     self.button_save_changes = QtWidgets.QPushButton()
-                    self.checkbox_bakery_table = QtWidgets.QCheckBox()
-                    self.checkbox_ice_sklad_table = QtWidgets.QCheckBox()
-                    self.checkbox_tualet_table = QtWidgets.QCheckBox()
-                    self.checkbox_tables_table = QtWidgets.QCheckBox()
-                    self.checkbox_vhod_group_table = QtWidgets.QCheckBox()
-                    self.checkbox_enable_table = QtWidgets.QCheckBox()
+                    self.button_save_changes.setFont(font)
+                    self.line_combo_yes_no_bakery = QtWidgets.QComboBox()
+                    self.line_combo_yes_no_ice_sklad = QtWidgets.QComboBox()
+                    self.line_combo_yes_no_vhod_group = QtWidgets.QComboBox()
+                    self.line_combo_yes_no_tualet = QtWidgets.QComboBox()
+                    self.line_combo_yes_no_tables = QtWidgets.QComboBox()
+                    self.line_combo_yes_no_enable = QtWidgets.QComboBox()
+                    self.line_combo_yes_no_bakery.setObjectName("line_yes_no")
+                    self.line_combo_yes_no_ice_sklad.setObjectName("line_yes_no")
+                    self.line_combo_yes_no_vhod_group.setObjectName("line_yes_no")
+                    self.line_combo_yes_no_tualet.setObjectName("line_yes_no")
+                    self.line_combo_yes_no_tables.setObjectName("line_yes_no")
+                    self.line_combo_yes_no_enable.setObjectName("line_yes_no")
+                    self.line_combo_yes_no_bakery.setStyleSheet(open('data/css/QComboBox.qss').read())
+                    self.line_combo_yes_no_ice_sklad.setStyleSheet(open('data/css/QComboBox.qss').read())
+                    self.line_combo_yes_no_vhod_group.setStyleSheet(open('data/css/QComboBox.qss').read())
+                    self.line_combo_yes_no_tualet.setStyleSheet(open('data/css/QComboBox.qss').read())
+                    self.line_combo_yes_no_tables.setStyleSheet(open('data/css/QComboBox.qss').read())
+                    self.line_combo_yes_no_enable.setStyleSheet(open('data/css/QComboBox.qss').read())
+                    self.line_combo_yes_no_bakery.setFont(font)
+                    self.line_combo_yes_no_ice_sklad.setFont(font)
+                    self.line_combo_yes_no_vhod_group.setFont(font)
+                    self.line_combo_yes_no_tualet.setFont(font)
+                    self.line_combo_yes_no_tables.setFont(font)
+                    self.line_combo_yes_no_enable.setFont(font)
+                    self.line_combo_yes_no_bakery.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_combo_yes_no_ice_sklad.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_combo_yes_no_vhod_group.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_combo_yes_no_tualet.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_combo_yes_no_tables.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_combo_yes_no_enable.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+                    self.line_combo_yes_no_bakery.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.line_combo_yes_no_ice_sklad.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.line_combo_yes_no_vhod_group.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.line_combo_yes_no_tualet.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.line_combo_yes_no_tables.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.line_combo_yes_no_enable.setInputMethodHints(
+                        QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
+                    self.list_combo_yes_no = ['Нет', 'Да']
+                    self.line_combo_yes_no_bakery.addItems(self.list_combo_yes_no)
+                    self.line_combo_yes_no_ice_sklad.addItems(self.list_combo_yes_no)
+                    self.line_combo_yes_no_vhod_group.addItems(self.list_combo_yes_no)
+                    self.line_combo_yes_no_tualet.addItems(self.list_combo_yes_no)
+                    self.line_combo_yes_no_tables.addItems(self.list_combo_yes_no)
+                    self.line_combo_yes_no_enable.addItems(self.list_combo_yes_no)
+                    self.line_combo_yes_no_bakery.wheelEvent = lambda event: None
+                    self.line_combo_yes_no_ice_sklad.wheelEvent = lambda event: None
+                    self.line_combo_yes_no_vhod_group.wheelEvent = lambda event: None
+                    self.line_combo_yes_no_tualet.wheelEvent = lambda event: None
+                    self.line_combo_yes_no_tables.wheelEvent = lambda event: None
+                    self.line_combo_yes_no_enable.wheelEvent = lambda event: None
                     self.line_type_table = QtWidgets.QComboBox()
                     self.line_type_table.setObjectName("line_type")
                     self.line_type_table.setStyleSheet(open('data/css/QComboBox.qss').read())
@@ -201,30 +251,32 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
                     self.line_type_table.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
                     self.line_type_table.setInputMethodHints(
                         QtCore.Qt.InputMethodHint.ImhHiddenText | QtCore.Qt.InputMethodHint.ImhNoAutoUppercase | QtCore.Qt.InputMethodHint.ImhNoPredictiveText | QtCore.Qt.InputMethodHint.ImhSensitiveData)
-                    self.listType_table = ['Магазин', 'Дисконт']
+                    self.listType_table = ['Дисконт', 'Магазин']
                     self.line_type_table.addItems(self.listType_table)
                     self.line_type_table.wheelEvent = lambda event: None
-                    if result[row][2] == 0:
-                        role_in_DB = 'Дисконт'
-                    else:
-                        role_in_DB = 'Магазин'
                     self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(result[row][1]))
                     self.ui.tableWidget.setCellWidget(row, 1, self.line_type_table)
-                    self.ui.tableWidget.cellWidget(row, 1).setCurrentText(role_in_DB)
-                    self.ui.tableWidget.setCellWidget(row, 2, self.checkbox_bakery_table)
-                    self.ui.tableWidget.setCellWidget(row, 3, self.checkbox_ice_sklad_table)
-                    self.ui.tableWidget.setCellWidget(row, 4, self.checkbox_tualet_table)
-                    self.ui.tableWidget.setCellWidget(row, 5, self.checkbox_tables_table)
-                    self.ui.tableWidget.setCellWidget(row, 6, self.checkbox_vhod_group_table)
-                    self.ui.tableWidget.setCellWidget(row, 7, self.checkbox_enable_table)
+                    self.ui.tableWidget.cellWidget(row, 1).setCurrentIndex(result[row][2])
+                    self.ui.tableWidget.setCellWidget(row, 2, self.line_combo_yes_no_bakery)
+                    self.ui.tableWidget.cellWidget(row, 2).setCurrentIndex(result[row][3])
+                    self.ui.tableWidget.setCellWidget(row, 3, self.line_combo_yes_no_ice_sklad)
+                    self.ui.tableWidget.cellWidget(row, 3).setCurrentIndex(result[row][4])
+                    self.ui.tableWidget.setCellWidget(row, 4, self.line_combo_yes_no_vhod_group)
+                    self.ui.tableWidget.cellWidget(row, 4).setCurrentIndex(result[row][5])
+                    self.ui.tableWidget.setCellWidget(row, 5, self.line_combo_yes_no_tualet)
+                    self.ui.tableWidget.cellWidget(row, 5).setCurrentIndex(result[row][6])
+                    self.ui.tableWidget.setCellWidget(row, 6, self.line_combo_yes_no_tables)
+                    self.ui.tableWidget.cellWidget(row, 6).setCurrentIndex(result[row][7])
+                    self.ui.tableWidget.setCellWidget(row, 7, self.line_combo_yes_no_enable)
+                    self.ui.tableWidget.cellWidget(row, 7).setCurrentIndex(result[row][8])
                     self.ui.tableWidget.setCellWidget(row, 8, self.button_save_changes)
                     self.ui.tableWidget.cellWidget(row, 8).setText('Сохранить')
                     self.ui.tableWidget.cellWidget(row, 8).setStyleSheet(open('data/css/QPushButton.qss').read())
-                    # self.ui.tableWidget.cellWidget(row, 8).clicked.connect(self.update_user_role)
+                    self.ui.tableWidget.cellWidget(row, 8).clicked.connect(self.update_konditerskay)
             else:
                 self.signals.error_DB_signal.emit(result)
         else:
-            self.signals.failed_signal.emit('Пользователей не найдено!')
+            self.signals.failed_signal.emit('Кондитерские не найдены!')
 
 
     def get_count_rows(self):
@@ -280,6 +332,27 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         windowLogistik = data.windows.windows_logistics.WindowLogistics()
         windowLogistik.show()
 
+
+    def update_konditerskay(self):
+        buttonClicked = self.sender()
+        index = self.ui.tableWidget.indexAt(buttonClicked.pos())
+        konditerskay_name = self.ui.tableWidget.item(index.row(), 0).text()
+        konditerskay_type = self.ui.tableWidget.cellWidget(index.row(), 1).currentIndex()
+        konditerskay_bakery = self.ui.tableWidget.cellWidget(index.row(), 2).currentIndex()
+        konditerskay_ice_sklad = self.ui.tableWidget.cellWidget(index.row(), 3).currentIndex()
+        konditerskay_vhod_group = self.ui.tableWidget.cellWidget(index.row(), 4).currentIndex()
+        konditerskay_tualet = self.ui.tableWidget.cellWidget(index.row(), 5).currentIndex()
+        konditerskay_tables = self.ui.tableWidget.cellWidget(index.row(), 6).currentIndex()
+        konditerskay_enable = self.ui.tableWidget.cellWidget(index.row(), 7).currentIndex()
+        result = self.database.update_konditerskay_data(konditerskay_name, konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable)
+        if "успешно изменены" in result:
+            self.signals.success_signal.emit(result)
+        else:
+            if 'Ошибка работы' in result:
+                self.signals.error_DB_signal.emit(result)
+            else:
+                self.signals.failed_signal.emit(result)
+            return
 
     def show_success_message(self, message):
         if "успешно" in message:

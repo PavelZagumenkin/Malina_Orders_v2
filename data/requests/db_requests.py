@@ -186,7 +186,7 @@ class Database:
                 konditerskay = cursor.fetchone()
                 if konditerskay is not None:
                     return "Такая кондитерская уже существует"
-                cursor.execute(Queries.register_konditerskay_in_DB(), (konditerskay_name, konditerskay_type, bakery, ice_sklad, tualet, tables, vhod_group))
+                cursor.execute(Queries.register_konditerskay_in_DB(), (konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables))
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
@@ -207,3 +207,13 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def update_konditerskay_data(self, konditerskay_name, konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.update_konditerskay_in_DB(), (konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable, konditerskay_name))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Данные по кондитерской {konditerskay_name} успешно изменены."
