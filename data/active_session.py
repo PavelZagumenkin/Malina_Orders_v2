@@ -21,12 +21,16 @@ class Session:
     # def get_session(self):
     #     return self.session
 
-    def set_username_role(self, username, role):
+    def set_username_role(self, username, role, currentDate):
         self.username = username
         self.role = role
+        self.currentDate = currentDate
 
     def get_role(self):
         return self.role
 
     def get_username(self):
         return self.username
+
+    def get_currentDate(self):
+        return self.currentDate

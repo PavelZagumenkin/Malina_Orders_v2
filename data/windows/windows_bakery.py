@@ -8,6 +8,7 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 from PyQt6.QtWidgets import QFileDialog
 from PyQt6.QtWidgets import QMessageBox
 from data.ui.bakery import Ui_WindowBakery
+from data.active_session import Session
 
 from math import ceil
 # from handler.check_db import CheckThread
@@ -27,6 +28,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = Ui_WindowBakery()
         self.ui.setupUi(self)
+        self.session = Session.get_instance()  # Получение экземпляра класса Session
         # self.check_db = CheckThread()
         # self.check_db.period.connect(self.signal_period)
         # self.check_db.prognoz.connect(self.signal_prognoz)
@@ -35,24 +37,19 @@ class WindowBakery(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("image/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
-        # if self.proverkaData() != 0:
-        #     TodayDate = QtCore.QDate(self.proverkaData()[0], self.proverkaData()[1], self.proverkaData()[2])
-        #     self.ui.dateEdit_startDay.setDate(TodayDate)
-        #     EndDay = TodayDate.addDays(6)
-        #     self.ui.dateEdit_EndDay.setDate(EndDay)
-        # else:
-        #     TodayDate = datetime.datetime.today()
-        #     EndDay = datetime.datetime.today() + datetime.timedelta(days=6)
-        #     self.ui.dateEdit_startDay.setDate(QtCore.QDate(TodayDate.year, TodayDate.month, TodayDate.day))
-        #     self.ui.dateEdit_EndDay.setDate(QtCore.QDate(EndDay.year, EndDay.month, EndDay.day))
-        # self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_EndDay.date()]
+        year, month, day = map(int, self.session.get_currentDate().split('.'))
+        TodayDate = QtCore.QDate(year, month, day)
+        EndDay = TodayDate.addDays(6)
+        self.ui.dateEdit_startDay.setDate(TodayDate)
+        self.ui.dateEdit_endDay.setDate(EndDay)
+        self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
         self.ui.progressBar.hide()
-        # # self.ui.dateEdit_startDay.userDateChanged['QDate'].connect(self.setEndDay)
+        self.ui.dateEdit_startDay.userDateChanged['QDate'].connect(self.setEndDay)
         self.ui.btn_exit_bakery.clicked.connect(self.show_windowAutoorders)
-        # self.ui.btn_path_OLAP_P.clicked.connect(self.olap_p)
-        # self.ui.btn_path_dayWeek_bakery.clicked.connect(self.olap_dayWeek_bakery)
-        # self.ui.btn_koeff_Prognoz.clicked.connect(self.koeff_Prognoz)
-        # self.ui.btn_koeff_DayWeek.clicked.connect(self.koeff_DayWeek)
+        self.ui.btn_path_OLAP_prodagi.clicked.connect(self.olap_prodagi_xlsx)
+        self.ui.btn_path_dayWeek.clicked.connect(self.olap_dayWeek_xlsx)
+        self.ui.btn_koeff_prognoz.clicked.connect(self.koeff_prognoz)
+        self.ui.btn_koeff_dayWeek.clicked.connect(self.koeff_dayWeek)
         # self.proverkaPeriodaPrognozFunc()
         # self.proverkaPeriodaKDayWeekFunc()
         # self.proverkaNormativaFunc()
@@ -68,24 +65,99 @@ class WindowBakery(QtWidgets.QMainWindow):
         # self.ui.btn_download_Normativ.clicked.connect(self.saveFileDialogNormativ)
         # self.ui.btn_download_Layout.clicked.connect(self.saveFileDialogLayout)
 
-    # def proverkaData(self):
-    #     if self.check_db.thr_proverkaData() == 0:
-    #         return 0
-    #     else:
-    #         year = self.check_db.thr_proverkaData()[0][1]
-    #         month = self.check_db.thr_proverkaData()[0][2]
-    #         day = self.check_db.thr_proverkaData()[0][3]
-    #         date = [year, month, day]
-    #         return date
+    def setEndDay(self):
+        self.ui.dateEdit_endDay.setDate(self.ui.dateEdit_startDay.date().addDays(6))
+        self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
+        # self.proverkaPeriodaPrognozFunc()
+        # self.proverkaPeriodaKDayWeekFunc()
+        # self.proverkaNormativaFunc()
 
-    # def setEndDay(self):
-    #     self.check_db.thr_savecookieData(int(self.ui.dateEdit_startDay.date().toString('yyyy')), int(self.ui.dateEdit_startDay.date().toString('MM')), int(self.ui.dateEdit_startDay.date().toString('dd')))
-    #     self.ui.dateEdit_EndDay.setDate(self.ui.dateEdit_startDay.date().addDays(6))
-    #     self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_EndDay.date()]
-    #     self.proverkaPeriodaPrognozFunc()
-    #     self.proverkaPeriodaKDayWeekFunc()
-    #     self.proverkaNormativaFunc()
-    #
+
+    # Диалог выбора файла ОБЩЕГО отчета
+    def olap_prodagi_xlsx(self):
+        fileName = QFileDialog.getOpenFileName(self, 'Выберите файл OLAP по продажам Выпечки', os.path.expanduser(
+                '~') + r'\Desktop', 'Excel файл (*.xlsx)')
+        self.ui.lineEdit_OLAP_prodagi.setText(fileName[0])
+        self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgb(0, 0, 0)")
+
+
+    # Проверяем на пустоту поле для OLAP отчета по продажам выпечки
+    @staticmethod
+    def check_prognoz_OLAP(funct_bakery):
+        def wrapper(self):
+            if len(self.ui.lineEdit_OLAP_prodagi.text()) == 0 or self.ui.lineEdit_OLAP_prodagi.text() == 'Файл отчета неверный, укажите OLAP по продажам за 7 дней':
+                self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
+                self.ui.lineEdit_OLAP_prodagi.setText('Не выбран файл отчета!')
+                return
+            elif self.ui.lineEdit_OLAP_prodagi.text() == 'Не выбран файл отчета!':
+                return
+            funct_bakery(self)
+        return wrapper
+
+    # Обрабытываем кнопку "Установить" для OLAP отчета по продажам выпечки
+    @check_prognoz_OLAP
+    def koeff_prognoz(self):
+        path_OLAP_prodagi = self.ui.lineEdit_OLAP_prodagi.text()
+        self.prognozTable(path_OLAP_prodagi)
+
+    # Проверка на правильность OLAP отчета по продажам выпечки и запуск таблицы с коэффициентами
+    def prognozTable(self, path_OLAP_prodagi):
+        Excel = win32com.client.Dispatch("Excel.Application")
+        wb_OLAP_prodagi = Excel.Workbooks.Open(path_OLAP_prodagi)
+        sheet_OLAP_prodagi = wb_OLAP_prodagi.ActiveSheet
+        if sheet_OLAP_prodagi.Name != "OLAP отчет для Выпечки":
+            wb_OLAP_prodagi.Close()
+            Excel.Quit()
+            self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
+            self.ui.lineEdit_OLAP_prodagi.setText('Файл отчета неверный, укажите OLAP по продажам Выпечки за 7 дней')
+        else:
+            wb_OLAP_prodagi.Close()
+            Excel.Quit()
+            # self.prognoz_table_open(path_OLAP_prodagi, self.periodDay)
+
+
+    # Диалог выбора файла OLAP отчета по продажам по дням недели для выпечки
+    def olap_dayWeek_xlsx(self):
+        fileName = QFileDialog.getOpenFileName(self, 'Выберите файл OLAP по дням недели для Выпечки', os.path.expanduser(
+                '~') + r'\Desktop', 'Excel файл (*.xlsx)')
+        self.ui.lineEdit_OLAP_dayWeek.setText(fileName[0])
+        self.ui.lineEdit_OLAP_dayWeek.setStyleSheet("padding-left: 5px; color: rgb(0, 0, 0)")
+
+    # Проверяем на пустоту поля для OLAP отчета по продажам по дням недели для выпечки
+    @staticmethod
+    def check_dayWeek(funct_bakery):
+        def wrapper(self):
+            if len(self.ui.lineEdit_OLAP_dayWeek.text()) == 0 or self.ui.lineEdit_OLAP_dayWeek.text() == 'Файл отчета неверный, укажите OLAP по продажам по дням недели для Выпечки за 7 дней':
+                self.ui.lineEdit_OLAP_dayWeek.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
+                self.ui.lineEdit_OLAP_dayWeek.setText('Не выбран файл отчета!')
+                return
+            elif self.ui.lineEdit_OLAP_dayWeek.text() == 'Не выбран файл отчета!':
+                return
+            funct_bakery(self)
+        return wrapper
+
+    # Обрабытываем кнопку "Установить" для OLAP отчета по продажам по дням недели для выпечки
+    @check_dayWeek
+    def koeff_dayWeek(self):
+        path_OLAP_DayWeek = self.ui.lineEdit_OLAP_dayWeek.text()
+        self.dayWeekTable(path_OLAP_DayWeek)
+
+    # Проверка на правильность OLAP отчета по продажам по дням недели для выпечки и запуск таблици с коэффициентами
+    def dayWeekTable(self, path_OLAP_DayWeek):
+        Excel = win32com.client.Dispatch("Excel.Application")
+        wb_OLAP_dayWeek = Excel.Workbooks.Open(path_OLAP_DayWeek)
+        sheet_OLAP_dayWeek = wb_OLAP_dayWeek.ActiveSheet
+        if sheet_OLAP_dayWeek.Name != "OLAP по дням недели для Выпечки":
+            wb_OLAP_dayWeek.Close()
+            Excel.Quit()
+            self.ui.lineEdit_OLAP_dayWeek.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
+            self.ui.lineEdit_OLAP_dayWeek.setText(
+                'Файл отчета неверный, укажите OLAP по продажам по дням недели для Выпечки')
+        else:
+            wb_OLAP_dayWeek.Close()
+            Excel.Quit()
+            # self.dayWeek_Table_Open(path_OLAP_DayWeek, self.periodDay)
+
     # def proverkaPeriodaPrognozFunc(self):
     #     if self.proverkaPerioda(self.periodDay) == 0:
     #         self.ui.btn_koeff_Prognoz.setEnabled(True)
@@ -163,88 +235,13 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     elif value == 'За этот период есть сформированный прогноз' or value == 'За этот период есть сформированные коэффициенты долей продаж':
     #         otvetPeriod = 1
     #
-    # # Диалог выбора файла ОБЩЕГО отчета
-    # def olap_p(self):
-    #     fileName = QFileDialog.getOpenFileName(self, 'Выберите файл OLAP по продажам', os.path.expanduser(
-    #             '~') + r'\Desktop', 'Excel файл (*.xlsx)')
-    #     self.ui.lineEdit_OLAP_P.setText(fileName[0])
-    #     self.ui.lineEdit_OLAP_P.setStyleSheet("padding-left: 5px; color: rgb(0, 0, 0)")
+
     #
-    # # Диалог выбора файла отчета по дням недели
-    # def olap_dayWeek_bakery(self):
-    #     fileName = QFileDialog.getOpenFileName(self, 'Выберите файл OLAP по дням недели для пекарни', os.path.expanduser(
-    #             '~') + r'\Desktop', 'Excel файл (*.xlsx)')
-    #     self.ui.lineEdit_OLAP_dayWeek_bakery.setText(fileName[0])
-    #     self.ui.lineEdit_OLAP_dayWeek_bakery.setStyleSheet("padding-left: 5px; color: rgb(0, 0, 0)")
+
     #
-    # # Проверяем на пустоту поле для OLAP отчета ОБЩИЙ
-    # def check_prognozOLAP(funct_bakery):
-    #     def wrapper(self):
-    #         if len(self.ui.lineEdit_OLAP_P.text()) == 0 or self.ui.lineEdit_OLAP_P.text() == 'Файл отчета неверный, укажите OLAP по продажам за 7 дней':
-    #             self.ui.lineEdit_OLAP_P.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
-    #             self.ui.lineEdit_OLAP_P.setText('Не выбран файл отчета!')
-    #             return
-    #         elif self.ui.lineEdit_OLAP_P.text() == 'Не выбран файл отчета!':
-    #             return
-    #         funct_bakery(self)
+
     #
-    #     return wrapper
-    #
-    # # Обрабытываем кнопку "Установить" для ОБЩЕГО отчета
-    # @check_prognozOLAP
-    # def koeff_Prognoz(self):
-    #     pathOLAP_P = self.ui.lineEdit_OLAP_P.text()
-    #     self.prognozTable(pathOLAP_P)
-    #
-    # # Проверка на правильность отчета и запуск таблици с коэффициентами
-    # def prognozTable(self, pathOLAP_P):
-    #     Excel = win32com.client.Dispatch("Excel.Application")
-    #     wb_OLAP_P = Excel.Workbooks.Open(pathOLAP_P)
-    #     sheet_OLAP_P = wb_OLAP_P.ActiveSheet
-    #     if sheet_OLAP_P.Name != "OLAP отчет для Пекарни":
-    #         wb_OLAP_P.Close()
-    #         Excel.Quit()
-    #         self.ui.lineEdit_OLAP_P.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
-    #         self.ui.lineEdit_OLAP_P.setText('Файл отчета неверный, укажите OLAP по продажам за 7 дней')
-    #     else:
-    #         wb_OLAP_P.Close()
-    #         Excel.Quit()
-    #         self.prognozTablesOpen(pathOLAP_P, self.periodDay)
-    #
-    # # Проверяем на пустоту поля для отчета по дням недели
-    # def check_DayWeek(funct_bakery):
-    #     def wrapper(self):
-    #         if len(self.ui.lineEdit_OLAP_dayWeek_bakery.text()) == 0 or self.ui.lineEdit_OLAP_dayWeek_bakery.text() == 'Файл отчета неверный, укажите OLAP по продажам по дням недели за 7 дней':
-    #             self.ui.lineEdit_OLAP_dayWeek_bakery.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
-    #             self.ui.lineEdit_OLAP_dayWeek_bakery.setText('Не выбран файл отчета!')
-    #             return
-    #         elif self.ui.lineEdit_OLAP_dayWeek_bakery.text() == 'Не выбран файл отчета!':
-    #             return
-    #         funct_bakery(self)
-    #
-    #     return wrapper
-    #
-    # # Обрабытываем кнопку "Установить" для отчета по дням недели
-    # @check_DayWeek
-    # def koeff_DayWeek(self):
-    #     pathOLAP_DayWeek = self.ui.lineEdit_OLAP_dayWeek_bakery.text()
-    #     self.dayWeekTable(pathOLAP_DayWeek)
-    #
-    # # Проверка на правильность отчета и запуск таблици с коэффициентами
-    # def dayWeekTable(self, pathOLAP_DayWeek):
-    #     Excel = win32com.client.Dispatch("Excel.Application")
-    #     wb_OLAP_DayWeek = Excel.Workbooks.Open(pathOLAP_DayWeek)
-    #     sheet_OLAP_DayWeek = wb_OLAP_DayWeek.ActiveSheet
-    #     if sheet_OLAP_DayWeek.Name != "OLAP по дням недели для програм":
-    #         wb_OLAP_DayWeek.Close()
-    #         Excel.Quit()
-    #         self.ui.lineEdit_OLAP_dayWeek_bakery.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
-    #         self.ui.lineEdit_OLAP_dayWeek_bakery.setText(
-    #             'Файл отчета неверный, укажите OLAP по продажам по дням недели для Выпечки пекарне')
-    #     else:
-    #         wb_OLAP_DayWeek.Close()
-    #         Excel.Quit()
-    #         self.dayWeekTablesOpen(pathOLAP_DayWeek, self.periodDay)
+
     #
     # def signal_prognoz(self, value):
     #     global headers

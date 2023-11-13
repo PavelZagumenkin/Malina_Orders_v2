@@ -36,7 +36,7 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <widget class="QLineEdit" name="lineEdit_OLAP_dayWeek_bakery">
+   <widget class="QLineEdit" name="lineEdit_OLAP_dayWeek">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -61,7 +61,7 @@
      <string notr="true">padding-left: 5px</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_OLAP_P">
+   <widget class="QLabel" name="label_OLAP_prodagi">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -77,10 +77,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Укажите путь к OLAP отчету по продажам</string>
+     <string>Укажите путь к OLAP отчету по продажам выпечки</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_OLAP_P">
+   <widget class="QLineEdit" name="lineEdit_OLAP_prodagi">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -105,7 +105,7 @@
      <string notr="true">padding-left: 5px</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_path_OLAP_P">
+   <widget class="QPushButton" name="btn_path_OLAP_prodagi">
     <property name="geometry">
      <rect>
       <x>730</x>
@@ -167,7 +167,7 @@ background-color: rgba(228, 107, 134, 1)
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_OLAP_dayWeek_bakery">
+   <widget class="QLabel" name="label_OLAP_dayWeek">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -183,7 +183,7 @@ background-color: rgba(228, 107, 134, 1)
      </font>
     </property>
     <property name="text">
-     <string>Укажите путь к OLAP отчету по продажам по дням недели - выпечка</string>
+     <string>Укажите путь к OLAP отчету по продажам по дням недели по выпечке</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_exit_bakery">
@@ -226,7 +226,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_path_dayWeek_bakery">
+   <widget class="QPushButton" name="btn_path_dayWeek">
     <property name="geometry">
      <rect>
       <x>730</x>
@@ -266,7 +266,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_koeff_Prognoz">
+   <widget class="QPushButton" name="btn_koeff_prognoz">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -356,7 +356,7 @@ background-color: rgba(228, 107, 134, 1)
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_EndDay">
+   <widget class="QLabel" name="label_endDay">
     <property name="geometry">
      <rect>
       <x>320</x>
@@ -402,7 +402,7 @@ background-color: rgba(228, 107, 134, 1)
      <enum>Qt::LocalTime</enum>
     </property>
    </widget>
-   <widget class="QDateEdit" name="dateEdit_EndDay">
+   <widget class="QDateEdit" name="dateEdit_endDay">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -426,7 +426,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_prosmotrPrognoz">
+   <widget class="QPushButton" name="btn_prosmotr_prognoz">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -469,7 +469,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_editPrognoz">
+   <widget class="QPushButton" name="btn_edit_prognoz">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -512,7 +512,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_editNormativ">
+   <widget class="QPushButton" name="btn_edit_normativ">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -555,7 +555,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_Normativ">
+   <widget class="QPushButton" name="btn_normativ">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -598,7 +598,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_edit_koeff_DayWeek">
+   <widget class="QPushButton" name="btn_edit_dayWeek">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -641,7 +641,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_download_Normativ">
+   <widget class="QPushButton" name="btn_download_normativ">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -684,7 +684,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_OLAP_P_2">
+   <widget class="QLabel" name="label_konditerskie">
     <property name="geometry">
      <rect>
       <x>830</x>
@@ -758,7 +758,7 @@ background-color: rgba(228, 107, 134, 1)
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_prosmotr_koeff_DayWeek">
+   <widget class="QPushButton" name="btn_prosmotr_dayWeek">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -801,7 +801,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_deletePrognoz">
+   <widget class="QPushButton" name="btn_delete_prognoz">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -844,7 +844,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_delete_koeff_DayWeek">
+   <widget class="QPushButton" name="btn_delete_dayWeek">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -887,7 +887,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_koeff_DayWeek">
+   <widget class="QPushButton" name="btn_koeff_dayWeek">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -967,321 +967,6 @@ background-color: rgba(228, 107, 134, 1)
      <property name="topMargin">
       <number>5</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="cb_volsk">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Вольск</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="cb_rahova">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Рахова</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="cb_gorkogo">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Горького</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QCheckBox" name="cb_svoboda">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Свобода</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="cb_grand">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Гранд</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="cb_solnechnii">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Солнечный</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QCheckBox" name="cb_kr">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Крытый рынок</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="cb_stargrad">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Старград</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QCheckBox" name="cb_lenina">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Ленина</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QCheckBox" name="cb_stepnaya">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Степная</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QCheckBox" name="cb_magazin">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Магазин</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QCheckBox" name="cb_topol">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Топольчанская</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QCheckBox" name="cb_marks">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Маркс</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QCheckBox" name="cb_trnavskaya">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Трнавская</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QCheckBox" name="cb_ust_kurdym">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Усть-Курдюмская</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QCheckBox" name="cb_fridriha">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Фридриха 11</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QCheckBox" name="cb_moskovskaya">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Московская</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QCheckBox" name="cb_orang">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Оранж</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QCheckBox" name="cb_pobeda">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Победа</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QCheckBox" name="cb_entuziastov_2">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Радищева</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QCheckBox" name="cb_entuziastov">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Энтузиастов</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
    <widget class="Line" name="line">
@@ -1388,7 +1073,7 @@ background-color: rgba(228, 107, 134, 1)
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_deleteNormativ">
+   <widget class="QPushButton" name="btn_delete_normativ">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -1431,7 +1116,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_OLAP_P_3">
+   <widget class="QLabel" name="label_normativs">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -1502,7 +1187,7 @@ background-color: rgba(228, 107, 134, 1)
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_download_Layout">
+   <widget class="QPushButton" name="btn_download_layout">
     <property name="enabled">
      <bool>false</bool>
     </property>

@@ -59,34 +59,6 @@ class Ui_WindowLogistics(object):
         self.btn_autoorders.setCheckable(False)
         self.btn_autoorders.setObjectName("btn_autoorders")
         self.verticalLayout.addWidget(self.btn_autoorders)
-        self.btn_konditerskie = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_konditerskie.setEnabled(True)
-        self.btn_konditerskie.setMinimumSize(QtCore.QSize(0, 65))
-        self.btn_konditerskie.setMaximumSize(QtCore.QSize(500, 65))
-        self.btn_konditerskie.setBaseSize(QtCore.QSize(0, 0))
-        font = QtGui.QFont()
-        font.setFamily("Trebuchet MS")
-        font.setPointSize(22)
-        font.setBold(False)
-        font.setWeight(50)
-        self.btn_konditerskie.setFont(font)
-        self.btn_konditerskie.setStyleSheet("QPushButton {\n"
-"background-color: rgb(228, 107, 134);\n"
-"border: none;\n"
-"border-radius: 10px}\n"
-"\n"
-"QPushButton:hover {\n"
-"border: 1px solid  rgb(0, 0, 0);\n"
-"background-color: rgba(228, 107, 134, 0.9)\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"border:3px solid  rgb(0, 0, 0);\n"
-"background-color: rgba(228, 107, 134, 1)\n"
-"}")
-        self.btn_konditerskie.setCheckable(False)
-        self.btn_konditerskie.setObjectName("btn_konditerskie")
-        self.verticalLayout.addWidget(self.btn_konditerskie)
         self.btn_comingsoon1 = QtWidgets.QPushButton(self.centralwidget)
         self.btn_comingsoon1.setEnabled(True)
         self.btn_comingsoon1.setMinimumSize(QtCore.QSize(0, 65))
@@ -171,6 +143,34 @@ class Ui_WindowLogistics(object):
         self.btn_comingsoon3.setCheckable(False)
         self.btn_comingsoon3.setObjectName("btn_comingsoon3")
         self.verticalLayout.addWidget(self.btn_comingsoon3)
+        self.btn_konditerskie = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_konditerskie.setEnabled(True)
+        self.btn_konditerskie.setMinimumSize(QtCore.QSize(0, 65))
+        self.btn_konditerskie.setMaximumSize(QtCore.QSize(500, 65))
+        self.btn_konditerskie.setBaseSize(QtCore.QSize(0, 0))
+        font = QtGui.QFont()
+        font.setFamily("Trebuchet MS")
+        font.setPointSize(22)
+        font.setBold(False)
+        font.setWeight(50)
+        self.btn_konditerskie.setFont(font)
+        self.btn_konditerskie.setStyleSheet("QPushButton {\n"
+"background-color: rgb(228, 107, 134);\n"
+"border: none;\n"
+"border-radius: 10px}\n"
+"\n"
+"QPushButton:hover {\n"
+"border: 1px solid  rgb(0, 0, 0);\n"
+"background-color: rgba(228, 107, 134, 0.9)\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"border:3px solid  rgb(0, 0, 0);\n"
+"background-color: rgba(228, 107, 134, 1)\n"
+"}")
+        self.btn_konditerskie.setCheckable(False)
+        self.btn_konditerskie.setObjectName("btn_konditerskie")
+        self.verticalLayout.addWidget(self.btn_konditerskie)
         self.btn_back = QtWidgets.QPushButton(self.centralwidget)
         self.btn_back.setEnabled(True)
         self.btn_back.setMinimumSize(QtCore.QSize(0, 65))
@@ -209,10 +209,10 @@ class Ui_WindowLogistics(object):
         WindowLogistics.setWindowTitle(_translate("WindowLogistics", "Выберите раздел"))
         self.label_title.setText(_translate("WindowLogistics", "Выберите раздел"))
         self.btn_autoorders.setText(_translate("WindowLogistics", "АВТОЗАКАЗЫ"))
-        self.btn_konditerskie.setText(_translate("WindowLogistics", "КОНДИТЕРСКИЕ"))
         self.btn_comingsoon1.setText(_translate("WindowLogistics", "В РАЗРАБОТКЕ"))
         self.btn_comingsoon2.setText(_translate("WindowLogistics", "В РАЗРАБОТКЕ"))
         self.btn_comingsoon3.setText(_translate("WindowLogistics", "В РАЗРАБОТКЕ"))
+        self.btn_konditerskie.setText(_translate("WindowLogistics", "КОНДИТЕРСКИЕ"))
         self.btn_back.setText(_translate("WindowLogistics", "НАЗАД"))
 
 
