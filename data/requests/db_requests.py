@@ -200,7 +200,7 @@ class Database:
     def get_konditerskie(self):
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(Queries.get_konditerskie_on_DB())
+                cursor.execute(Queries.get_konditerskie_in_DB())
                 result = cursor.fetchall()
                 self.connection.commit()
         except Exception as e:
@@ -217,3 +217,25 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return f"Данные по кондитерской {konditerskay_name} успешно изменены."
+
+    def check_period_in_prognoz(self, period, category):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_period_in_prognoz_in_DB(), (str(period), category))
+                result = cursor.fetchall()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result
+
+    def check_koeff_day_week_in_DB(self, period, category):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_koeff_day_week_in_DB(), (str(period), category))
+                result = cursor.fetchall()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

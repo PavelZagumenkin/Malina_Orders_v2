@@ -136,7 +136,7 @@ class Queries:
 
     @staticmethod
     # Получить список кондитерских со всеми данными
-    def get_konditerskie_on_DB():
+    def get_konditerskie_in_DB():
         return '''
         SELECT * FROM konditerskie;
         '''
@@ -155,3 +155,21 @@ class Queries:
             enable = %s
         WHERE name = %s;
         '''
+
+    @staticmethod
+    # Получить все логи
+    def get_period_in_prognoz_in_DB():
+        return '''
+        SELECT * FROM prognoz
+        WHERE period = %s AND category = %s;
+        '''
+
+    @staticmethod
+    # Получить все логи
+    def get_koeff_day_week_in_DB():
+        return '''
+        SELECT * FROM koeff_day_week
+        WHERE period = %s AND category = %s;
+        '''
+
+

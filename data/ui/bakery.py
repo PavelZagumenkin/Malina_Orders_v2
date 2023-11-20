@@ -136,16 +136,16 @@ class Ui_WindowBakery(object):
 "}")
         self.btn_path_dayWeek.setCheckable(False)
         self.btn_path_dayWeek.setObjectName("btn_path_dayWeek")
-        self.btn_koeff_prognoz = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_koeff_prognoz.setEnabled(False)
-        self.btn_koeff_prognoz.setGeometry(QtCore.QRect(20, 240, 171, 51))
+        self.btn_set_prognoz = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_set_prognoz.setEnabled(False)
+        self.btn_set_prognoz.setGeometry(QtCore.QRect(20, 240, 171, 51))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(16)
         font.setBold(False)
         font.setWeight(50)
-        self.btn_koeff_prognoz.setFont(font)
-        self.btn_koeff_prognoz.setStyleSheet("QPushButton {\n"
+        self.btn_set_prognoz.setFont(font)
+        self.btn_set_prognoz.setStyleSheet("QPushButton {\n"
 "background-color: rgb(228, 107, 134);\n"
 "border: none;\n"
 "border-radius: 10px}\n"
@@ -159,8 +159,8 @@ class Ui_WindowBakery(object):
 "border:3px solid  rgb(0, 0, 0);\n"
 "background-color: rgba(228, 107, 134, 1)\n"
 "}")
-        self.btn_koeff_prognoz.setCheckable(False)
-        self.btn_koeff_prognoz.setObjectName("btn_koeff_prognoz")
+        self.btn_set_prognoz.setCheckable(False)
+        self.btn_set_prognoz.setObjectName("btn_set_prognoz")
         self.label_startDay_and_endDay = QtWidgets.QLabel(self.centralwidget)
         self.label_startDay_and_endDay.setGeometry(QtCore.QRect(20, 60, 691, 21))
         font = QtGui.QFont()
@@ -283,16 +283,16 @@ class Ui_WindowBakery(object):
 "}")
         self.btn_edit_normativ.setCheckable(False)
         self.btn_edit_normativ.setObjectName("btn_edit_normativ")
-        self.btn_normativ = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_normativ.setEnabled(False)
-        self.btn_normativ.setGeometry(QtCore.QRect(20, 540, 231, 61))
+        self.btn_set_normativ = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_set_normativ.setEnabled(False)
+        self.btn_set_normativ.setGeometry(QtCore.QRect(20, 540, 231, 61))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(18)
         font.setBold(False)
         font.setWeight(50)
-        self.btn_normativ.setFont(font)
-        self.btn_normativ.setStyleSheet("QPushButton {\n"
+        self.btn_set_normativ.setFont(font)
+        self.btn_set_normativ.setStyleSheet("QPushButton {\n"
 "background-color: rgb(228, 107, 134);\n"
 "border: none;\n"
 "border-radius: 10px}\n"
@@ -306,8 +306,8 @@ class Ui_WindowBakery(object):
 "border:3px solid  rgb(0, 0, 0);\n"
 "background-color: rgba(228, 107, 134, 1)\n"
 "}")
-        self.btn_normativ.setCheckable(False)
-        self.btn_normativ.setObjectName("btn_normativ")
+        self.btn_set_normativ.setCheckable(False)
+        self.btn_set_normativ.setObjectName("btn_set_normativ")
         self.btn_edit_dayWeek = QtWidgets.QPushButton(self.centralwidget)
         self.btn_edit_dayWeek.setEnabled(False)
         self.btn_edit_dayWeek.setGeometry(QtCore.QRect(410, 410, 171, 51))
@@ -461,16 +461,16 @@ class Ui_WindowBakery(object):
 "}")
         self.btn_delete_dayWeek.setCheckable(False)
         self.btn_delete_dayWeek.setObjectName("btn_delete_dayWeek")
-        self.btn_koeff_dayWeek = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_koeff_dayWeek.setEnabled(False)
-        self.btn_koeff_dayWeek.setGeometry(QtCore.QRect(20, 410, 171, 51))
+        self.btn_set_dayWeek = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_set_dayWeek.setEnabled(False)
+        self.btn_set_dayWeek.setGeometry(QtCore.QRect(20, 410, 171, 51))
         font = QtGui.QFont()
         font.setFamily("Trebuchet MS")
         font.setPointSize(16)
         font.setBold(False)
         font.setWeight(50)
-        self.btn_koeff_dayWeek.setFont(font)
-        self.btn_koeff_dayWeek.setStyleSheet("QPushButton {\n"
+        self.btn_set_dayWeek.setFont(font)
+        self.btn_set_dayWeek.setStyleSheet("QPushButton {\n"
 "background-color: rgb(228, 107, 134);\n"
 "border: none;\n"
 "border-radius: 10px}\n"
@@ -484,8 +484,8 @@ class Ui_WindowBakery(object):
 "border:3px solid  rgb(0, 0, 0);\n"
 "background-color: rgba(228, 107, 134, 1)\n"
 "}")
-        self.btn_koeff_dayWeek.setCheckable(False)
-        self.btn_koeff_dayWeek.setObjectName("btn_koeff_dayWeek")
+        self.btn_set_dayWeek.setCheckable(False)
+        self.btn_set_dayWeek.setObjectName("btn_set_dayWeek")
         self.formLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.formLayoutWidget.setGeometry(QtCore.QRect(830, 50, 381, 411))
         self.formLayoutWidget.setObjectName("formLayoutWidget")
@@ -641,21 +641,21 @@ class Ui_WindowBakery(object):
         self.label_OLAP_dayWeek.setText(_translate("WindowBakery", "Укажите путь к OLAP отчету по продажам по дням недели по выпечке"))
         self.btn_exit_bakery.setText(_translate("WindowBakery", "К ВЫБОРУ РАЗДЕЛА"))
         self.btn_path_dayWeek.setText(_translate("WindowBakery", "..."))
-        self.btn_koeff_prognoz.setText(_translate("WindowBakery", "Установить"))
+        self.btn_set_prognoz.setText(_translate("WindowBakery", "Установить"))
         self.label_startDay_and_endDay.setText(_translate("WindowBakery", "Укажите начало периода для формирования данных"))
         self.label_startDay.setText(_translate("WindowBakery", "Начало периода"))
         self.label_endDay.setText(_translate("WindowBakery", "Конец периода"))
         self.btn_prosmotr_prognoz.setText(_translate("WindowBakery", "Посмотреть"))
         self.btn_edit_prognoz.setText(_translate("WindowBakery", "Редактировать"))
         self.btn_edit_normativ.setText(_translate("WindowBakery", "Редактировать"))
-        self.btn_normativ.setText(_translate("WindowBakery", "Установить"))
+        self.btn_set_normativ.setText(_translate("WindowBakery", "Установить"))
         self.btn_edit_dayWeek.setText(_translate("WindowBakery", "Редактировать"))
         self.btn_download_normativ.setText(_translate("WindowBakery", "ВЫГРУЗИТЬ НОРМАТИВЫ"))
         self.label_konditerskie.setText(_translate("WindowBakery", "Выберите кондитерские для автозаказа"))
         self.btn_prosmotr_dayWeek.setText(_translate("WindowBakery", "Посмотреть"))
         self.btn_delete_prognoz.setText(_translate("WindowBakery", "Удалить"))
         self.btn_delete_dayWeek.setText(_translate("WindowBakery", "Удалить"))
-        self.btn_koeff_dayWeek.setText(_translate("WindowBakery", "Установить"))
+        self.btn_set_dayWeek.setText(_translate("WindowBakery", "Установить"))
         self.btn_delete_normativ.setText(_translate("WindowBakery", "Удалить"))
         self.label_normativs.setText(_translate("WindowBakery", "Нормативы пекарни"))
         self.btn_download_layout.setText(_translate("WindowBakery", "ВЫГРУЗИТЬ ВЫКЛАДКУ"))

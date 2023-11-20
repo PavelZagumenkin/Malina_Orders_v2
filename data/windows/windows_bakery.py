@@ -6,8 +6,9 @@ import json
 import data.windows.windows_autoorders
 from PyQt6 import QtCore, QtWidgets, QtGui
 from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtWidgets import QMessageBox
 from data.ui.bakery import Ui_WindowBakery
+from data.requests.db_requests import Database
+from data.signals import Signals
 from data.active_session import Session
 
 from math import ceil
@@ -28,12 +29,9 @@ class WindowBakery(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = Ui_WindowBakery()
         self.ui.setupUi(self)
+        self.signals = Signals()
+        self.database = Database()
         self.session = Session.get_instance()  # Получение экземпляра класса Session
-        # self.check_db = CheckThread()
-        # self.check_db.period.connect(self.signal_period)
-        # self.check_db.prognoz.connect(self.signal_prognoz)
-        # self.check_db.normativ.connect(self.signal_normativ)
-        # self.check_db.normativdata.connect(self.signal_normativdata)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("image/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
@@ -48,11 +46,8 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.ui.btn_exit_bakery.clicked.connect(self.show_windowAutoorders)
         self.ui.btn_path_OLAP_prodagi.clicked.connect(self.olap_prodagi_xlsx)
         self.ui.btn_path_dayWeek.clicked.connect(self.olap_dayWeek_xlsx)
-        self.ui.btn_koeff_prognoz.clicked.connect(self.koeff_prognoz)
-        self.ui.btn_koeff_dayWeek.clicked.connect(self.koeff_dayWeek)
-        # self.proverkaPeriodaPrognozFunc()
-        # self.proverkaPeriodaKDayWeekFunc()
-        # self.proverkaNormativaFunc()
+        self.ui.btn_set_prognoz.clicked.connect(self.koeff_prognoz)
+        self.ui.btn_set_dayWeek.clicked.connect(self.koeff_dayWeek)
         # self.ui.btn_prosmotrPrognoz.clicked.connect(self.prognozTablesView)
         # self.ui.btn_editPrognoz.clicked.connect(self.prognozTablesRedact)
         # self.ui.btn_deletePrognoz.clicked.connect(self.dialogDeletePrognoz)
@@ -64,12 +59,25 @@ class WindowBakery(QtWidgets.QMainWindow):
         # self.ui.btn_deleteNormativ.clicked.connect(self.dialogDeleteNormativ)
         # self.ui.btn_download_Normativ.clicked.connect(self.saveFileDialogNormativ)
         # self.ui.btn_download_Layout.clicked.connect(self.saveFileDialogLayout)
+        data_konditerskie = self.database.get_konditerskie()
+        for point in range(0, len(data_konditerskie)):
+            if data_konditerskie[point][2] == 1 & data_konditerskie[point][3] == 1:
+                self.ui.formLayoutWidget.layout().addWidget(QtWidgets.QCheckBox(data_konditerskie[point][1]))
+        self.check_prognoz()
+        self.check_koeff_day_week()
+        # self.proverkaNormativaFunc()
+
+        # Подключаем слоты к сигналам
+        self.signals.success_signal.connect(self.show_success_message)
+        self.signals.failed_signal.connect(self.show_error_message)
+        self.signals.error_DB_signal.connect(self.show_DB_error_message)
+
 
     def setEndDay(self):
         self.ui.dateEdit_endDay.setDate(self.ui.dateEdit_startDay.date().addDays(6))
         self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
-        # self.proverkaPeriodaPrognozFunc()
-        # self.proverkaPeriodaKDayWeekFunc()
+        self.check_prognoz()
+        self.check_koeff_day_week()
         # self.proverkaNormativaFunc()
 
 
@@ -113,7 +121,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         else:
             wb_OLAP_prodagi.Close()
             Excel.Quit()
-            # self.prognoz_table_open(path_OLAP_prodagi, self.periodDay)
+            self.prognoz_table_open(path_OLAP_prodagi, self.periodDay)
 
 
     # Диалог выбора файла OLAP отчета по продажам по дням недели для выпечки
@@ -158,44 +166,44 @@ class WindowBakery(QtWidgets.QMainWindow):
             Excel.Quit()
             # self.dayWeek_Table_Open(path_OLAP_DayWeek, self.periodDay)
 
-    # def proverkaPeriodaPrognozFunc(self):
-    #     if self.proverkaPerioda(self.periodDay) == 0:
-    #         self.ui.btn_koeff_Prognoz.setEnabled(True)
-    #         self.ui.btn_prosmotrPrognoz.setEnabled(False)
-    #         self.ui.btn_editPrognoz.setEnabled(False)
-    #         self.ui.btn_deletePrognoz.setEnabled(False)
-    #         self.ui.btn_Normativ.setEnabled(False)
-    #         self.ui.btn_download_Layout.setEnabled(False)
-    #     elif self.proverkaPerioda(self.periodDay) == 1:
-    #         self.ui.btn_koeff_Prognoz.setEnabled(False)
-    #         self.ui.btn_prosmotrPrognoz.setEnabled(True)
-    #         self.ui.btn_editPrognoz.setEnabled(True)
-    #         self.ui.btn_deletePrognoz.setEnabled(True)
-    #         if self.proverkaNormativa(self.periodDay) == 0 and self.proverkaPeriodaKDayWeek(self.periodDay) == 1:
-    #             self.ui.btn_Normativ.setEnabled(True)
-    #         if self.proverkaPeriodaKDayWeek(self.periodDay) == 1:
-    #             self.ui.btn_download_Layout.setEnabled(True)
-    #         else:
-    #             self.ui.btn_download_Layout.setEnabled(False)
+    def check_prognoz(self):
+        if self.check_period_in_prognoz(self.periodDay) == 0:
+            self.ui.btn_set_prognoz.setEnabled(True)
+            self.ui.btn_prosmotr_prognoz.setEnabled(False)
+            self.ui.btn_edit_prognoz.setEnabled(False)
+            self.ui.btn_delete_prognoz.setEnabled(False)
+            self.ui.btn_set_normativ.setEnabled(False)
+            self.ui.btn_download_layout.setEnabled(False)
+        else:
+            self.ui.btn_set_prognoz.setEnabled(False)
+            self.ui.btn_prosmotr_prognoz.setEnabled(True)
+            self.ui.btn_edit_prognoz.setEnabled(True)
+            self.ui.btn_delete_prognoz.setEnabled(True)
+            # if self.proverkaNormativa(self.periodDay) == 0 and self.proverkaPeriodaKDayWeek(self.periodDay) == 1:
+            #     self.ui.btn_Normativ.setEnabled(True)
+            # if self.proverkaPeriodaKDayWeek(self.periodDay) == 1:
+            #     self.ui.btn_download_Layout.setEnabled(True)
+            # else:
+            #     self.ui.btn_download_Layout.setEnabled(False)
     #
-    # def proverkaPeriodaKDayWeekFunc(self):
-    #     if self.proverkaPeriodaKDayWeek(self.periodDay) == 0:
-    #         self.ui.btn_koeff_DayWeek.setEnabled(True)
-    #         self.ui.btn_prosmotr_koeff_DayWeek.setEnabled(False)
-    #         self.ui.btn_edit_koeff_DayWeek.setEnabled(False)
-    #         self.ui.btn_delete_koeff_DayWeek.setEnabled(False)
-    #         self.ui.btn_download_Layout.setEnabled(False)
-    #         self.ui.btn_Normativ.setEnabled(False)
-    #     elif self.proverkaPeriodaKDayWeek(self.periodDay) == 1:
-    #         self.ui.btn_koeff_DayWeek.setEnabled(False)
-    #         self.ui.btn_prosmotr_koeff_DayWeek.setEnabled(True)
-    #         self.ui.btn_edit_koeff_DayWeek.setEnabled(True)
-    #         self.ui.btn_delete_koeff_DayWeek.setEnabled(True)
-    #         if self.proverkaPerioda(self.periodDay) == 1:
-    #             self.ui.btn_download_Layout.setEnabled(True)
-    #             self.ui.btn_Normativ.setEnabled(True)
-    #         else:
-    #             self.ui.btn_download_Layout.setEnabled(False)
+    def check_koeff_day_week(self):
+        if self.check_koeff_day_week_in_bakery(self.periodDay) == 0:
+            self.ui.btn_set_dayWeek.setEnabled(True)
+            self.ui.btn_prosmotr_dayWeek.setEnabled(False)
+            self.ui.btn_edit_dayWeek.setEnabled(False)
+            self.ui.btn_delete_dayWeek.setEnabled(False)
+            self.ui.btn_download_layout.setEnabled(False)
+            self.ui.btn_set_normativ.setEnabled(False)
+        else:
+            self.ui.btn_set_dayWeek.setEnabled(False)
+            self.ui.btn_prosmotr_dayWeek.setEnabled(True)
+            self.ui.btn_edit_dayWeek.setEnabled(True)
+            self.ui.btn_delete_dayWeek.setEnabled(True)
+            # if self.proverkaPerioda(self.periodDay) == 1:
+            #     self.ui.btn_download_Layout.setEnabled(True)
+            #     self.ui.btn_Normativ.setEnabled(True)
+            # else:
+            #     self.ui.btn_download_Layout.setEnabled(False)
     #
     # def proverkaNormativaFunc(self):
     #     if self.proverkaNormativa(self.periodDay) == 0:
@@ -213,42 +221,20 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     self.check_db.thr_proverkaNormativa(period)
     #     return otvetNormativ
     #
-    # def signal_normativ(self, value):
-    #     global otvetNormativ
-    #     if value == 'Пусто':
-    #         otvetNormativ = 0
-    #     elif value == 'За этот период есть сформированный норматив':
-    #         otvetNormativ = 1
-    #
-    # def proverkaPerioda(self, period):
-    #     self.check_db.thr_proverkaPerioda(period)
-    #     return otvetPeriod
-    #
-    # def proverkaPeriodaKDayWeek(self, period):
-    #     self.check_db.thr_proverkaPeriodaKDayWeek(period)
-    #     return otvetPeriod
-    #
-    # def signal_period(self, value):
-    #     global otvetPeriod
-    #     if value == 'Пусто':
-    #         otvetPeriod = 0
-    #     elif value == 'За этот период есть сформированный прогноз' or value == 'За этот период есть сформированные коэффициенты долей продаж':
-    #         otvetPeriod = 1
-    #
+    def check_period_in_prognoz(self, period):
+        result_check = self.database.check_period_in_prognoz(period, "Выпечка пекарни")
+        if isinstance(result_check, int):
+            return result_check
+        else:
+            return 0
 
+    def check_koeff_day_week_in_bakery(self, period):
+        result_check = self.database.check_koeff_day_week_in_DB(period, "Выпечка пекарни")
+        if isinstance(result_check, int):
+            return result_check
+        else:
+            return 0
     #
-
-    #
-
-    #
-
-    #
-    # def signal_prognoz(self, value):
-    #     global headers
-    #     headers = value[0][2]
-    #     data = value[0][3]
-    #     global fullData
-    #     fullData = [headers, data]
     #
     # def poiskPrognoza(self, periodDay):
     #     self.check_db.thr_poiskPrognoza(periodDay)
@@ -273,52 +259,60 @@ class WindowBakery(QtWidgets.QMainWindow):
         windowAutoorders = data.windows.windows_autoorders.WindowAutoorders()
         windowAutoorders.show()
 
-    # # Закрываем выпечку, открываем таблицу для работы
-    # def prognozTablesOpen(self, pathOLAP_P, periodDay):
-    #     Excel = win32com.client.Dispatch("Excel.Application")
-    #     wb_OLAP_P = Excel.Workbooks.Open(pathOLAP_P)
-    #     sheet_OLAP_P = wb_OLAP_P.ActiveSheet
-    #     firstOLAPRow = sheet_OLAP_P.Range("A:A").Find("Код блюда").Row
-    #     pointsCheck = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
-    #     if self.proverkaPeriodaKDayWeek(self.periodDay) == 0:
-    #         points = []
-    #         for i in range(len(pointsCheck)):
-    #             if pointsCheck[i].isChecked():
-    #                 ValidPoints = sheet_OLAP_P.Rows(firstOLAPRow).Find(pointsCheck[i].text())
-    #                 if ValidPoints == None:
-    #                     self.dialogNOvalidOLAP(pointsCheck[i].text())
-    #                     return
-    #                 points.append(pointsCheck[i].text())
-    #         pointsNonCheck = []
-    #         for i in range(len(pointsCheck)):
-    #             if not pointsCheck[i].isChecked():
-    #                 pointsNonCheck.append(pointsCheck[i].text())
-    #     else:
-    #         points = json.loads(self.poiskKDayWeek(self.periodDay).strip("\'"))
-    #         del points[0:2]
-    #         for i in range(len(points)):
-    #             ValidPoints = sheet_OLAP_P.Rows(firstOLAPRow).Find(points[i])
-    #             if ValidPoints == None:
-    #                 self.dialogNOvalidOLAP(points[i])
-    #                 return
-    #         pointsNonCheck = []
-    #         for i in range (len(pointsCheck)):
-    #             if not (pointsCheck[i].text() in points):
-    #                 pointsNonCheck.append(pointsCheck[i].text())
-    #     self.hide()
-    #     global WindowBakeryTablesEdit
-    #     WindowBakeryTablesEdit = Windows.WindowsBakeryTablesEdit.WindowBakeryTablesEdit(pathOLAP_P, periodDay, pointsNonCheck)
-    #     WindowBakeryTablesEdit.showMaximized()
-    #
-    # def dialogNOvalidOLAP(self, pointsNoOLAP):
-    #     dialogBox = QMessageBox()
-    #     dialogBox.setText(f"В OLAP-отчете отсутствует кондитерская {pointsNoOLAP}")
-    #     dialogBox.setWindowIcon(QtGui.QIcon("image/icon.png"))
-    #     dialogBox.setWindowTitle('Прекращение работы!')
-    #     dialogBox.setIcon(QMessageBox.Icon.Critical)
-    #     dialogBox.setStandardButtons(QMessageBox.StandardButton.Ok)
-    #     dialogBox.exec()
-    #
+    # Закрываем выпечку, открываем таблицу для работы
+    def prognoz_table_open(self, path_OLAP_prodagi, periodDay):
+        Excel = win32com.client.Dispatch("Excel.Application")
+        wb_OLAP_prodagi = Excel.Workbooks.Open(path_OLAP_prodagi)
+        sheet_OLAP_prodagi = wb_OLAP_prodagi.ActiveSheet
+        first_OLAP_row = sheet_OLAP_prodagi.Range("A:A").Find("Код блюда").Row
+        points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
+        if self.check_koeff_day_week_in_bakery(self.periodDay) == 0:
+            points = []
+            for i in range(len(points_check)):
+                if points_check[i].isChecked():
+                    ValidPoints = sheet_OLAP_prodagi.Rows(first_OLAP_row).Find(points_check[i].text())
+                    if ValidPoints == None:
+                        self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points_check[i].text()}")
+                        return
+                    points.append(points_check[i].text())
+            pointsNonCheck = []
+            for i in range(len(points_check)):
+                if not points_check[i].isChecked():
+                    pointsNonCheck.append(points_check[i].text())
+        else:
+            points = json.loads(self.poiskKDayWeek(self.periodDay).strip("\'"))
+            del points[0:2]
+            for i in range(len(points)):
+                ValidPoints = sheet_OLAP_prodagi.Rows(first_OLAP_row).Find(points[i])
+                if ValidPoints == None:
+                    self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points[i]}")
+                    return
+            pointsNonCheck = []
+            for i in range (len(points_check)):
+                if not (points_check[i].text() in points):
+                    pointsNonCheck.append(points_check[i].text())
+        # self.hide()
+        # global WindowBakeryTablesEdit
+        # WindowBakeryTablesEdit = Windows.WindowsBakeryTablesEdit.WindowBakeryTablesEdit(pathOLAP_P, periodDay, pointsNonCheck)
+        # WindowBakeryTablesEdit.showMaximized()
+
+
+    def show_success_message(self, message):
+        # if "Авторизация успешна" in message:
+        #     self.show_windowSection()
+        pass
+
+
+    def show_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
+    def show_DB_error_message(self, message):
+        # Отображаем сообщение об ошибке
+        QtWidgets.QMessageBox.information(self, "Ошибка", message)
+
+
     # def prognozTablesView(self):
     #     self.hide()
     #     periodDay = self.periodDay

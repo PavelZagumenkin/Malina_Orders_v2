@@ -1,6 +1,5 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMessageBox
 from data.ui.authorization import Ui_WindowAuthorization
 from data.requests.db_requests import Database
 from data.signals import Signals

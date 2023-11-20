@@ -266,7 +266,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_koeff_prognoz">
+   <widget class="QPushButton" name="btn_set_prognoz">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -555,7 +555,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_normativ">
+   <widget class="QPushButton" name="btn_set_normativ">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -887,7 +887,7 @@ background-color: rgba(228, 107, 134, 1)
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_koeff_dayWeek">
+   <widget class="QPushButton" name="btn_set_dayWeek">
     <property name="enabled">
      <bool>false</bool>
     </property>
