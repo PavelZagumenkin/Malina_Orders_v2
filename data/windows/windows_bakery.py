@@ -59,10 +59,27 @@ class WindowBakery(QtWidgets.QMainWindow):
         # self.ui.btn_deleteNormativ.clicked.connect(self.dialogDeleteNormativ)
         # self.ui.btn_download_Normativ.clicked.connect(self.saveFileDialogNormativ)
         # self.ui.btn_download_Layout.clicked.connect(self.saveFileDialogLayout)
+        self.ui.formLayoutWidget.layout().setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         data_konditerskie = self.database.get_konditerskie()
+        checkbox_list = []
         for point in range(0, len(data_konditerskie)):
             if data_konditerskie[point][2] == 1 & data_konditerskie[point][3] == 1:
-                self.ui.formLayoutWidget.layout().addWidget(QtWidgets.QCheckBox(data_konditerskie[point][1]))
+                checkbox_list.append(data_konditerskie[point][1])
+        checkbox_list.sort()
+        sorted_checkbox_list = []
+        for check in checkbox_list:
+            sorted_checkbox_list.append(QtWidgets.QCheckBox(check))
+        for checkbox in range(0, len(sorted_checkbox_list), 2):
+            checkbox1 = sorted_checkbox_list[checkbox]
+            checkbox1.setStyleSheet("font-size: 16px;")
+            checkbox1.setChecked(True)
+            try:
+                checkbox2 = sorted_checkbox_list[checkbox+1]
+                checkbox2.setStyleSheet("font-size: 16px;")
+                checkbox2.setChecked(True)
+                self.ui.formLayoutWidget.layout().addRow(checkbox1, checkbox2)
+            except:
+                self.ui.formLayoutWidget.layout().addRow(checkbox1)
         self.check_prognoz()
         self.check_koeff_day_week()
         # self.proverkaNormativaFunc()
