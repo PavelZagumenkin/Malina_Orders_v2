@@ -179,14 +179,14 @@ class Database:
             return f"Ошибка работы с БД: {str(e)}"
         return count_rows
 
-    def register_konditerskay(self, konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables):
+    def register_konditerskay(self, konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables, bakery_store):
         try:
             with self.connection, self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_konditerskay_by_name(), (konditerskay_name,))
                 konditerskay = cursor.fetchone()
                 if konditerskay is not None:
                     return "Такая кондитерская уже существует"
-                cursor.execute(Queries.register_konditerskay_in_DB(), (konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables))
+                cursor.execute(Queries.register_konditerskay_in_DB(), (konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables, bakery_store))
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
@@ -208,10 +208,10 @@ class Database:
             return f"Ошибка работы с БД: {str(e)}"
         return result
 
-    def update_konditerskay_data(self, konditerskay_name, konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable):
+    def update_konditerskay_data(self, konditerskay_name, konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable, konditerskay_bakery_store):
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(Queries.update_konditerskay_in_DB(), (konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable, konditerskay_name))
+                cursor.execute(Queries.update_konditerskay_in_DB(), (konditerskay_type, konditerskay_bakery, konditerskay_ice_sklad, konditerskay_vhod_group, konditerskay_tualet, konditerskay_tables, konditerskay_enable, konditerskay_bakery_store, konditerskay_name))
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()

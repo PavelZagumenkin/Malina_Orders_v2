@@ -10,8 +10,8 @@ from data.ui.bakery import Ui_WindowBakery
 from data.requests.db_requests import Database
 from data.signals import Signals
 from data.active_session import Session
-
 from math import ceil
+
 # from handler.check_db import CheckThread
 # import Windows.WindowsViborRazdela
 # import Windows.WindowsBakeryTablesEdit
@@ -63,7 +63,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         data_konditerskie = self.database.get_konditerskie()
         checkbox_list = []
         for point in range(0, len(data_konditerskie)):
-            if data_konditerskie[point][2] == 1 & data_konditerskie[point][3] == 1:
+            if data_konditerskie[point][2] == 1 & data_konditerskie[point][9] == 1:
                 checkbox_list.append(data_konditerskie[point][1])
         checkbox_list.sort()
         sorted_checkbox_list = []

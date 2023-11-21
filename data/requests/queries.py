@@ -130,8 +130,8 @@ class Queries:
     # Регистрация новой кондитерской
     def register_konditerskay_in_DB():
         return '''
-        INSERT INTO konditerskie (name, type, bakery, ice_sklad, vhod_group, tualet, stoliki, enable)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, 1);
+        INSERT INTO konditerskie (name, type, bakery, ice_sklad, vhod_group, tualet, stoliki, enable, bakery_store)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, 1, %s);
         '''
 
     @staticmethod
@@ -152,7 +152,8 @@ class Queries:
             vhod_group = %s,
             tualet = %s,
             stoliki = %s,
-            enable = %s
+            enable = %s,
+            bakery_store = %s
         WHERE name = %s;
         '''
 
