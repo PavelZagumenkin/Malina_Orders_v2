@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 import pandas as pd
 import shutil
@@ -269,7 +269,25 @@ class WindowBakery(QtWidgets.QMainWindow):
     # Закрываем выпечку, открываем таблицу для работы
     def prognoz_table_open(self, path_OLAP_prodagi, periodDay):
         wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi)
+        index_of_period = wb_OLAP_prodagi.iloc[:, 0].str.find("Период").idxmax()
+        start_date_text = wb_OLAP_prodagi.iloc[index_of_period, 0][10:20]
+        end_date_text = wb_OLAP_prodagi.iloc[index_of_period, 0][24:34]
+        start_date = datetime.strptime(start_date_text, '%d.%m.%Y')
+        end_date = datetime.strptime(end_date_text, '%d.%m.%Y')
+        if (end_date - start_date).days + 1 != 7:
+            self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
+            self.ui.lineEdit_OLAP_prodagi.setText(f'Файл OLAP отчета по продажам должен быть за 7 дней, а вы загрузили за {(end_date - start_date).days + 1} дней!')
+            return
+        index_of_start_table = wb_OLAP_prodagi.iloc[:, 0].str.find("Код блюда").idxmax() + 1
+        wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi, header=index_of_start_table)
+        wb_OLAP_prodagi = wb_OLAP_prodagi.dropna(axis=1, how='all')
+        # Удаление последнего столбца
+        wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:, :-1]
+        # Удаление последней строки
+        wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:-1, :]
+
         print(wb_OLAP_prodagi.head())
+        print(wb_OLAP_prodagi.tail())
         # sheet_OLAP_prodagi = wb_OLAP_prodagi.ActiveSheet
         # first_OLAP_row = sheet_OLAP_prodagi.Range("A:A").Find("Код блюда").Row
         # points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
