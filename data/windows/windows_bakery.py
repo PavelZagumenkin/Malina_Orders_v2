@@ -35,13 +35,19 @@ class WindowBakery(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("image/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
+
+        # Работа с установкой периода
         year, month, day = map(int, self.session.get_currentDate().split('.'))
         TodayDate = QtCore.QDate(year, month, day)
         EndDay = TodayDate.addDays(6)
         self.ui.dateEdit_startDay.setDate(TodayDate)
         self.ui.dateEdit_endDay.setDate(EndDay)
         self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
+
+        # Скрываем прогрессбар
         self.ui.progressBar.hide()
+
+        # Подключаем действия к функциям
         self.ui.dateEdit_startDay.userDateChanged['QDate'].connect(self.setEndDay)
         self.ui.btn_exit_bakery.clicked.connect(self.show_windowAutoorders)
         self.ui.btn_path_OLAP_prodagi.clicked.connect(self.olap_prodagi_xlsx)
@@ -59,6 +65,8 @@ class WindowBakery(QtWidgets.QMainWindow):
         # self.ui.btn_deleteNormativ.clicked.connect(self.dialogDeleteNormativ)
         # self.ui.btn_download_Normativ.clicked.connect(self.saveFileDialogNormativ)
         # self.ui.btn_download_Layout.clicked.connect(self.saveFileDialogLayout)
+
+        # Заполняем поле кондитерских чекбоксами
         self.ui.formLayoutWidget.layout().setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         data_konditerskie = self.database.get_konditerskie()
         checkbox_list = []
@@ -80,6 +88,8 @@ class WindowBakery(QtWidgets.QMainWindow):
                 self.ui.formLayoutWidget.layout().addRow(checkbox1, checkbox2)
             except:
                 self.ui.formLayoutWidget.layout().addRow(checkbox1)
+
+        # Проверям наличие готовых автозаказов в БД
         self.check_prognoz()
         self.check_koeff_day_week()
         # self.proverkaNormativaFunc()
@@ -89,7 +99,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.signals.failed_signal.connect(self.show_error_message)
         self.signals.error_DB_signal.connect(self.show_DB_error_message)
 
-
+    # Функция обработки изменения стартовой даты периода
     def setEndDay(self):
         self.ui.dateEdit_endDay.setDate(self.ui.dateEdit_startDay.date().addDays(6))
         self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
@@ -98,7 +108,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         # self.proverkaNormativaFunc()
 
 
-    # Диалог выбора файла ОБЩЕГО отчета
+    # Функция нажатия кнопки ..., диалог выбора файла OLAP по продажам Выпечки
     def olap_prodagi_xlsx(self):
         fileName = QFileDialog.getOpenFileName(self, 'Выберите файл OLAP по продажам Выпечки', os.path.expanduser(
                 '~') + r'\Desktop', 'Excel файл (*.xlsx)')
@@ -119,7 +129,7 @@ class WindowBakery(QtWidgets.QMainWindow):
             funct_bakery(self)
         return wrapper
 
-    # Обрабытываем кнопку "Установить" для OLAP отчета по продажам выпечки
+    # Функция нажатия кнопки "Установить" для OLAP отчета по продажам выпечки
     @check_prognoz_OLAP
     def koeff_prognoz(self):
         path_OLAP_prodagi = self.ui.lineEdit_OLAP_prodagi.text()
@@ -133,7 +143,51 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
             self.ui.lineEdit_OLAP_prodagi.setText('Файл отчета неверный, укажите OLAP по продажам Выпечки за 7 дней')
         else:
-            self.prognoz_table_open(path_OLAP_prodagi, self.periodDay)
+            wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi)
+            index_of_period = wb_OLAP_prodagi.iloc[:, 0].str.find("Период").idxmax()
+            start_date_text = wb_OLAP_prodagi.iloc[index_of_period, 0][10:20]
+            end_date_text = wb_OLAP_prodagi.iloc[index_of_period, 0][24:34]
+            start_date = datetime.strptime(start_date_text, '%d.%m.%Y')
+            end_date = datetime.strptime(end_date_text, '%d.%m.%Y')
+            if (end_date - start_date).days + 1 != 7:
+                self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
+                self.ui.lineEdit_OLAP_prodagi.setText(
+                    f'Файл OLAP отчета по продажам должен быть за 7 дней, а вы загрузили за {(end_date - start_date).days + 1} дней!')
+                return
+            index_of_start_table = wb_OLAP_prodagi.iloc[:, 0].str.find("Код блюда").idxmax() + 1
+            wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi, header=index_of_start_table)
+            wb_OLAP_prodagi = wb_OLAP_prodagi.dropna(axis=1, how='all')
+            # Удаление последнего столбца
+            wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:, :-1]
+            # Удаление последней строки
+            wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:-1, :]
+            point_in_OLAP = wb_OLAP_prodagi.columns.tolist()
+            del point_in_OLAP[0:2]
+            points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
+            # if self.check_koeff_day_week_in_bakery(self.periodDay) == 0:
+            for i in range(len(points_check)):
+                if points_check[i].isChecked():
+                    if not points_check[i].text() in point_in_OLAP:
+                        self.signals.failed_signal.emit(
+                            f"В OLAP-отчете отсутствует кондитерская {points_check[i].text()}")
+                        return
+            # else:
+            #     points = json.loads(self.poiskKDayWeek(self.periodDay).strip("\'"))
+            #     del points[0:2]
+            #     for i in range(len(points)):
+            #         ValidPoints = sheet_OLAP_prodagi.Rows(first_OLAP_row).Find(points[i])
+            #         if ValidPoints == None:
+            #             self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points[i]}")
+            #             return
+            #     pointsNonCheck = []
+            #     for i in range (len(points_check)):
+            #         if not (points_check[i].text() in points):
+            #             pointsNonCheck.append(points_check[i].text())
+            # Нужно создать переменную для сохранения всех точек с которыми придется работать, что бы получать их из другого ОЛАП
+            self.hide()
+            global window_bakery_set
+            window_bakery_set = Windows.WindowsBakeryTablesEdit.WindowBakeryTablesEdit(path_OLAP_prodagi, periodDay, pointsNonCheck)
+            WindowBakeryTablesEdit.showMaximized()
 
 
     # Диалог выбора файла OLAP отчета по продажам по дням недели для выпечки
@@ -265,61 +319,6 @@ class WindowBakery(QtWidgets.QMainWindow):
         global windowAutoorders
         windowAutoorders = data.windows.windows_autoorders.WindowAutoorders()
         windowAutoorders.show()
-
-    # Закрываем выпечку, открываем таблицу для работы
-    def prognoz_table_open(self, path_OLAP_prodagi, periodDay):
-        wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi)
-        index_of_period = wb_OLAP_prodagi.iloc[:, 0].str.find("Период").idxmax()
-        start_date_text = wb_OLAP_prodagi.iloc[index_of_period, 0][10:20]
-        end_date_text = wb_OLAP_prodagi.iloc[index_of_period, 0][24:34]
-        start_date = datetime.strptime(start_date_text, '%d.%m.%Y')
-        end_date = datetime.strptime(end_date_text, '%d.%m.%Y')
-        if (end_date - start_date).days + 1 != 7:
-            self.ui.lineEdit_OLAP_prodagi.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
-            self.ui.lineEdit_OLAP_prodagi.setText(f'Файл OLAP отчета по продажам должен быть за 7 дней, а вы загрузили за {(end_date - start_date).days + 1} дней!')
-            return
-        index_of_start_table = wb_OLAP_prodagi.iloc[:, 0].str.find("Код блюда").idxmax() + 1
-        wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi, header=index_of_start_table)
-        wb_OLAP_prodagi = wb_OLAP_prodagi.dropna(axis=1, how='all')
-        # Удаление последнего столбца
-        wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:, :-1]
-        # Удаление последней строки
-        wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:-1, :]
-
-        print(wb_OLAP_prodagi.head())
-        print(wb_OLAP_prodagi.tail())
-        # sheet_OLAP_prodagi = wb_OLAP_prodagi.ActiveSheet
-        # first_OLAP_row = sheet_OLAP_prodagi.Range("A:A").Find("Код блюда").Row
-        # points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
-        # if self.check_koeff_day_week_in_bakery(self.periodDay) == 0:
-        #     points = []
-        #     for i in range(len(points_check)):
-        #         if points_check[i].isChecked():
-        #             ValidPoints = sheet_OLAP_prodagi.Rows(first_OLAP_row).Find(points_check[i].text())
-        #             if ValidPoints == None:
-        #                 self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points_check[i].text()}")
-        #                 return
-        #             points.append(points_check[i].text())
-        #     pointsNonCheck = []
-        #     for i in range(len(points_check)):
-        #         if not points_check[i].isChecked():
-        #             pointsNonCheck.append(points_check[i].text())
-        # else:
-        #     points = json.loads(self.poiskKDayWeek(self.periodDay).strip("\'"))
-        #     del points[0:2]
-        #     for i in range(len(points)):
-        #         ValidPoints = sheet_OLAP_prodagi.Rows(first_OLAP_row).Find(points[i])
-        #         if ValidPoints == None:
-        #             self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points[i]}")
-        #             return
-        #     pointsNonCheck = []
-        #     for i in range (len(points_check)):
-        #         if not (points_check[i].text() in points):
-        #             pointsNonCheck.append(points_check[i].text())
-        # self.hide()
-        # global WindowBakeryTablesEdit
-        # WindowBakeryTablesEdit = Windows.WindowsBakeryTablesEdit.WindowBakeryTablesEdit(pathOLAP_P, periodDay, pointsNonCheck)
-        # WindowBakeryTablesEdit.showMaximized()
 
 
     def show_success_message(self, message):
