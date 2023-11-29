@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtWidgets import QTableWidgetItem, QInputDialog, QMessageBox
-from data.ui.tableWindow import Ui_tableWindow
+from data.ui.mini_table_window import Ui_mini_table_window
 from data.requests.db_requests import Database
 from data.signals import Signals
 import data.windows.windows_logistics
@@ -10,7 +10,7 @@ import datetime
 class WindowKonditerskie(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_tableWindow()
+        self.ui = Ui_mini_table_window()
         self.ui.setupUi(self)
         self.signals = Signals()
         self.database = Database()

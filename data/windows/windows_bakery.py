@@ -3,16 +3,18 @@ import os
 import pandas as pd
 import shutil
 import json
-import data.windows.windows_autoorders
+from math import ceil
+
 from PyQt6 import QtCore, QtWidgets, QtGui
 from PyQt6.QtWidgets import QFileDialog
 from data.ui.bakery import Ui_WindowBakery
 from data.requests.db_requests import Database
 from data.signals import Signals
 from data.active_session import Session
-from math import ceil
 
-# from handler.check_db import CheckThread
+import data.windows.windows_autoorders
+import data.windows.windows_prognoz_bakery_table
+
 # import Windows.WindowsViborRazdela
 # import Windows.WindowsBakeryTablesEdit
 # import Windows.WindowsBakeryTablesView
@@ -48,7 +50,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.ui.progressBar.hide()
 
         # Подключаем действия к функциям
-        self.ui.dateEdit_startDay.userDateChanged['QDate'].connect(self.setEndDay)
+        self.ui.dateEdit_startDay.userDateChanged['QDate'].connect(self.set_end_day)
         self.ui.btn_exit_bakery.clicked.connect(self.show_windowAutoorders)
         self.ui.btn_path_OLAP_prodagi.clicked.connect(self.olap_prodagi_xlsx)
         self.ui.btn_path_dayWeek.clicked.connect(self.olap_dayWeek_xlsx)
@@ -100,7 +102,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.signals.error_DB_signal.connect(self.show_DB_error_message)
 
     # Функция обработки изменения стартовой даты периода
-    def setEndDay(self):
+    def set_end_day(self):
         self.ui.dateEdit_endDay.setDate(self.ui.dateEdit_startDay.date().addDays(6))
         self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
         self.check_prognoz()
@@ -133,10 +135,10 @@ class WindowBakery(QtWidgets.QMainWindow):
     @check_prognoz_OLAP
     def koeff_prognoz(self):
         path_OLAP_prodagi = self.ui.lineEdit_OLAP_prodagi.text()
-        self.prognozTable(path_OLAP_prodagi)
+        self.prognoz_table_open(path_OLAP_prodagi)
 
     # Проверка на правильность OLAP отчета по продажам выпечки и запуск таблицы с коэффициентами
-    def prognozTable(self, path_OLAP_prodagi):
+    def prognoz_table_open(self, path_OLAP_prodagi):
         wb_OLAP_prodagi = pd.ExcelFile(path_OLAP_prodagi)
         sheet_OLAP_prodagi = wb_OLAP_prodagi.sheet_names
         if sheet_OLAP_prodagi[0] != "OLAP отчет для Выпечки":
@@ -157,20 +159,23 @@ class WindowBakery(QtWidgets.QMainWindow):
             index_of_start_table = wb_OLAP_prodagi.iloc[:, 0].str.find("Код блюда").idxmax() + 1
             wb_OLAP_prodagi = pd.read_excel(path_OLAP_prodagi, header=index_of_start_table)
             wb_OLAP_prodagi = wb_OLAP_prodagi.dropna(axis=1, how='all')
-            # Удаление последнего столбца
-            wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:, :-1]
-            # Удаление последней строки
-            wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:-1, :]
+            # Удаление последнего столбца и последней строки
+            wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:-1, :-1]
+            print(wb_OLAP_prodagi.head())
+            print(wb_OLAP_prodagi.tail())
             point_in_OLAP = wb_OLAP_prodagi.columns.tolist()
             del point_in_OLAP[0:2]
             points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
             # if self.check_koeff_day_week_in_bakery(self.periodDay) == 0:
+            points = []
             for i in range(len(points_check)):
                 if points_check[i].isChecked():
                     if not points_check[i].text() in point_in_OLAP:
                         self.signals.failed_signal.emit(
                             f"В OLAP-отчете отсутствует кондитерская {points_check[i].text()}")
                         return
+                    else:
+                        points.append(points_check[i].text())
             # else:
             #     points = json.loads(self.poiskKDayWeek(self.periodDay).strip("\'"))
             #     del points[0:2]
@@ -183,11 +188,10 @@ class WindowBakery(QtWidgets.QMainWindow):
             #     for i in range (len(points_check)):
             #         if not (points_check[i].text() in points):
             #             pointsNonCheck.append(points_check[i].text())
-            # Нужно создать переменную для сохранения всех точек с которыми придется работать, что бы получать их из другого ОЛАП
             self.hide()
-            global window_bakery_set
-            window_bakery_set = Windows.WindowsBakeryTablesEdit.WindowBakeryTablesEdit(path_OLAP_prodagi, periodDay, pointsNonCheck)
-            WindowBakeryTablesEdit.showMaximized()
+            global window_prognoz_bakery_set
+            window_prognoz_bakery_set = data.windows.windows_prognoz_bakery_table.WindowPrognozBakeryTablesSet(path_OLAP_prodagi, self.periodDay, points)
+            window_prognoz_bakery_set.showMaximized()
 
 
     # Диалог выбора файла OLAP отчета по продажам по дням недели для выпечки
