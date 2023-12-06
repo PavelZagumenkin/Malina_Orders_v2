@@ -35,7 +35,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.database = Database()
         self.session = Session.get_instance()  # Получение экземпляра класса Session
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("image/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
 
         # Работа с установкой периода
@@ -161,8 +161,6 @@ class WindowBakery(QtWidgets.QMainWindow):
             wb_OLAP_prodagi = wb_OLAP_prodagi.dropna(axis=1, how='all')
             # Удаление последнего столбца и последней строки
             wb_OLAP_prodagi = wb_OLAP_prodagi.iloc[:-1, :-1]
-            print(wb_OLAP_prodagi.head())
-            print(wb_OLAP_prodagi.tail())
             point_in_OLAP = wb_OLAP_prodagi.columns.tolist()
             del point_in_OLAP[0:2]
             points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
@@ -190,7 +188,7 @@ class WindowBakery(QtWidgets.QMainWindow):
             #             pointsNonCheck.append(points_check[i].text())
             self.hide()
             global window_prognoz_bakery_set
-            window_prognoz_bakery_set = data.windows.windows_prognoz_bakery_table.WindowPrognozBakeryTablesSet(path_OLAP_prodagi, self.periodDay, points)
+            window_prognoz_bakery_set = data.windows.windows_prognoz_bakery_table.WindowPrognozBakeryTablesSet(wb_OLAP_prodagi, self.periodDay, points)
             window_prognoz_bakery_set.showMaximized()
 
 
