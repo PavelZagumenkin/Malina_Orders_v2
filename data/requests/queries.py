@@ -173,4 +173,10 @@ class Queries:
         WHERE period = %s AND category = %s;
         '''
 
+    @staticmethod
+    # Получить имя пользователя из БД
+    def get_data_tovar_in_DB():
+        return '''
+        SELECT * FROM dishes WHERE kod = %s;
+        '''
 

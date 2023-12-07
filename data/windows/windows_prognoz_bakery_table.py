@@ -27,6 +27,7 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
         wb_OLAP_prodagi = wb_OLAP_prodagi[self.column_title_for_excel]
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
         self.ui.tableWidget.setRowCount(wb_OLAP_prodagi.shape[0] + 1)
         self.ui.tableWidget.setColumnCount(len(self.column_title))
         self.wrap = []
@@ -74,15 +75,15 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
             self.ui.tableWidget.cellWidget(row_spin, 2).valueChanged.connect(self.raschetPrognoz)
             self.ui.tableWidget.setCellWidget(row_spin, 3, self.DisplaySpin)
             self.ui.tableWidget.cellWidget(row_spin, 3).setMaximum(1000)
-            # self.ui.tableWidget.cellWidget(row_spin, 3).setValue(self.poisk_kod(self.ui.tableWidget.item(row_spin, 4).text(), self.ui.tableWidget.item(row_spin, 5).text()))
+            self.ui.tableWidget.cellWidget(row_spin, 3).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text())[4])
             self.ui.tableWidget.cellWidget(row_spin, 3).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 4, self.KvantSpin)
             self.ui.tableWidget.cellWidget(row_spin, 4).setMaximum(1000)
-            # self.ui.tableWidget.cellWidget(row_spin, 4).setValue(self.poisk_kod(self.ui.tableWidget.item(row_spin, 4).text(), self.ui.tableWidget.item(row_spin, 5).text()))
+            self.ui.tableWidget.cellWidget(row_spin, 4).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text())[5])
             self.ui.tableWidget.cellWidget(row_spin, 4).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 5, self.BatchSpin)
             self.ui.tableWidget.cellWidget(row_spin, 5).setMaximum(1000)
-            # self.ui.tableWidget.cellWidget(row_spin, 5).setValue(self.poisk_kod(self.ui.tableWidget.item(row_spin, 4).text(), self.ui.tableWidget.item(row_spin, 5).text()))
+            self.ui.tableWidget.cellWidget(row_spin, 5).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text())[6])
             self.ui.tableWidget.cellWidget(row_spin, 5).setSingleStep(1)
         for row_button in range(1, self.ui.tableWidget.rowCount()):
             self.copyRowButton = QtWidgets.QPushButton()
@@ -249,14 +250,13 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
     #     else:
     #         layout = self.dialogAddLayout()
     #
-    # # Поиск кода в базе данных
-    # def poisk_kod(self, kod, tovar):
-    #     global kod_text
-    #     kod_text = kod
-    #     global tovar_text
-    #     tovar_text = tovar
-    #     self.check_db.thr_kod(kod_text)
-    #     return int(layout)
+    # Поиск кода в базе данных
+    def poisk_display_kvant_batch(self, kod):
+        result = self.database.poisk_data_tovar(kod)
+        print(result)
+        return result
+
+
     #
     # def insertInDB(self, savePeriod, saveHeaders, saveDB, saveNull):
     #     self.check_db.thr_updatePrognoz(savePeriod, saveHeaders, saveDB, saveNull)

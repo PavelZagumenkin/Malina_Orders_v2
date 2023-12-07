@@ -239,3 +239,14 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def poisk_data_tovar(self, kod):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_data_tovar_in_DB(), (kod,))
+                result = cursor.fetchall()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result
