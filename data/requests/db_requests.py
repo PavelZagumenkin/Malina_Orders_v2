@@ -244,7 +244,7 @@ class Database:
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_data_tovar_in_DB(), (kod,))
-                result = cursor.fetchall()[0]
+                result = cursor.fetchall()
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()

@@ -253,25 +253,51 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
     # Поиск кода в базе данных
     def poisk_display_kvant_batch(self, kod):
         result = self.database.poisk_data_tovar(kod)
+        if not result:
+            result = self.dialog_add_display_kvant_batch()
+        else:
+            return result[0]
         print(result)
-        return result
 
+    def dialog_add_display_kvant_batch(self):
+        # Создаем диалоговое окно
+        dialog = QtWidgets.QDialog()
+        layout = QtWidgets.QVBoxLayout()
+        line_edit1 = QtWidgets.QLineEdit(dialog)
+        line_edit1.setValidator(QtGui.QIntValidator())
+        line_edit2 = QtWidgets.QLineEdit(dialog)
+        line_edit2.setValidator(QtGui.QIntValidator())
+        line_edit3 = QtWidgets.QLineEdit(dialog)
+        line_edit3.setValidator(QtGui.QIntValidator())
+        line_edit4 = QtWidgets.QLineEdit(dialog)
+        line_edit4.setValidator(QtGui.QDoubleValidator())
+        button_ok = QtWidgets.QPushButton('Добавить', dialog)
+        button_ok.clicked.connect(dialog.accept)
+        layout.addWidget(QtWidgets.QLabel('Установите необходимые значения для товара отсутствующего в БД, код:, наименование:'))
+        layout.addWidget(QtWidgets.QLabel('Выкладка:'))
+        layout.addWidget(line_edit1)
+        layout.addWidget(QtWidgets.QLabel('Квант поставки:'))
+        layout.addWidget(line_edit2)
+        layout.addWidget(QtWidgets.QLabel('Минимальный замес:'))
+        layout.addWidget(line_edit3)
+        layout.addWidget(QtWidgets.QLabel('Коэффициент для пекарни:'))
+        layout.addWidget(line_edit4)
+        layout.addWidget(button_ok)
+        dialog.setLayout(layout)
+        dialog.setWindowTitle('Добавление нового товара в БД')
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        dialog.setWindowIcon(icon)
 
-    #
-    # def insertInDB(self, savePeriod, saveHeaders, saveDB, saveNull):
-    #     self.check_db.thr_updatePrognoz(savePeriod, saveHeaders, saveDB, saveNull)
-    #
-    # def delPeriodInDB(self, period):
-    #     self.check_db.thr_delPeriod(period)
-    #
-    # def dialogAddLayout(self):
-    #     kol, ok = QInputDialog.getInt(self, "Отсуствует норма выкладки", f"Введите норму выкладки для {tovar_text} код изделия {kod_text}:")
-    #     if ok:
-    #         self.check_db.thr_updateLayout(kod_text, tovar_text, int(kol))
-    #         return(int(kol))
-    #     else:
-    #         self.check_db.thr_updateLayout(kod_text, tovar_text, 1)
-    #         return(1)
+        # Открываем диалоговое окно и ждем его завершения
+        result = dialog.exec()
+        if result == 1:
+            text1 = line_edit1.text()
+            text2 = line_edit2.text()
+            text3 = line_edit3.text()
+            text4 = line_edit4.text()
+            print(f'Введенные тексты: {text1}, {text2}, {text3}, {text4}')
+
     #
     # def addPeriod(self, period):
     #     self.check_db.thr_addPeriod(period)
