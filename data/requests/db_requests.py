@@ -250,3 +250,13 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def insert_data_tovar(self, kod, name, category, display, kvant, batch, kf_ice_sklad):
+        try:
+            with self.connection, self.connection.cursor() as cursor:
+                cursor.execute(Queries.insert_data_tovar_in_DB(), (kod, name, category, display, kvant, batch, kf_ice_sklad))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return "Товар успешно зарегистрирован"

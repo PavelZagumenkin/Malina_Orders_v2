@@ -180,3 +180,10 @@ class Queries:
         SELECT * FROM dishes WHERE kod = %s;
         '''
 
+    @staticmethod
+    # Регистрация новой кондитерской
+    def insert_data_tovar_in_DB():
+        return '''
+        INSERT INTO dishes (kod, name, category, display, kvant, batch, koeff_ice_sklad)
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        '''

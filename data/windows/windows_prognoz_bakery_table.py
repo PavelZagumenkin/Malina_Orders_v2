@@ -1,3 +1,5 @@
+import sys
+
 from PyQt6 import QtWidgets, QtGui
 import json
 import textwrap
@@ -75,15 +77,18 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
             self.ui.tableWidget.cellWidget(row_spin, 2).valueChanged.connect(self.raschetPrognoz)
             self.ui.tableWidget.setCellWidget(row_spin, 3, self.DisplaySpin)
             self.ui.tableWidget.cellWidget(row_spin, 3).setMaximum(1000)
-            self.ui.tableWidget.cellWidget(row_spin, 3).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text())[4])
+            # if self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text()) == 'Отмена':
+            #     self.close()
+            #     return
+            self.ui.tableWidget.cellWidget(row_spin, 3).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text())[4])
             self.ui.tableWidget.cellWidget(row_spin, 3).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 4, self.KvantSpin)
             self.ui.tableWidget.cellWidget(row_spin, 4).setMaximum(1000)
-            self.ui.tableWidget.cellWidget(row_spin, 4).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text())[5])
+            self.ui.tableWidget.cellWidget(row_spin, 4).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text())[5])
             self.ui.tableWidget.cellWidget(row_spin, 4).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 5, self.BatchSpin)
             self.ui.tableWidget.cellWidget(row_spin, 5).setMaximum(1000)
-            self.ui.tableWidget.cellWidget(row_spin, 5).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text())[6])
+            self.ui.tableWidget.cellWidget(row_spin, 5).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text())[6])
             self.ui.tableWidget.cellWidget(row_spin, 5).setSingleStep(1)
         for row_button in range(1, self.ui.tableWidget.rowCount()):
             self.copyRowButton = QtWidgets.QPushButton()
@@ -173,11 +178,6 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
     #         self.saveLayoutInDB(self.ui.tableWidget.item(i, 4).text(), self.ui.tableWidget.item(i, 5).text(), int(self.ui.tableWidget.cellWidget(i, 3).value()))
     #     self.close()
     #
-    # # Сохраняем новые значения выкладки
-    # def saveLayoutInDB(self, kod, name, layout):
-    #     self.check_db.thr_saveLayoutInDB(kod, name, layout)
-    #
-    #
     def copyRow(self):
         buttonClicked = self.sender()
         index = self.ui.tableWidget.indexAt(buttonClicked.pos())
@@ -251,37 +251,47 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
     #         layout = self.dialogAddLayout()
     #
     # Поиск кода в базе данных
-    def poisk_display_kvant_batch(self, kod):
+    def poisk_display_kvant_batch(self, kod, name, category):
         result = self.database.poisk_data_tovar(kod)
         if not result:
-            result = self.dialog_add_display_kvant_batch()
+            result_request = self.dialog_add_display_kvant_batch(kod, name, category)
+            print(result_request)
+            if result_request == [0, 'Отмена']:
+                self.signals.failed_signal.emit(f"Если вы не хотите добавлять товар с кодом: {kod}, наименование: {name},\nто загрузите OLAP отчет по продажам выпечки без этой позиции.")
+                return result_request[1]
+            elif result_request == [1, 'Товар успешно зарегистрирован']:
+                result = self.database.poisk_data_tovar(kod)
         else:
             return result[0]
-        print(result)
+        return result[0]
 
-    def dialog_add_display_kvant_batch(self):
+    def dialog_add_display_kvant_batch(self, kod, name, category):
         # Создаем диалоговое окно
         dialog = QtWidgets.QDialog()
         layout = QtWidgets.QVBoxLayout()
-        line_edit1 = QtWidgets.QLineEdit(dialog)
-        line_edit1.setValidator(QtGui.QIntValidator())
-        line_edit2 = QtWidgets.QLineEdit(dialog)
-        line_edit2.setValidator(QtGui.QIntValidator())
-        line_edit3 = QtWidgets.QLineEdit(dialog)
-        line_edit3.setValidator(QtGui.QIntValidator())
-        line_edit4 = QtWidgets.QLineEdit(dialog)
-        line_edit4.setValidator(QtGui.QDoubleValidator())
+        display_line_edit = QtWidgets.QLineEdit(dialog)
+        display_line_edit.setValidator(QtGui.QIntValidator())
+        kvant_line_edit = QtWidgets.QLineEdit(dialog)
+        kvant_line_edit.setValidator(QtGui.QIntValidator())
+        batch_line_edit = QtWidgets.QLineEdit(dialog)
+        batch_line_edit.setValidator(QtGui.QIntValidator())
+        kf_ice_sklad_line_edit = QtWidgets.QLineEdit(dialog)
+        kf_ice_sklad_line_edit.setValidator(QtGui.QDoubleValidator())
         button_ok = QtWidgets.QPushButton('Добавить', dialog)
         button_ok.clicked.connect(dialog.accept)
-        layout.addWidget(QtWidgets.QLabel('Установите необходимые значения для товара отсутствующего в БД, код:, наименование:'))
+        layout.addWidget(QtWidgets.QLabel(f'Установите необходимые значения для товара\nотсутствующего в БД, код: {kod}, наименование: {name}'))
         layout.addWidget(QtWidgets.QLabel('Выкладка:'))
-        layout.addWidget(line_edit1)
+        layout.addWidget(display_line_edit)
+        display_line_edit.setText('1')
         layout.addWidget(QtWidgets.QLabel('Квант поставки:'))
-        layout.addWidget(line_edit2)
+        layout.addWidget(kvant_line_edit)
+        kvant_line_edit.setText('1')
         layout.addWidget(QtWidgets.QLabel('Минимальный замес:'))
-        layout.addWidget(line_edit3)
+        layout.addWidget(batch_line_edit)
+        batch_line_edit.setText('1')
         layout.addWidget(QtWidgets.QLabel('Коэффициент для пекарни:'))
-        layout.addWidget(line_edit4)
+        layout.addWidget(kf_ice_sklad_line_edit)
+        kf_ice_sklad_line_edit.setText('1')
         layout.addWidget(button_ok)
         dialog.setLayout(layout)
         dialog.setWindowTitle('Добавление нового товара в БД')
@@ -290,13 +300,17 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
         dialog.setWindowIcon(icon)
 
         # Открываем диалоговое окно и ждем его завершения
-        result = dialog.exec()
-        if result == 1:
-            text1 = line_edit1.text()
-            text2 = line_edit2.text()
-            text3 = line_edit3.text()
-            text4 = line_edit4.text()
-            print(f'Введенные тексты: {text1}, {text2}, {text3}, {text4}')
+        request = dialog.exec()
+        otvet_DB = "Отмена"
+        if request == 1:
+            display = display_line_edit.text()
+            kvant = kvant_line_edit.text()
+            batch = batch_line_edit.text()
+            kf_ice_sklad = kf_ice_sklad_line_edit.text()
+            otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, kf_ice_sklad)
+
+        return [request, otvet_DB]
+
 
     #
     # def addPeriod(self, period):
@@ -331,20 +345,22 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
 
 
     def closeEvent(self, event):
-        reply = QMessageBox()
-        reply.setWindowTitle("Завершение работы с таблицой")
-        reply.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
-        reply.setText("Вы хотите завершить работу с таблицей?")
-        reply.setIcon(QMessageBox.Icon.Question)
-        reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        reply.setDefaultButton(QMessageBox.StandardButton.Cancel)
-        otvet = reply.exec()
-        if otvet == QMessageBox.StandardButton.Yes:
-            # event.accept()
-            # if self.proverkaPerioda(self.periodDay) == 0:
-            #     self.delPeriodInDB(self.periodDay)
-            global WindowBakery
-            WindowBakery = data.windows.windows_bakery.WindowBakery()
-            WindowBakery.show()
-        else:
-            event.ignore()
+        if event.spontaneous():
+            reply = QMessageBox()
+            reply.setWindowTitle("Завершение работы с таблицой")
+            reply.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
+            reply.setText("Вы хотите завершить работу с таблицей?")
+            reply.setIcon(QMessageBox.Icon.Question)
+            reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            reply.setDefaultButton(QMessageBox.StandardButton.Cancel)
+            otvet = reply.exec()
+            if otvet == QMessageBox.StandardButton.Yes:
+                # event.accept()
+                # if self.proverkaPerioda(self.periodDay) == 0:
+                #     self.delPeriodInDB(self.periodDay)
+                global WindowBakery
+                WindowBakery = data.windows.windows_bakery.WindowBakery()
+                WindowBakery.show()
+            else:
+                event.ignore()
+        event.accept()
