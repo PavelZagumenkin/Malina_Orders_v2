@@ -63,6 +63,16 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
             self.ui.tableWidget.cellWidget(0, col_spin).setSingleStep(0.01)
             self.ui.tableWidget.cellWidget(0, col_spin).valueChanged.connect(self.raschetPrognoz)
         for row_spin in range(1, self.ui.tableWidget.rowCount()):
+            if self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text()) == 'Отмена':
+                self.ui.tableWidget.removeRow(row_spin)
+                for c in range(9, self.ui.tableWidget.columnCount()):
+                    del saveZnach[c][row_spin]
+                for c in range(9, self.ui.tableWidget.columnCount()):
+                    counter = row_spin + 1
+                    for r in range(row_spin, self.ui.tableWidget.rowCount()):
+                        saveZnach[c][r] = saveZnach[c].pop(counter)
+                        counter += 1
+                continue
             self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
             self.DisplaySpin = QtWidgets.QSpinBox()
             self.KvantSpin = QtWidgets.QSpinBox()
@@ -77,9 +87,6 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
             self.ui.tableWidget.cellWidget(row_spin, 2).valueChanged.connect(self.raschetPrognoz)
             self.ui.tableWidget.setCellWidget(row_spin, 3, self.DisplaySpin)
             self.ui.tableWidget.cellWidget(row_spin, 3).setMaximum(1000)
-            # if self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text()) == 'Отмена':
-            #     self.close()
-            #     return
             self.ui.tableWidget.cellWidget(row_spin, 3).setValue(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text(), self.ui.tableWidget.item(row_spin, 8).text())[4])
             self.ui.tableWidget.cellWidget(row_spin, 3).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 4, self.KvantSpin)
@@ -255,15 +262,16 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
         result = self.database.poisk_data_tovar(kod)
         if not result:
             result_request = self.dialog_add_display_kvant_batch(kod, name, category)
-            print(result_request)
-            if result_request == [0, 'Отмена']:
-                self.signals.failed_signal.emit(f"Если вы не хотите добавлять товар с кодом: {kod}, наименование: {name},\nто загрузите OLAP отчет по продажам выпечки без этой позиции.")
-                return result_request[1]
-            elif result_request == [1, 'Товар успешно зарегистрирован']:
+            if result_request == 'Отмена':
+                return 'Отмена'
+            elif result_request == 'Товар успешно зарегистрирован':
                 result = self.database.poisk_data_tovar(kod)
+                return result[0]
+            elif 'Ошибка' in result_request:
+                self.signals.error_DB_signal.emit(result_request)
+                return 'Отмена'
         else:
             return result[0]
-        return result[0]
 
     def dialog_add_display_kvant_batch(self, kod, name, category):
         # Создаем диалоговое окно
@@ -298,9 +306,9 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         dialog.setWindowIcon(icon)
-
         # Открываем диалоговое окно и ждем его завершения
         request = dialog.exec()
+        # Проверям результат обращения к БД
         otvet_DB = "Отмена"
         if request == 1:
             display = display_line_edit.text()
@@ -308,8 +316,7 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
             batch = batch_line_edit.text()
             kf_ice_sklad = kf_ice_sklad_line_edit.text()
             otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, kf_ice_sklad)
-
-        return [request, otvet_DB]
+        return otvet_DB
 
 
     #
@@ -345,22 +352,20 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
 
 
     def closeEvent(self, event):
-        if event.spontaneous():
-            reply = QMessageBox()
-            reply.setWindowTitle("Завершение работы с таблицой")
-            reply.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
-            reply.setText("Вы хотите завершить работу с таблицей?")
-            reply.setIcon(QMessageBox.Icon.Question)
-            reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-            reply.setDefaultButton(QMessageBox.StandardButton.Cancel)
-            otvet = reply.exec()
-            if otvet == QMessageBox.StandardButton.Yes:
-                # event.accept()
-                # if self.proverkaPerioda(self.periodDay) == 0:
-                #     self.delPeriodInDB(self.periodDay)
-                global WindowBakery
-                WindowBakery = data.windows.windows_bakery.WindowBakery()
-                WindowBakery.show()
-            else:
-                event.ignore()
-        event.accept()
+        reply = QMessageBox()
+        reply.setWindowTitle("Завершение работы с таблицой")
+        reply.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
+        reply.setText("Вы хотите завершить работу с таблицей?")
+        reply.setIcon(QMessageBox.Icon.Question)
+        reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        reply.setDefaultButton(QMessageBox.StandardButton.Cancel)
+        otvet = reply.exec()
+        if otvet == QMessageBox.StandardButton.Yes:
+            # event.accept()
+            # if self.proverkaPerioda(self.periodDay) == 0:
+            #     self.delPeriodInDB(self.periodDay)
+            global WindowBakery
+            WindowBakery = data.windows.windows_bakery.WindowBakery()
+            WindowBakery.show()
+        else:
+            event.ignore()
