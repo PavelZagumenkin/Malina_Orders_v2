@@ -134,7 +134,7 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
 
     def on_cell_changed(self, row, col):
         if row >= 1 and col >= 9:
-            # Получаем содержимое ячейки и проверяем, является ли оно числом
+        # Получаем содержимое ячейки и проверяем, является ли оно числом
             try:
                 value = float(self.ui.tableWidget.item(row, col).text())
             except ValueError:
@@ -337,8 +337,6 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
     #         otvetPeriod = 2
     #
     def show_success_message(self, message):
-        # if "Авторизация успешна" in message:
-        #     self.show_windowSection()
         pass
 
     def show_error_message(self, message):
