@@ -73,7 +73,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         data_konditerskie = self.database.get_konditerskie()
         checkbox_list = []
         for point in range(0, len(data_konditerskie)):
-            if data_konditerskie[point][2] == 1 & data_konditerskie[point][9] == 1:
+            if data_konditerskie[point][2] == 1 & data_konditerskie[point][9] == 1 & data_konditerskie[point][8] == 1:
                 checkbox_list.append(data_konditerskie[point][1])
         checkbox_list.sort()
         sorted_checkbox_list = []
