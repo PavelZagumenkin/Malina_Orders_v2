@@ -187,3 +187,11 @@ class Queries:
         INSERT INTO dishes (kod, name, category, display, kvant, batch, koeff_ice_sklad)
         VALUES (%s, %s, %s, %s, %s, %s, %s);
         '''
+
+    @staticmethod
+    # Сохранение прогноза в БД
+    def save_prognoz_in_DB():
+        return '''
+            INSERT INTO prognoz (period, name_point, kod_dishe, category, koeff_dishe,  display, kvant, batch, koeff_points, data_null, data_prognoz, author)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            '''

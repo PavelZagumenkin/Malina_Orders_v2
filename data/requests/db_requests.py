@@ -1,4 +1,6 @@
 import psycopg2
+from psycopg2 import Error
+from psycopg2.extras import DateRange
 import hashlib
 import os
 from passlib.hash import pbkdf2_sha256
@@ -260,3 +262,24 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return "Товар успешно зарегистрирован"
+
+    def save_prognoz(self, matrix_table_prognoz):
+        self.connection.autocommit = False
+        try:
+            for row in matrix_table_prognoz:
+                try:
+                    with self.connection, self.connection.cursor() as cursor:
+                        period_range = DateRange(row[0], row[1])
+                        cursor.execute(Queries.save_prognoz_in_DB(), (period_range, row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12]))
+                except Error as e:
+                    # Отмена транзакции в случае ошибки
+                    self.connection.rollback()
+                    return f"Ошибка при вставке данных: {e}"
+            else:
+                # Если все вставки прошли успешно, фиксируем транзакцию
+                self.connection.commit()
+                return "Все данные успешно вставлены в базу данных"
+        except Exception as e:
+            # Отмена транзакции в случае общей ошибки
+            self.connection.rollback()
+            return f"Ошибка: {e}"
