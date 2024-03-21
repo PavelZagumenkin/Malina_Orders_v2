@@ -11,14 +11,14 @@ from PyQt6.QtWidgets import QInputDialog
 from data.requests.db_requests import Database
 from data.signals import Signals
 from data.active_session import Session
-from data.ui.prognoz_table import Ui_prognoz_table
+from data.ui.autozakaz_table import Ui_autozakaz_table
 import data.windows.windows_bakery
 
 
-class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
+class WindowPrognozTablesSet(QtWidgets.QMainWindow):
     def __init__(self, wb_OLAP_prodagi, periodDay, points):
         super().__init__()
-        self.ui = Ui_prognoz_table()
+        self.ui = Ui_autozakaz_table()
         self.ui.setupUi(self)
         self.database = Database()
         self.signals = Signals()
@@ -411,20 +411,23 @@ class WindowPrognozBakeryTablesSet(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
     def closeEvent(self, event):
-        reply = QMessageBox()
-        reply.setWindowTitle("Завершение работы с таблицой")
-        reply.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
-        reply.setText("Вы хотите завершить работу с таблицей?")
-        reply.setIcon(QMessageBox.Icon.Question)
-        reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        reply.setDefaultButton(QMessageBox.StandardButton.Cancel)
-        otvet = reply.exec()
-        if otvet == QMessageBox.StandardButton.Yes:
-            # event.accept()
-            # if self.proverkaPerioda(self.periodDay) == 0:
-            #     self.delPeriodInDB(self.periodDay)
-            global WindowBakery
+        global WindowBakery
+        if event.spontaneous():
+            reply = QMessageBox()
+            reply.setWindowTitle("Завершение работы с таблицой")
+            reply.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
+            reply.setText("Вы хотите завершить работу с таблицей?")
+            reply.setIcon(QMessageBox.Icon.Question)
+            reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            reply.setDefaultButton(QMessageBox.StandardButton.Cancel)
+            otvet = reply.exec()
+            if otvet == QMessageBox.StandardButton.Yes:
+                event.accept()
+                WindowBakery = data.windows.windows_bakery.WindowBakery()
+                WindowBakery.show()
+            else:
+                event.ignore()
+        else:
+            event.accept()
             WindowBakery = data.windows.windows_bakery.WindowBakery()
             WindowBakery.show()
-        else:
-            event.ignore()

@@ -220,22 +220,12 @@ class Database:
             return f"Ошибка работы с БД: {str(e)}"
         return f"Данные по кондитерской {konditerskay_name} успешно изменены."
 
-    def check_period_in_prognoz(self, period, category):
+    def check_cunts_row_in_DB(self, start_day, end_day, category, query_function):
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(Queries.get_period_in_prognoz_in_DB(), (str(period), category))
-                result = cursor.fetchall()[0]
-                self.connection.commit()
-        except Exception as e:
-            self.connection.rollback()
-            return f"Ошибка работы с БД: {str(e)}"
-        return result
-
-    def check_koeff_day_week_in_DB(self, period, category):
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(Queries.get_koeff_day_week_in_DB(), (str(period), category))
-                result = cursor.fetchall()[0]
+                period = DateRange(start_day, end_day)
+                cursor.execute(query_function(), (period, category))
+                result = cursor.fetchall()[0][0]
                 self.connection.commit()
         except Exception as e:
             self.connection.rollback()
@@ -283,3 +273,15 @@ class Database:
             # Отмена транзакции в случае общей ошибки
             self.connection.rollback()
             return f"Ошибка: {e}"
+
+    def get_spisok_konditerskih_in_DB(self, start_day, end_day, category, query_function):
+        try:
+            with self.connection.cursor() as cursor:
+                period = DateRange(start_day, end_day)
+                cursor.execute(query_function(), (period, category))
+                result = cursor.fetchall()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

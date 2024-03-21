@@ -158,30 +158,38 @@ class Queries:
         '''
 
     @staticmethod
-    # Получить все логи
-    def get_period_in_prognoz_in_DB():
+    # Получить количество строк из таблицы прогноз
+    def get_count_row_prognoz_in_DB():
         return '''
-        SELECT * FROM prognoz
+        SELECT COUNT(*) FROM prognoz
         WHERE period = %s AND category = %s;
         '''
 
     @staticmethod
-    # Получить все логи
-    def get_koeff_day_week_in_DB():
+    # Получить количество строк из таблицы коэффицентов по дням недели
+    def get_count_row_koeff_day_week_in_DB():
         return '''
-        SELECT * FROM koeff_day_week
+        SELECT COUNT(*) FROM koeff_day_week
         WHERE period = %s AND category = %s;
         '''
 
     @staticmethod
-    # Получить имя пользователя из БД
+    # Получить количество строк из таблицы нормативов
+    def get_count_row_normativ_in_DB():
+        return '''
+        SELECT COUNT(*) FROM normativ_bakery
+        WHERE period = %s AND category = %s;
+        '''
+
+    @staticmethod
+    # Получить все блюда
     def get_data_tovar_in_DB():
         return '''
         SELECT * FROM dishes WHERE kod = %s;
         '''
 
     @staticmethod
-    # Регистрация новой кондитерской
+    # Регистрация нового блюда в БД
     def insert_data_tovar_in_DB():
         return '''
         INSERT INTO dishes (kod, name, category, display, kvant, batch, koeff_ice_sklad)
@@ -192,6 +200,25 @@ class Queries:
     # Сохранение прогноза в БД
     def save_prognoz_in_DB():
         return '''
-            INSERT INTO prognoz (period, name_point, kod_dishe, category, koeff_dishe,  display, kvant, batch, koeff_points, data_null, data_prognoz, author)
+            INSERT INTO prognoz (period, name_point, kod_dishe, category, koeff_dishe,  display, kvant, batch, koeff_point, data_null, data_prognoz, author)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             '''
+
+    @staticmethod
+    # Получить список кондитерских в таблице прогноз за период
+    def get_spisok_konditerskih_in_prognoz_in_DB():
+        return '''
+            SELECT DISTINCT name_point
+            FROM prognoz
+            WHERE period = %s AND category = %s;
+            '''
+
+    @staticmethod
+    # Получить список кондитерских в таблице коэффицентов по дням недели за период
+    def get_spisok_konditerskih_in_koeff_day_week_in_DB():
+        return '''
+            SELECT DISTINCT name_point
+            FROM koeff_day_week
+            WHERE period = %s AND category = %s;
+            '''
+

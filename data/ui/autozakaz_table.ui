@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>prognoz_table</class>
- <widget class="QMainWindow" name="prognoz_table">
+ <class>autozakaz_table</class>
+ <widget class="QMainWindow" name="autozakaz_table">
   <property name="geometry">
    <rect>
     <x>0</x>

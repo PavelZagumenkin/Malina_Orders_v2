@@ -9,5 +9,3 @@ if __name__ == "__main__":
     WindowAuthorization.show()
     WindowAuthorization.check_update()
     sys.exit(app.exec())
-
-

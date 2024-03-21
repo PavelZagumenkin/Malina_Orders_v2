@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'prognoz_table.ui'
+# Form implementation generated from reading ui file 'autozakaz_table.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #
@@ -9,11 +9,11 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_prognoz_table(object):
-    def setupUi(self, prognoz_table):
-        prognoz_table.setObjectName("prognoz_table")
-        prognoz_table.resize(1203, 811)
-        self.centralwidget = QtWidgets.QWidget(prognoz_table)
+class Ui_autozakaz_table(object):
+    def setupUi(self, autozakaz_table):
+        autozakaz_table.setObjectName("autozakaz_table")
+        autozakaz_table.resize(1203, 811)
+        self.centralwidget = QtWidgets.QWidget(autozakaz_table)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -22,21 +22,21 @@ class Ui_prognoz_table(object):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.verticalLayout.addWidget(self.tableWidget)
-        prognoz_table.setCentralWidget(self.centralwidget)
+        autozakaz_table.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(prognoz_table)
-        QtCore.QMetaObject.connectSlotsByName(prognoz_table)
+        self.retranslateUi(autozakaz_table)
+        QtCore.QMetaObject.connectSlotsByName(autozakaz_table)
 
-    def retranslateUi(self, prognoz_table):
+    def retranslateUi(self, autozakaz_table):
         _translate = QtCore.QCoreApplication.translate
-        prognoz_table.setWindowTitle(_translate("prognoz_table", "Работа с коэффициентами"))
+        autozakaz_table.setWindowTitle(_translate("autozakaz_table", "Работа с коэффициентами"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    prognoz_table = QtWidgets.QMainWindow()
-    ui = Ui_prognoz_table()
-    ui.setupUi(prognoz_table)
-    prognoz_table.show()
+    autozakaz_table = QtWidgets.QMainWindow()
+    ui = Ui_autozakaz_table()
+    ui.setupUi(autozakaz_table)
+    autozakaz_table.show()
     sys.exit(app.exec())

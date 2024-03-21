@@ -9,4 +9,4 @@
 @REM pyuic6 -x bakeryTables.ui -o bakeryTables.py
 @REM pyuic6 -x autoorders.ui -o autoorders.py
 @REM pyuic6 -x bakery.ui -o bakery.py
-pyuic6 -x prognoz_table.ui -o prognoz_table.py
+pyuic6 -x autozakaz_table.ui -o autozakaz_table.py
