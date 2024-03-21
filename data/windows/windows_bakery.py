@@ -178,16 +178,12 @@ class WindowBakery(QtWidgets.QMainWindow):
                         else:
                             points.append(points_check[i].text())
             else:
-                points = self.get_spisok_konditerskih_in_DB(Queries.get_spisok_konditerskih_in_koeff_day_week_in_DB)
-            #     for i in range(len(points)):
-            #         ValidPoints = sheet_OLAP_prodagi.Rows(first_OLAP_row).Find(points[i])
-            #         if ValidPoints == None:
-            #             self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points[i]}")
-            #             return
-            #     pointsNonCheck = []
-            #     for i in range (len(points_check)):
-            #         if not (points_check[i].text() in points):
-            #             pointsNonCheck.append(points_check[i].text())
+                points_in_DB = self.get_spisok_konditerskih_in_DB(Queries.get_spisok_konditerskih_in_koeff_day_week_in_DB)
+                for i in range(len(points_in_DB)):
+                    if not points_in_DB[i] in point_in_OLAP:
+                        self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points_in_DB[i]}")
+                        return
+                points = points_in_DB
             self.hide()
             global window_prognoz_set
             window_prognoz_set = data.windows.windows_prognoz_table.WindowPrognozTablesSet(wb_OLAP_prodagi, self.periodDay, points)
@@ -254,7 +250,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         # Удаление последнего столбца и последней строки
         wb_OLAP_dayWeek = wb_OLAP_dayWeek.iloc[:-1, :-1]
         point_in_OLAP = wb_OLAP_dayWeek.columns.tolist()
-        del point_in_OLAP[0:2]
+        del point_in_OLAP[0:1]
         points_check = self.ui.formLayoutWidget.findChildren(QtWidgets.QCheckBox)
         result_prognoz = self.check_data_in_DB(Queries.get_count_row_prognoz_in_DB())
         if result_prognoz == 0:
@@ -267,7 +263,12 @@ class WindowBakery(QtWidgets.QMainWindow):
                     else:
                         points.append(points_check[i].text())
         else:
-            points = self.get_spisok_konditerskih_in_DB(Queries.get_spisok_konditerskih_in_prognoz_in_DB())
+            points_in_DB = self.get_spisok_konditerskih_in_DB(Queries.get_spisok_konditerskih_in_prognoz_in_DB)
+            for i in range(len(points_in_DB)):
+                if not points_in_DB[i] in point_in_OLAP:
+                    self.signals.failed_signal.emit(f"В OLAP-отчете отсутствует кондитерская {points_in_DB[i]}")
+                    return
+            points = points_in_DB
         self.hide()
         global windows_koeff_day_week_set
         windows_koeff_day_week_set = data.windows.windows_koeff_day_week_table.WindowKoeffDayWeek(wb_OLAP_dayWeek, self.periodDay, points)
@@ -319,7 +320,7 @@ class WindowBakery(QtWidgets.QMainWindow):
     def check_data_in_DB(self, check_function_in_DB):
         start_date = self.periodDay[0].toString('yyyy-MM-dd')
         end_date = self.periodDay[1].toString('yyyy-MM-dd')
-        result_check = self.database.check_cunts_row_in_DB(start_date, end_date, "Выпечка пекарни", check_function_in_DB)
+        result_check = self.database.check_counts_row_in_DB(start_date, end_date, "Выпечка пекарни", check_function_in_DB)
         if isinstance(result_check, int):
             return result_check
         else:
@@ -328,8 +329,7 @@ class WindowBakery(QtWidgets.QMainWindow):
     def get_spisok_konditerskih_in_DB(self, check_function_in_DB):
         start_date = self.periodDay[0].toString('yyyy-MM-dd')
         end_date = self.periodDay[1].toString('yyyy-MM-dd')
-        result_spisok = self.database.check_cunts_row_in_DB(start_date, end_date, "Выпечка пекарни", check_function_in_DB)
-        print(result_spisok)
+        result_spisok = self.database.get_spisok_konditerskih_in_DB(start_date, end_date, "Выпечка пекарни", check_function_in_DB)
         return result_spisok
 
     # Закрываем окно настроек, открываем выбор раздела

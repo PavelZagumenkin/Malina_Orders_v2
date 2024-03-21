@@ -205,6 +205,14 @@ class Queries:
             '''
 
     @staticmethod
+    # Сохранение прогноза в БД
+    def save_koeff_day_week_in_DB():
+        return '''
+            INSERT INTO koeff_day_week (period, name_point, category, day_week, koeff_day_week, koeff_point, data_null, data_koeff_day_week, author)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+            '''
+
+    @staticmethod
     # Получить список кондитерских в таблице прогноз за период
     def get_spisok_konditerskih_in_prognoz_in_DB():
         return '''
@@ -221,4 +229,3 @@ class Queries:
             FROM koeff_day_week
             WHERE period = %s AND category = %s;
             '''
-

@@ -237,8 +237,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                     row_data.append(data_prognoz)
                 else:
                     row_data.append(0)  # или любое значение по умолчанию для пустых ячеек
-                autor = self.session.get_username()  # Получение имени пользователя из экземпляра класса Session
-                row_data.append(autor)
+                author = self.session.get_username()  # Получение имени пользователя из экземпляра класса Session
+                row_data.append(author)
                 # Добавление строки в матрицу
                 matrix_table_prognoz.append(row_data)
         save_result = self.database.save_prognoz(matrix_table_prognoz)
