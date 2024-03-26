@@ -344,8 +344,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         kvant_line_edit.setValidator(QtGui.QIntValidator())
         batch_line_edit = QtWidgets.QLineEdit(dialog)
         batch_line_edit.setValidator(QtGui.QIntValidator())
-        kf_ice_sklad_line_edit = QtWidgets.QLineEdit(dialog)
-        kf_ice_sklad_line_edit.setValidator(QtGui.QDoubleValidator())
+        koeff_ice_sklad_line_edit = QtWidgets.QLineEdit(dialog)
+        koeff_ice_sklad_line_edit.setValidator(QtGui.QDoubleValidator())
         button_ok = QtWidgets.QPushButton('Добавить', dialog)
         button_ok.clicked.connect(dialog.accept)
         layout.addWidget(QtWidgets.QLabel(
@@ -360,8 +360,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         layout.addWidget(batch_line_edit)
         batch_line_edit.setText('1')
         layout.addWidget(QtWidgets.QLabel('Коэффициент для пекарни:'))
-        layout.addWidget(kf_ice_sklad_line_edit)
-        kf_ice_sklad_line_edit.setText('1')
+        layout.addWidget(koeff_ice_sklad_line_edit)
+        koeff_ice_sklad_line_edit.setText('1')
         layout.addWidget(button_ok)
         dialog.setLayout(layout)
         dialog.setWindowTitle('Добавление нового товара в БД')
@@ -376,8 +376,10 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             display = display_line_edit.text()
             kvant = kvant_line_edit.text()
             batch = batch_line_edit.text()
-            koeff_ice_sklad = kf_ice_sklad_line_edit.text()
+            koeff_ice_sklad = koeff_ice_sklad_line_edit.text()
+            print(kod, name, category, display, kvant, batch, koeff_ice_sklad)
             otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, koeff_ice_sklad)
+        print(otvet_DB)
         return otvet_DB
 
 
