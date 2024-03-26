@@ -70,10 +70,14 @@ class WindowBakery(QtWidgets.QMainWindow):
         # self.ui.btn_download_Normativ.clicked.connect(self.saveFileDialogNormativ)
         # self.ui.btn_download_Layout.clicked.connect(self.saveFileDialogLayout)
 
-        # Заполняем поле кондитерских чекбоксами
+        # Проверям наличие готовых автозаказов в БД
+        self.check_prognoz()
+        self.check_koeff_day_week()
+        self.check_normativ()
+
         self.ui.formLayoutWidget.layout().setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
-        data_konditerskie = self.database.get_konditerskie()
         checkbox_list = []
+        data_konditerskie = self.database.get_konditerskie()
         for point in range(0, len(data_konditerskie)):
             if data_konditerskie[point][2] == 1 & data_konditerskie[point][9] == 1 & data_konditerskie[point][8] == 1:
                 checkbox_list.append(data_konditerskie[point][1])
@@ -84,24 +88,45 @@ class WindowBakery(QtWidgets.QMainWindow):
         for checkbox in range(0, len(sorted_checkbox_list), 2):
             checkbox1 = sorted_checkbox_list[checkbox]
             checkbox1.setStyleSheet("font-size: 16px;")
-            checkbox1.setChecked(True)
+            checkbox1.setChecked(False)
             try:
-                checkbox2 = sorted_checkbox_list[checkbox+1]
+                checkbox2 = sorted_checkbox_list[checkbox + 1]
                 checkbox2.setStyleSheet("font-size: 16px;")
-                checkbox2.setChecked(True)
+                checkbox2.setChecked(False)
                 self.ui.formLayoutWidget.layout().addRow(checkbox1, checkbox2)
             except:
                 self.ui.formLayoutWidget.layout().addRow(checkbox1)
-
-        # Проверям наличие готовых автозаказов в БД
-        self.check_prognoz()
-        self.check_koeff_day_week()
-        self.check_normativ()
+        self.install_check_box()
 
         # Подключаем слоты к сигналам
         self.signals.success_signal.connect(self.show_success_message)
         self.signals.failed_signal.connect(self.show_error_message)
         self.signals.error_DB_signal.connect(self.show_DB_error_message)
+
+    # Получаем список кондитерских и устанавливаем чек-боксы
+    def install_check_box(self):
+        for index in range(0, self.ui.formLayoutWidget.layout().count()):
+            self.ui.formLayoutWidget.layout().itemAt(index).widget().setChecked(False)
+        if self.check_prognoz() == 1:
+            checkbox_list_checked = self.get_spisok_konditerskih_in_DB(Queries.get_spisok_konditerskih_in_prognoz_in_DB)
+            sorted_checkbox_list = []
+            for index in range(0, self.ui.formLayoutWidget.layout().count()):
+                sorted_checkbox_list.append(self.ui.formLayoutWidget.layout().itemAt(index).widget().text())
+            for checkbox in checkbox_list_checked:
+                if checkbox in sorted_checkbox_list:
+                    self.ui.formLayoutWidget.layout().itemAt(sorted_checkbox_list.index(checkbox)).widget().setChecked(True)
+        elif self.check_koeff_day_week() == 1:
+            checkbox_list_checked = self.get_spisok_konditerskih_in_DB(Queries.get_spisok_konditerskih_in_koeff_day_week_in_DB)
+            sorted_checkbox_list = []
+            for index in range(0, self.ui.formLayoutWidget.layout().count()):
+                sorted_checkbox_list.append(self.ui.formLayoutWidget.layout().itemAt(index).widget().text())
+            for checkbox in checkbox_list_checked:
+                if checkbox in sorted_checkbox_list:
+                    self.ui.formLayoutWidget.layout().itemAt(sorted_checkbox_list.index(checkbox)).widget().setChecked(True)
+        else:
+            for index in range(0, self.ui.formLayoutWidget.layout().count()):
+                self.ui.formLayoutWidget.layout().itemAt(index).widget().setChecked(True)
+
 
     # Функция обработки изменения стартовой даты периода
     def set_end_day(self):
@@ -110,6 +135,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.check_prognoz()
         self.check_koeff_day_week()
         self.check_normativ()
+        self.install_check_box()
 
 
     # Функция нажатия кнопки ..., диалог выбора файла OLAP по продажам Выпечки
@@ -283,11 +309,13 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.btn_delete_prognoz.setEnabled(False)
             self.ui.btn_set_normativ.setEnabled(False)
             self.ui.btn_download_layout.setEnabled(False)
+            return 0
         else:
             self.ui.btn_set_prognoz.setEnabled(False)
             self.ui.btn_prosmotr_prognoz.setEnabled(True)
             self.ui.btn_edit_prognoz.setEnabled(True)
             self.ui.btn_delete_prognoz.setEnabled(True)
+            return 1
     #
     def check_koeff_day_week(self):
         result_koeff_day_week = self.check_data_in_DB(Queries.get_count_row_koeff_day_week_in_DB)
@@ -298,11 +326,13 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.btn_delete_dayWeek.setEnabled(False)
             self.ui.btn_download_layout.setEnabled(False)
             self.ui.btn_set_normativ.setEnabled(False)
+            return 0
         else:
             self.ui.btn_set_dayWeek.setEnabled(False)
             self.ui.btn_prosmotr_dayWeek.setEnabled(True)
             self.ui.btn_edit_dayWeek.setEnabled(True)
             self.ui.btn_delete_dayWeek.setEnabled(True)
+            return 1
 
     def check_normativ(self):
         result_normativ = self.check_data_in_DB(Queries.get_count_row_normativ_in_DB)
@@ -310,11 +340,13 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.btn_edit_normativ.setEnabled(False)
             self.ui.btn_download_normativ.setEnabled(False)
             self.ui.btn_delete_normativ.setEnabled(False)
+            return 0
         else:
             self.ui.btn_set_normativ.setEnabled(False)
             self.ui.btn_edit_normativ.setEnabled(True)
             self.ui.btn_download_normativ.setEnabled(True)
             self.ui.btn_delete_normativ.setEnabled(True)
+            return 1
 
 
     def check_data_in_DB(self, check_function_in_DB):
