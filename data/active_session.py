@@ -6,8 +6,10 @@ class Session:
             raise Exception("Невозможно создать несколько экземпляров класса Session")
         else:
             Session.__instance = self
-            # self.session = None
+            self.username = None
             self.role = None
+            self.current_date = None
+            self.work_date = None
 
     @staticmethod
     def get_instance():
@@ -15,16 +17,13 @@ class Session:
             Session()
         return Session.__instance
 
-    # def set_session(self, session):
-    #     self.session = session
-    #
-    # def get_session(self):
-    #     return self.session
-
-    def set_username_role(self, username, role, currentDate):
+    def set_username_role_date(self, username, role, current_date):
         self.username = username
         self.role = role
-        self.currentDate = currentDate
+        self.current_date = current_date
+
+    def set_work_date(self, work_date):
+        self.work_date = work_date
 
     def get_role(self):
         return self.role
@@ -32,5 +31,8 @@ class Session:
     def get_username(self):
         return self.username
 
-    def get_currentDate(self):
-        return self.currentDate
+    def get_current_date(self):
+        return self.current_date
+
+    def get_work_date(self):
+        return self.work_date

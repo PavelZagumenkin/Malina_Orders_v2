@@ -171,6 +171,7 @@ class WindowKoeffDayWeek(QtWidgets.QMainWindow):
                 # Добавление строки в матрицу
                 matrix_table_koeff_day_week.append(row_data)
         save_result = self.database.save_koeff_day_week(matrix_table_koeff_day_week)
+        self.session.set_work_date(self.periodDay[0].toString('yyyy-MM-dd'))  # Сохраняем время периода, скоторым работаем
         print(save_result)
         self.close()
     #

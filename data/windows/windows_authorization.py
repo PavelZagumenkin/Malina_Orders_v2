@@ -81,7 +81,6 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                     downloaded_size += len(data)
                     progress = int((downloaded_size / total_size) * 100)
                     self.progress_bar.setValue(progress)
-
             # Проверяем, что файл успешно скачан
             if total_size > 0 and downloaded_size == total_size:
                 print('\nФайл обновлений успешно скачан.')
@@ -114,7 +113,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
                 logs_result = self.database.add_log(datetime.datetime.now().date(), datetime.datetime.now().time(),
                                       f"Пользователь {username} выполнил вход в систему.")
                 if "Лог записан" in logs_result:
-                    self.session.set_username_role(username, role, datetime.datetime.now().strftime('%Y.%m.%d'))  # сохраняем пользователя, роль пользователя, текущую дату в объекте UserSession
+                    self.session.set_username_role_date(username, role, datetime.datetime.now().strftime('%Y.%m.%d'))  # сохраняем пользователя, роль пользователя, текущую дату в объекте UserSession
                     self.signals.success_signal.emit(result)
                 elif 'Ошибка работы' in logs_result:
                     self.signals.error_DB_signal.emit(logs_result)

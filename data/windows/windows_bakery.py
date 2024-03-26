@@ -16,8 +16,6 @@ from data.active_session import Session
 import data.windows.windows_autoorders
 import data.windows.windows_prognoz_table
 import data.windows.windows_koeff_day_week_table
-
-# import Windows.WindowsViborRazdela
 # import Windows.WindowsBakeryTablesEdit
 # import Windows.WindowsBakeryTablesView
 # import Windows.WindowsBakeryTablesRedact
@@ -41,7 +39,10 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.setWindowIcon(icon)
 
         # Работа с установкой периода
-        year, month, day = map(int, self.session.get_currentDate().split('.'))
+        if self.session.get_work_date() == None:
+            year, month, day = map(int, self.session.get_current_date().split('.'))
+        else:
+            year, month, day = map(int, self.session.get_work_date().split('-'))
         TodayDate = QtCore.QDate(year, month, day)
         EndDay = TodayDate.addDays(6)
         self.ui.dateEdit_startDay.setDate(TodayDate)
@@ -223,6 +224,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.ui.lineEdit_OLAP_dayWeek.setText(fileName[0])
         self.ui.lineEdit_OLAP_dayWeek.setStyleSheet("padding-left: 5px; color: rgb(0, 0, 0)")
 
+
     # Проверяем на пустоту поля для OLAP отчета по продажам по дням недели для выпечки
     @staticmethod
     def check_dayWeek(funct_bakery):
@@ -236,11 +238,13 @@ class WindowBakery(QtWidgets.QMainWindow):
             funct_bakery(self)
         return wrapper
 
+
     # Обрабытываем кнопку "Установить" для OLAP отчета по продажам по дням недели для выпечки
     @check_dayWeek
     def koeff_dayWeek(self):
         path_OLAP_DayWeek = self.ui.lineEdit_OLAP_dayWeek.text()
         self.dayWeekTable(path_OLAP_DayWeek)
+
 
     # Проверка на правильность OLAP отчета по продажам по дням недели для выпечки и запуск таблици с коэффициентами
     def dayWeekTable(self, path_OLAP_DayWeek):
@@ -252,6 +256,7 @@ class WindowBakery(QtWidgets.QMainWindow):
                 'Файл отчета неверный, укажите OLAP по продажам по дням недели для Выпечки')
         else:
             self.dayWeek_Table_Open(path_OLAP_DayWeek)
+
 
     def dayWeek_Table_Open(self, pathOLAP_DayWeek):
         wb_OLAP_dayWeek = pd.ExcelFile(pathOLAP_DayWeek)
@@ -300,6 +305,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         windows_koeff_day_week_set = data.windows.windows_koeff_day_week_table.WindowKoeffDayWeek(wb_OLAP_dayWeek, self.periodDay, points)
         windows_koeff_day_week_set.showMaximized()
 
+
     def check_prognoz(self):
         result_prognoz = self.check_data_in_DB(Queries.get_count_row_prognoz_in_DB)
         if result_prognoz == 0:
@@ -316,7 +322,8 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.btn_edit_prognoz.setEnabled(True)
             self.ui.btn_delete_prognoz.setEnabled(True)
             return 1
-    #
+
+
     def check_koeff_day_week(self):
         result_koeff_day_week = self.check_data_in_DB(Queries.get_count_row_koeff_day_week_in_DB)
         if result_koeff_day_week == 0:
@@ -333,6 +340,7 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.btn_edit_dayWeek.setEnabled(True)
             self.ui.btn_delete_dayWeek.setEnabled(True)
             return 1
+
 
     def check_normativ(self):
         result_normativ = self.check_data_in_DB(Queries.get_count_row_normativ_in_DB)
@@ -358,11 +366,13 @@ class WindowBakery(QtWidgets.QMainWindow):
         else:
             return 0
 
+
     def get_spisok_konditerskih_in_DB(self, check_function_in_DB):
         start_date = self.periodDay[0].toString('yyyy-MM-dd')
         end_date = self.periodDay[1].toString('yyyy-MM-dd')
         result_spisok = self.database.get_spisok_konditerskih_in_DB(start_date, end_date, "Выпечка пекарни", check_function_in_DB)
         return result_spisok
+
 
     # Закрываем окно настроек, открываем выбор раздела
     def show_windowAutoorders(self):
@@ -488,23 +498,6 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     period = self.periodDay
     #     self.check_db.thr_deleteKDayWeek(period)
     #     self.proverkaPeriodaKDayWeekFunc()
-    #
-    # def normativ(self):
-    #     self.hide()
-    #     periodDay = self.periodDay
-    #     global WindowNormativEdit
-    #     WindowNormativEdit = Windows.WindowsBakeryNormativEdit.WindowBakeryNormativEdit(periodDay)
-    #     WindowNormativEdit.showMaximized()
-    #
-    # def poiskNormativa(self, periodDay):
-    #     self.check_db.thr_poiskNormativa(periodDay)
-    #     return (otvetNormativ)
-    #
-    # def signal_normativdata(self, value):
-    #     headers = value[0][2]
-    #     data = value[0][3]
-    #     global otvetNormativ
-    #     otvetNormativ = [headers, data]
     #
     # def saveFileDialogNormativ(self):
     #     fileName, _ = QFileDialog.getSaveFileName(
@@ -660,10 +653,3 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     self.setEnabled(True)
     #     self.ui.progressBar.hide()
     #     os.startfile(folderName)  # открытие папки
-    #
-    # def delCookieData(self):
-    #     self.check_db.thr_deleteCookieData()
-    #
-    # def closeEvent(self, event):
-    #     self.delCookieData()
-    #     event.accept()

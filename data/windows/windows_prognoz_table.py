@@ -242,6 +242,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 # Добавление строки в матрицу
                 matrix_table_prognoz.append(row_data)
         save_result = self.database.save_prognoz(matrix_table_prognoz)
+        self.session.set_work_date(self.periodDay[0].toString('yyyy-MM-dd'))  # Сохраняем время периода, скоторым работаем
         print(save_result)
         self.close()
 
