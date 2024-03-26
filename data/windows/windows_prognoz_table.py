@@ -138,12 +138,12 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         self.ui.tableWidget.cellWidget(0, 7).clicked.connect(self.saveAndCloseDef)
         self.ui.tableWidget.resizeColumnsToContents()
         self.ui.tableWidget.cellChanged.connect(lambda row, col: self.on_cell_changed(row, col))
-        #     self.addPeriod(self.periodDay)
 
         # Подключаем слоты к сигналам
         self.signals.success_signal.connect(self.show_success_message)
         self.signals.failed_signal.connect(self.show_error_message)
         self.signals.error_DB_signal.connect(self.show_DB_error_message)
+
 
     def on_cell_changed(self, row, col):
         if row >= 1 and col >= 9:
@@ -158,6 +158,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 self.ui.tableWidget.setItem(row, col, QTableWidgetItem(str(0.0)))
         else:
             return
+
 
     def raschetPrognoz(self):
         buttonClicked = self.sender()
@@ -174,6 +175,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                     self.ui.tableWidget.cellWidget(index.row(), 2).value()) * float(
                     self.ui.tableWidget.cellWidget(0, i).value()), 2)
                 self.ui.tableWidget.setItem(index.row(), i, QTableWidgetItem(str(result)))
+
 
     def saveAndCloseDef(self):
         start_date = self.periodDay[0].toString('yyyy-MM-dd')
@@ -242,9 +244,9 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 # Добавление строки в матрицу
                 matrix_table_prognoz.append(row_data)
         save_result = self.database.save_prognoz(matrix_table_prognoz)
-        self.session.set_work_date(self.periodDay[0].toString('yyyy-MM-dd'))  # Сохраняем время периода, скоторым работаем
         print(save_result)
         self.close()
+
 
     def copyRow(self):
         buttonClicked = self.sender()
@@ -301,6 +303,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             saveZnach[c][rowPosition] = round(float(self.ui.tableWidget.item(rowPosition, c).text()) / float(
                 self.ui.tableWidget.cellWidget(0, c).value()), 2)
 
+
     def deleteRow(self):
         buttonClicked = self.sender()
         index = self.ui.tableWidget.indexAt(buttonClicked.pos())
@@ -313,14 +316,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 saveZnach[c][r] = saveZnach[c].pop(counter)
                 counter += 1
 
-    #
-    # def signal_layout(self, value):
-    #     global layout
-    #     if value != 'Код отсутствует в БД':
-    #         layout = value
-    #     else:
-    #         layout = self.dialogAddLayout()
-    #
+
     # Поиск кода в базе данных
     def poisk_display_kvant_batch(self, kod, name, category):
         result = self.database.poisk_data_tovar(kod)
@@ -336,6 +332,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 return 'Отмена'
         else:
             return result[0]
+
 
     def dialog_add_display_kvant_batch(self, kod, name, category):
         # Создаем диалоговое окно
@@ -379,27 +376,11 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             display = display_line_edit.text()
             kvant = kvant_line_edit.text()
             batch = batch_line_edit.text()
-            kf_ice_sklad = kf_ice_sklad_line_edit.text()
-            otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, kf_ice_sklad)
+            koeff_ice_sklad = kf_ice_sklad_line_edit.text()
+            otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, koeff_ice_sklad)
         return otvet_DB
 
-    #
-    # def addPeriod(self, period):
-    #     self.check_db.thr_addPeriod(period)
-    #
-    # def proverkaPerioda(self, period):
-    #     self.check_db.thr_proverkaPerioda(period)
-    #     return otvetPeriod
-    #
-    # def signal_period(self, value):
-    #     global otvetPeriod
-    #     if value == 'Пусто':
-    #         otvetPeriod = 0
-    #     elif value == 'За этот период есть сформированный прогноз':
-    #         otvetPeriod = 1
-    #     elif value == 'Есть и то и то':
-    #         otvetPeriod = 2
-    #
+
     def show_success_message(self, message):
         pass
 
@@ -412,6 +393,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
     def closeEvent(self, event):
+        self.session.set_work_date(
+            self.periodDay[0].toString('yyyy-MM-dd'))  # Сохраняем время периода, скоторым работаем
         global WindowBakery
         if event.spontaneous():
             reply = QMessageBox()
