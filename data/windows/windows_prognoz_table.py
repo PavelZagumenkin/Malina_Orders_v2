@@ -76,6 +76,9 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                         saveZnach[c][r] = saveZnach[c].pop(counter)
                         counter += 1
                 continue
+            # self.ui.tableWidget.item(row_spin, 5).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            # self.ui.tableWidget.item(row_spin, 6).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            # self.ui.tableWidget.item(row_spin, 7).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
             self.DisplaySpin = QtWidgets.QSpinBox()
             self.KvantSpin = QtWidgets.QSpinBox()
