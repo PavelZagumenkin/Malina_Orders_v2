@@ -1,6 +1,6 @@
 import sys
 
-from PyQt6 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui, QtCore
 import json
 import textwrap
 import pandas as pd
@@ -66,8 +66,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             self.ui.tableWidget.cellWidget(0, col_spin).valueChanged.connect(self.raschetPrognoz)
         for row_spin in range(1, self.ui.tableWidget.rowCount()):
             if self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                              self.ui.tableWidget.item(row_spin, 7).text(),
-                                              self.ui.tableWidget.item(row_spin, 8).text()) == 'Отмена':
+                                              self.ui.tableWidget.item(row_spin, 7).text()) == 'Отмена':
                 self.ui.tableWidget.removeRow(row_spin)
                 for c in range(9, self.ui.tableWidget.columnCount()):
                     del saveZnach[c][row_spin]
@@ -93,23 +92,22 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             self.ui.tableWidget.cellWidget(row_spin, 3).setMaximum(1000)
             self.ui.tableWidget.cellWidget(row_spin, 3).setValue(
                 self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                               self.ui.tableWidget.item(row_spin, 7).text(),
-                                               self.ui.tableWidget.item(row_spin, 8).text())[4])
+                                               self.ui.tableWidget.item(row_spin, 7).text())[4])
             self.ui.tableWidget.cellWidget(row_spin, 3).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 4, self.KvantSpin)
             self.ui.tableWidget.cellWidget(row_spin, 4).setMaximum(1000)
             self.ui.tableWidget.cellWidget(row_spin, 4).setValue(
                 self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                               self.ui.tableWidget.item(row_spin, 7).text(),
-                                               self.ui.tableWidget.item(row_spin, 8).text())[5])
+                                               self.ui.tableWidget.item(row_spin, 7).text())[5])
             self.ui.tableWidget.cellWidget(row_spin, 4).setSingleStep(1)
             self.ui.tableWidget.setCellWidget(row_spin, 5, self.BatchSpin)
             self.ui.tableWidget.cellWidget(row_spin, 5).setMaximum(1000)
             self.ui.tableWidget.cellWidget(row_spin, 5).setValue(
                 self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                               self.ui.tableWidget.item(row_spin, 7).text(),
-                                               self.ui.tableWidget.item(row_spin, 8).text())[6])
+                                               self.ui.tableWidget.item(row_spin, 7).text())[6])
             self.ui.tableWidget.cellWidget(row_spin, 5).setSingleStep(1)
+            self.ui.tableWidget.setItem(row_spin, 8, QTableWidgetItem(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())[3]))
+            self.ui.tableWidget.setItem(row_spin, 7, QTableWidgetItem(self.sravnenie_name(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())[2]))
         for row_button in range(1, self.ui.tableWidget.rowCount()):
             self.copyRowButton = QtWidgets.QPushButton()
             self.ui.tableWidget.setCellWidget(row_button, 0, self.copyRowButton)
@@ -317,11 +315,51 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 counter += 1
 
 
+    def sravnenie_name(self, kod, name):
+        result = self.database.poisk_data_tovar(kod)
+        if result[0][2] != name:
+            self.dialog_select_name(kod, name, result[0][2])
+        return
+
+
+    def dialog_select_name(self, kod, name_excel, name_DB):
+        dialog = QtWidgets.QDialog()
+        layout = QtWidgets.QVBoxLayout()
+        button_yes = QtWidgets.QPushButton('Изменить', dialog)
+        button_yes.clicked.connect(dialog.accept)
+        button_no = QtWidgets.QPushButton('Нет', dialog)
+        button_no.clicked.connect(dialog.reject)
+        layout.addWidget(QtWidgets.QLabel(
+            f'В OLAP-отчете для блюда под кодом: {kod}, наименование\nтовара отличается от того,что хранится в Базе данных.'))
+        olap_name_line_edit = QtWidgets.QLineEdit(dialog)
+        DB_name_line_edit = QtWidgets.QLineEdit(dialog)
+        layout.addWidget(QtWidgets.QLabel('Наименование в OLAP-отчете:'))
+        layout.addWidget(olap_name_line_edit)
+        olap_name_line_edit.setText(name_excel)
+        olap_name_line_edit.setReadOnly(True)
+        layout.addWidget(QtWidgets.QLabel('Наименование в Базе данных:'))
+        layout.addWidget(DB_name_line_edit)
+        DB_name_line_edit.setText(name_DB)
+        DB_name_line_edit.setReadOnly(True)
+        layout.addWidget(QtWidgets.QLabel(
+            f'Изменить наименование в Базе данных?'))
+        layout.addWidget(button_yes)
+        layout.addWidget(button_no)
+        dialog.setLayout(layout)
+        dialog.setWindowTitle('Конфликт наименований товара')
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        dialog.setWindowIcon(icon)
+        # Открываем диалоговое окно и ждем его завершения
+        request = dialog.exec()
+        # Проверям результат обращения к БД
+        print(request)
+
     # Поиск кода в базе данных
-    def poisk_display_kvant_batch(self, kod, name, category):
+    def poisk_display_kvant_batch(self, kod, name):
         result = self.database.poisk_data_tovar(kod)
         if not result:
-            result_request = self.dialog_add_display_kvant_batch(kod, name, category)
+            result_request = self.dialog_add_display_kvant_batch(kod, name)
             if result_request == 'Отмена':
                 return 'Отмена'
             elif result_request == 'Товар успешно зарегистрирован':
@@ -334,10 +372,13 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             return result[0]
 
 
-    def dialog_add_display_kvant_batch(self, kod, name, category):
+    def dialog_add_display_kvant_batch(self, kod, name):
         # Создаем диалоговое окно
         dialog = QtWidgets.QDialog()
         layout = QtWidgets.QVBoxLayout()
+        kod_line_edit = QtWidgets.QLineEdit(dialog)
+        name_line_edit = QtWidgets.QLineEdit(dialog)
+        category_combobox = QtWidgets.QComboBox(dialog)
         display_line_edit = QtWidgets.QLineEdit(dialog)
         display_line_edit.setValidator(QtGui.QIntValidator())
         kvant_line_edit = QtWidgets.QLineEdit(dialog)
@@ -350,6 +391,18 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         button_ok.clicked.connect(dialog.accept)
         layout.addWidget(QtWidgets.QLabel(
             f'Установите необходимые значения для товара\nотсутствующего в БД, код: {kod}, наименование: {name}'))
+        layout.addWidget(QtWidgets.QLabel('Код:'))
+        layout.addWidget(kod_line_edit)
+        kod_line_edit.setText(kod)
+        kod_line_edit.setReadOnly(True)
+        layout.addWidget(QtWidgets.QLabel('Наименование:'))
+        layout.addWidget(name_line_edit)
+        name_line_edit.setText(name)
+        layout.addWidget(QtWidgets.QLabel('Выберите категорию:'))
+        layout.addWidget(category_combobox)
+        category_combobox.addItems(self.database.get_spisok_category_in_DB())
+        category_combobox.wheelEvent = lambda event: None
+        category_combobox.setCurrentText('Выпечка пекарни')
         layout.addWidget(QtWidgets.QLabel('Выкладка:'))
         layout.addWidget(display_line_edit)
         display_line_edit.setText('1')
@@ -373,11 +426,13 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         # Проверям результат обращения к БД
         otvet_DB = "Отмена"
         if request == 1:
+            kod = kod_line_edit.text()
+            name = name_line_edit.text()
+            category = category_combobox.currentText()
             display = display_line_edit.text()
             kvant = kvant_line_edit.text()
             batch = batch_line_edit.text()
             koeff_ice_sklad = koeff_ice_sklad_line_edit.text()
-            print(kod, name, category, display, kvant, batch, koeff_ice_sklad)
             otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, koeff_ice_sklad)
         print(otvet_DB)
         return otvet_DB

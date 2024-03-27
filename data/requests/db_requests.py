@@ -329,3 +329,15 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def get_spisok_category_in_DB(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_spisok_category_in_DB())
+                intermediate_result = cursor.fetchall()
+                result = [item[0] for item in intermediate_result]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

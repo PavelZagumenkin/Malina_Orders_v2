@@ -229,3 +229,11 @@ class Queries:
             FROM koeff_day_week
             WHERE period = %s AND category = %s;
             '''
+
+    @staticmethod
+    # Получить список категорий
+    def get_spisok_category_in_DB():
+        return '''
+                SELECT DISTINCT category_dishes
+                FROM category_dishes
+                '''
