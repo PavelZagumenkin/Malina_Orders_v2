@@ -341,3 +341,13 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def update_name_dishe(self, kod, new_name):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.update_name_dishe_in_DB(), (new_name, kod))
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return f"Наименование товара код: {kod} успешно изменено на {new_name}."

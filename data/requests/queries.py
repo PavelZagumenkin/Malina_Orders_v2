@@ -237,3 +237,12 @@ class Queries:
                 SELECT DISTINCT category_dishes
                 FROM category_dishes
                 '''
+
+    @staticmethod
+    # Установить новую роль
+    def update_name_dishe_in_DB():
+        return '''
+        UPDATE dishes
+        SET name = %s
+        WHERE kod = %s;
+        '''

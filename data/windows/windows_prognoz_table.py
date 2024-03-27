@@ -107,7 +107,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                                                self.ui.tableWidget.item(row_spin, 7).text())[6])
             self.ui.tableWidget.cellWidget(row_spin, 5).setSingleStep(1)
             self.ui.tableWidget.setItem(row_spin, 8, QTableWidgetItem(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())[3]))
-            self.ui.tableWidget.setItem(row_spin, 7, QTableWidgetItem(self.sravnenie_name(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())[2]))
+            self.ui.tableWidget.setItem(row_spin, 7, QTableWidgetItem(self.sravnenie_name(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())))
         for row_button in range(1, self.ui.tableWidget.rowCount()):
             self.copyRowButton = QtWidgets.QPushButton()
             self.ui.tableWidget.setCellWidget(row_button, 0, self.copyRowButton)
@@ -318,8 +318,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
     def sravnenie_name(self, kod, name):
         result = self.database.poisk_data_tovar(kod)
         if result[0][2] != name:
-            self.dialog_select_name(kod, name, result[0][2])
-        return
+            return self.dialog_select_name(kod, name, result[0][2])
+        return name
 
 
     def dialog_select_name(self, kod, name_excel, name_DB):
@@ -353,7 +353,15 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         # Открываем диалоговое окно и ждем его завершения
         request = dialog.exec()
         # Проверям результат обращения к БД
-        print(request)
+        if request == 0:
+            return name_DB
+        else:
+            result = self.database.update_name_dishe(kod, name_excel)
+            if "успешно изменено" in result:
+                return name_excel
+            else:
+                self.show_DB_error_message(result)
+                return name_DB
 
     # Поиск кода в базе данных
     def poisk_display_kvant_batch(self, kod, name):
