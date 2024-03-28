@@ -76,9 +76,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                         saveZnach[c][r] = saveZnach[c].pop(counter)
                         counter += 1
                 continue
-            # self.ui.tableWidget.item(row_spin, 5).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            # self.ui.tableWidget.item(row_spin, 6).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            # self.ui.tableWidget.item(row_spin, 7).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            self.ui.tableWidget.item(row_spin, 6).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
             self.DisplaySpin = QtWidgets.QSpinBox()
             self.KvantSpin = QtWidgets.QSpinBox()
@@ -110,7 +108,9 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                                                self.ui.tableWidget.item(row_spin, 7).text())[6])
             self.ui.tableWidget.cellWidget(row_spin, 5).setSingleStep(1)
             self.ui.tableWidget.setItem(row_spin, 8, QTableWidgetItem(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())[3]))
+            self.ui.tableWidget.item(row_spin, 8).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tableWidget.setItem(row_spin, 7, QTableWidgetItem(self.sravnenie_name(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())))
+            self.ui.tableWidget.item(row_spin, 7).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
         for row_button in range(1, self.ui.tableWidget.rowCount()):
             self.copyRowButton = QtWidgets.QPushButton()
             self.ui.tableWidget.setCellWidget(row_button, 0, self.copyRowButton)
