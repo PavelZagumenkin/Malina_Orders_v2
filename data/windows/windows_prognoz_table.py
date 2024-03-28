@@ -317,6 +317,28 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 saveZnach[c][r] = saveZnach[c].pop(counter)
                 counter += 1
 
+    def dialog_copy_row(self):
+        dialog = QtWidgets.QDialog()
+        layout = QtWidgets.QVBoxLayout()
+        button_select_new_batch = QtWidgets.QPushButton('Зарегистрировать новое блюдо', dialog)
+        button_select_new_batch.clicked.connect(lambda: self.dialog_add_display_kvant_batch(kod, name, edit=False))
+        button_select_from_existing = QtWidgets.QPushButton('Выбрать из существующих', dialog)
+        button_select_from_existing.clicked.connect(lambda: self.dialog_select_from_existing())
+        button_cancel = QtWidgets.QPushButton('Отменить операцию копирования', dialog)
+        button_cancel.clicked.connect(dialog.reject)
+        layout.addWidget(QtWidgets.QLabel(
+            f'Вы хотите применить продажи к новому блюду или уже существующему?'))
+        layout.addWidget(button_select_new_batch)
+        layout.addWidget(button_select_from_existing)
+        layout.addWidget(button_cancel)
+        dialog.setLayout(layout)
+        dialog.setWindowTitle('Примите решение по копированию строки')
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        dialog.setWindowIcon(icon)
+        # Открываем диалоговое окно и ждем его завершения
+        request = dialog.exec()
+
 
     def sravnenie_name(self, kod, name):
         result = self.database.poisk_data_tovar(kod)
@@ -370,7 +392,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
     def poisk_display_kvant_batch(self, kod, name):
         result = self.database.poisk_data_tovar(kod)
         if not result:
-            result_request = self.dialog_add_display_kvant_batch(kod, name)
+            result_request = self.dialog_add_display_kvant_batch(kod, name, edit=False)
             if result_request == 'Отмена':
                 return 'Отмена'
             elif result_request == 'Товар успешно зарегистрирован':
@@ -383,7 +405,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             return result[0]
 
 
-    def dialog_add_display_kvant_batch(self, kod, name):
+    def dialog_add_display_kvant_batch(self, kod, name, edit):
         # Создаем диалоговое окно
         dialog = QtWidgets.QDialog()
         layout = QtWidgets.QVBoxLayout()
@@ -405,7 +427,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         layout.addWidget(QtWidgets.QLabel('Код:'))
         layout.addWidget(kod_line_edit)
         kod_line_edit.setText(kod)
-        kod_line_edit.setReadOnly(True)
+        if edit == False:
+            kod_line_edit.setReadOnly(True)
         layout.addWidget(QtWidgets.QLabel('Наименование:'))
         layout.addWidget(name_line_edit)
         name_line_edit.setText(name)
