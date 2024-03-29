@@ -239,10 +239,30 @@ class Queries:
                 '''
 
     @staticmethod
-    # Установить новую роль
+    # Изменить наименование блюда
     def update_name_dishe_in_DB():
         return '''
         UPDATE dishes
         SET name = %s
         WHERE kod = %s;
+        '''
+
+    @staticmethod
+    # Получить список всех блюд
+    def spisok_kods_dishes_in_DB():
+        return '''
+        SELECT * FROM dishes;
+        '''
+
+    @staticmethod
+    def spisok_name_dishes_in_DB(placeholders):
+        return f'''
+        SELECT name FROM dishes WHERE kod IN ({placeholders})
+        '''
+
+    @staticmethod
+    # Получить все блюда
+    def get_kod_dishe_in_DB():
+        return '''
+        SELECT * FROM dishes WHERE name = %s;
         '''

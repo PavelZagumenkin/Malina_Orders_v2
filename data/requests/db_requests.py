@@ -351,3 +351,30 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return f"Наименование товара код: {kod} успешно изменено на {new_name}."
+
+    def spisok_names_dishes_in_DB(self, spisok_kods_in_table):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.spisok_kods_dishes_in_DB())
+                intermediate_result = cursor.fetchall()
+                intermediate_result = [row[1] for row in intermediate_result]
+                result_spisok_kods = [x for x in intermediate_result if x not in spisok_kods_in_table]
+                placeholders = ', '.join(['%s' for _ in result_spisok_kods])
+                cursor.execute(Queries.spisok_name_dishes_in_DB(placeholders), (result_spisok_kods))
+                spisok_names_in_DB = [row[0] for row in cursor.fetchall()]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return spisok_names_in_DB
+
+    def poisk_kod_dishe_in_DB(self, name):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_kod_dishe_in_DB(), (name,))
+                result = cursor.fetchone()[1]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

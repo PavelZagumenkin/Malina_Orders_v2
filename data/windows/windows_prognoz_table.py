@@ -23,6 +23,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         self.database = Database()
         self.signals = Signals()
         self.session = Session.get_instance()  # Получение экземпляра класса Session
+        self.kod = ''
+        self.name = ''
         self.periodDay = periodDay
         self.column_title = ['', '', 'Кф. товара', 'Выкладка', 'Квант поставки', 'Замес', 'Код блюда', 'Блюдо',
                              'Категория блюда']
@@ -250,59 +252,66 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
 
 
     def copyRow(self):
-        buttonClicked = self.sender()
-        index = self.ui.tableWidget.indexAt(buttonClicked.pos())
-        rowPosition = self.ui.tableWidget.rowCount()
-        self.ui.tableWidget.insertRow(rowPosition)
-        self.copyRowButton = QtWidgets.QPushButton()
-        self.ui.tableWidget.setCellWidget(rowPosition, 0, self.copyRowButton)
-        self.ui.tableWidget.cellWidget(rowPosition, 0).setText('')
-        iconCopy = QtGui.QIcon()
-        iconCopy.addPixmap(QtGui.QPixmap("data/images/copy.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        self.ui.tableWidget.cellWidget(rowPosition, 0).setIcon(iconCopy)
-        self.ui.tableWidget.cellWidget(rowPosition, 0).clicked.connect(self.copyRow)
-        self.deleteRowButton = QtWidgets.QPushButton()
-        self.ui.tableWidget.setCellWidget(rowPosition, 1, self.deleteRowButton)
-        self.ui.tableWidget.cellWidget(rowPosition, 1).setText('')
-        iconCross = QtGui.QIcon()
-        iconCross.addPixmap(QtGui.QPixmap("data/images/cross.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        self.ui.tableWidget.cellWidget(rowPosition, 1).setIcon(iconCross)
-        self.ui.tableWidget.cellWidget(rowPosition, 1).clicked.connect(self.deleteRow)
-        self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
-        self.DisplaySpin = QtWidgets.QSpinBox()
-        self.KvantSpin = QtWidgets.QSpinBox()
-        self.BatchSpin = QtWidgets.QSpinBox()
-        self.KFTovarDSpin.wheelEvent = lambda event: None
-        self.DisplaySpin.wheelEvent = lambda event: None
-        self.KvantSpin.wheelEvent = lambda event: None
-        self.BatchSpin.wheelEvent = lambda event: None
-        self.ui.tableWidget.setCellWidget(rowPosition, 2, self.KFTovarDSpin)
-        self.ui.tableWidget.cellWidget(rowPosition, 2).setValue(1.00)
-        self.ui.tableWidget.cellWidget(rowPosition, 2).setSingleStep(0.01)
-        self.ui.tableWidget.cellWidget(rowPosition, 2).valueChanged.connect(self.raschetPrognoz)
-        self.ui.tableWidget.setCellWidget(rowPosition, 3, self.DisplaySpin)
-        self.ui.tableWidget.cellWidget(rowPosition, 3).setMaximum(1000)
-        self.ui.tableWidget.cellWidget(rowPosition, 3).setSingleStep(1)
-        self.ui.tableWidget.setCellWidget(rowPosition, 4, self.KvantSpin)
-        self.ui.tableWidget.cellWidget(rowPosition, 4).setMaximum(1000)
-        self.ui.tableWidget.cellWidget(rowPosition, 4).setSingleStep(1)
-        self.ui.tableWidget.setCellWidget(rowPosition, 5, self.BatchSpin)
-        self.ui.tableWidget.cellWidget(rowPosition, 5).setMaximum(1000)
-        self.ui.tableWidget.cellWidget(rowPosition, 5).setSingleStep(1)
-        for c in range(6, 8):
-            if c == 6:
-                self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem('Код'))
-            elif c == 7:
-                self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem('Введите название блюда'))
-        for c in range(8, 9):
-            self.ui.tableWidget.setItem(rowPosition, c,
-                                        QTableWidgetItem(self.ui.tableWidget.item(index.row(), c).text()))
-        for c in range(9, self.ui.tableWidget.columnCount()):
-            self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem(
-                str(round(saveZnach[c][index.row()] * float(self.ui.tableWidget.cellWidget(0, c).value()), 2))))
-        for c in range(9, self.ui.tableWidget.columnCount()):
-            saveZnach[c][rowPosition] = round(float(self.ui.tableWidget.item(rowPosition, c).text()) / float(
-                self.ui.tableWidget.cellWidget(0, c).value()), 2)
+        otvet_dialog_copy_row = self.dialog_copy_row()
+        if otvet_dialog_copy_row == 0:
+            return
+        else:
+            kod = self.kod
+            name = self.name
+            data_dishe = self.poisk_display_kvant_batch(kod, name)
+            buttonClicked = self.sender()
+            index = self.ui.tableWidget.indexAt(buttonClicked.pos())
+            rowPosition = self.ui.tableWidget.rowCount()
+            self.ui.tableWidget.insertRow(rowPosition)
+            self.copyRowButton = QtWidgets.QPushButton()
+            self.ui.tableWidget.setCellWidget(rowPosition, 0, self.copyRowButton)
+            self.ui.tableWidget.cellWidget(rowPosition, 0).setText('')
+            iconCopy = QtGui.QIcon()
+            iconCopy.addPixmap(QtGui.QPixmap("data/images/copy.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            self.ui.tableWidget.cellWidget(rowPosition, 0).setIcon(iconCopy)
+            self.ui.tableWidget.cellWidget(rowPosition, 0).clicked.connect(self.copyRow)
+            self.deleteRowButton = QtWidgets.QPushButton()
+            self.ui.tableWidget.setCellWidget(rowPosition, 1, self.deleteRowButton)
+            self.ui.tableWidget.cellWidget(rowPosition, 1).setText('')
+            iconCross = QtGui.QIcon()
+            iconCross.addPixmap(QtGui.QPixmap("data/images/cross.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            self.ui.tableWidget.cellWidget(rowPosition, 1).setIcon(iconCross)
+            self.ui.tableWidget.cellWidget(rowPosition, 1).clicked.connect(self.deleteRow)
+            self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
+            self.DisplaySpin = QtWidgets.QSpinBox()
+            self.KvantSpin = QtWidgets.QSpinBox()
+            self.BatchSpin = QtWidgets.QSpinBox()
+            self.KFTovarDSpin.wheelEvent = lambda event: None
+            self.DisplaySpin.wheelEvent = lambda event: None
+            self.KvantSpin.wheelEvent = lambda event: None
+            self.BatchSpin.wheelEvent = lambda event: None
+            self.ui.tableWidget.setCellWidget(rowPosition, 2, self.KFTovarDSpin)
+            self.ui.tableWidget.cellWidget(rowPosition, 2).setValue(1.00)
+            self.ui.tableWidget.cellWidget(rowPosition, 2).setSingleStep(0.01)
+            self.ui.tableWidget.cellWidget(rowPosition, 2).valueChanged.connect(self.raschetPrognoz)
+            self.ui.tableWidget.setCellWidget(rowPosition, 3, self.DisplaySpin)
+            self.ui.tableWidget.cellWidget(rowPosition, 3).setValue(data_dishe[4])
+            self.ui.tableWidget.cellWidget(rowPosition, 3).setMaximum(1000)
+            self.ui.tableWidget.cellWidget(rowPosition, 3).setSingleStep(1)
+            self.ui.tableWidget.setCellWidget(rowPosition, 4, self.KvantSpin)
+            self.ui.tableWidget.cellWidget(rowPosition, 4).setValue(data_dishe[5])
+            self.ui.tableWidget.cellWidget(rowPosition, 4).setMaximum(1000)
+            self.ui.tableWidget.cellWidget(rowPosition, 4).setSingleStep(1)
+            self.ui.tableWidget.setCellWidget(rowPosition, 5, self.BatchSpin)
+            self.ui.tableWidget.cellWidget(rowPosition, 5).setValue(data_dishe[6])
+            self.ui.tableWidget.cellWidget(rowPosition, 5).setMaximum(1000)
+            self.ui.tableWidget.cellWidget(rowPosition, 5).setSingleStep(1)
+            for c in range(6, 9):
+                if c == 6:
+                    self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem(data_dishe[1]))
+                elif c == 7:
+                    self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem(data_dishe[2]))
+                elif c == 8:
+                    self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem(data_dishe[3]))
+            for c in range(9, self.ui.tableWidget.columnCount()):
+                self.ui.tableWidget.setItem(rowPosition, c, QTableWidgetItem(str(round(saveZnach[c][index.row()] * float(self.ui.tableWidget.cellWidget(0, c).value()), 2))))
+            for c in range(9, self.ui.tableWidget.columnCount()):
+                saveZnach[c][rowPosition] = round(float(self.ui.tableWidget.item(rowPosition, c).text()) / float(self.ui.tableWidget.cellWidget(0, c).value()), 2)
 
 
     def deleteRow(self):
@@ -318,26 +327,88 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 counter += 1
 
     def dialog_copy_row(self):
-        dialog = QtWidgets.QDialog()
+        dialog_copy = QtWidgets.QDialog()
         layout = QtWidgets.QVBoxLayout()
-        button_select_new_batch = QtWidgets.QPushButton('Зарегистрировать новое блюдо', dialog)
-        button_select_new_batch.clicked.connect(lambda: self.dialog_add_display_kvant_batch(kod, name, edit=False))
-        button_select_from_existing = QtWidgets.QPushButton('Выбрать из существующих', dialog)
-        button_select_from_existing.clicked.connect(lambda: self.dialog_select_from_existing())
-        button_cancel = QtWidgets.QPushButton('Отменить операцию копирования', dialog)
-        button_cancel.clicked.connect(dialog.reject)
+        button_select_new_batch = QtWidgets.QPushButton('Зарегистрировать новое блюдо', dialog_copy)
+        button_select_new_batch.clicked.connect(lambda: self.handle_button_click('Новое блюдо', dialog_copy))
+        button_select_from_existing = QtWidgets.QPushButton('Выбрать из существующих', dialog_copy)
+        button_select_from_existing.clicked.connect(lambda: self.handle_button_click('Существующее блюдо', dialog_copy))
+        button_cancel = QtWidgets.QPushButton('Отменить операцию копирования', dialog_copy)
+        button_cancel.clicked.connect(dialog_copy.reject)
         layout.addWidget(QtWidgets.QLabel(
             f'Вы хотите применить продажи к новому блюду или уже существующему?'))
         layout.addWidget(button_select_new_batch)
         layout.addWidget(button_select_from_existing)
         layout.addWidget(button_cancel)
-        dialog.setLayout(layout)
-        dialog.setWindowTitle('Примите решение по копированию строки')
+        dialog_copy.setLayout(layout)
+        dialog_copy.setWindowTitle('Примите решение по копированию строки')
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        dialog.setWindowIcon(icon)
+        dialog_copy.setWindowIcon(icon)
         # Открываем диалоговое окно и ждем его завершения
-        request = dialog.exec()
+        request = dialog_copy.exec()
+        return request
+
+    def handle_button_click(self, button_text, dialog_copy):
+        if button_text == 'Новое блюдо':
+            result = self.dialog_add_display_kvant_batch(kod='Введите код блюда', name='Введите наименование блюда', edit=True)
+            if result == 'Товар успешно зарегистрирован':
+                return dialog_copy.accept()
+            elif result == 'Отмена':
+                return
+            else:
+                self.show_DB_error_message(result)
+        else:
+            result = self.dialog_select_from_existing()
+            if result == 'Успешно':
+                return dialog_copy.accept()
+            elif result == 'Отмена':
+                return
+
+
+    def dialog_select_from_existing(self):
+        dialog = QtWidgets.QDialog()
+        layout = QtWidgets.QVBoxLayout()
+        button_yes = QtWidgets.QPushButton('Выбрать', dialog)
+        button_yes.clicked.connect(dialog.accept)
+        button_cancel = QtWidgets.QPushButton('Отмена', dialog)
+        button_cancel.clicked.connect(dialog.reject)
+        spisok_kods_dishes_in_table = []
+        for row in range (1, self.ui.tableWidget.rowCount()):
+            spisok_kods_dishes_in_table.append(self.ui.tableWidget.item(row, 6).text())
+        spisok_names_dishes_in_DB = self.spisok_dishes(spisok_kods_dishes_in_table)
+        if 'Ошибка' in spisok_names_dishes_in_DB:
+            self.show_DB_error_message(spisok_names_dishes_in_DB)
+        else:
+            spisok_names_dishe_combobox = QtWidgets.QComboBox(dialog)
+            spisok_names_dishe_combobox.addItems(spisok_names_dishes_in_DB)
+            layout.addWidget(QtWidgets.QLabel(
+                f'Выберите из выпадающего списка блюдо,\nдля которого хотите применить продажи из выбранной строки'))
+            layout.addWidget(spisok_names_dishe_combobox)
+            layout.addWidget(button_yes)
+            layout.addWidget(button_cancel)
+            dialog.setLayout(layout)
+            dialog.setWindowTitle('Конфликт наименований товара')
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            dialog.setWindowIcon(icon)
+            # Открываем диалоговое окно и ждем его завершения
+            request = dialog.exec()
+            # Проверям результат обращения к БД
+            if request == 0:
+                return 'Отмена'
+            else:
+                self.kod = self.poisk_kod_dishe_in_DB_po_name(spisok_names_dishe_combobox.currentText())
+                self.name = spisok_names_dishe_combobox.currentText()
+                return 'Успешно'
+
+    def poisk_kod_dishe_in_DB_po_name(self, name):
+        result = self.database.poisk_kod_dishe_in_DB(name)
+        return result
+
+    def spisok_dishes(self, spisok_kods_dishes_in_table):
+        result = self.database.spisok_names_dishes_in_DB(spisok_kods_dishes_in_table)
+        return result
 
 
     def sravnenie_name(self, kod, name):
@@ -423,7 +494,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         button_ok = QtWidgets.QPushButton('Добавить', dialog)
         button_ok.clicked.connect(dialog.accept)
         layout.addWidget(QtWidgets.QLabel(
-            f'Установите необходимые значения для товара\nотсутствующего в БД, код: {kod}, наименование: {name}'))
+            f'Установите необходимые значения\nдля товара отсутствующего в БД'))
         layout.addWidget(QtWidgets.QLabel('Код:'))
         layout.addWidget(kod_line_edit)
         kod_line_edit.setText(kod)
@@ -432,6 +503,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         layout.addWidget(QtWidgets.QLabel('Наименование:'))
         layout.addWidget(name_line_edit)
         name_line_edit.setText(name)
+        if edit == False:
+            name_line_edit.setReadOnly(True)
         layout.addWidget(QtWidgets.QLabel('Выберите категорию:'))
         layout.addWidget(category_combobox)
         category_combobox.addItems(self.database.get_spisok_category_in_DB())
@@ -468,7 +541,8 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
             batch = batch_line_edit.text()
             koeff_ice_sklad = koeff_ice_sklad_line_edit.text()
             otvet_DB = self.database.insert_data_tovar(kod, name, category, display, kvant, batch, koeff_ice_sklad)
-        print(otvet_DB)
+            self.kod = kod
+            self.name = name
         return otvet_DB
 
 
