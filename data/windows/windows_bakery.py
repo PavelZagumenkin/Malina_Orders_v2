@@ -2,7 +2,6 @@ from datetime import datetime
 import os
 import pandas as pd
 import shutil
-import json
 from math import ceil
 
 from PyQt6 import QtCore, QtWidgets, QtGui
@@ -16,8 +15,9 @@ from data.active_session import Session
 import data.windows.windows_autoorders
 import data.windows.windows_prognoz_table
 import data.windows.windows_koeff_day_week_table
+import data.windows.windows_prognoz_view
+import data.windows.windows_koeff_day_week_view
 # import Windows.WindowsBakeryTablesEdit
-# import Windows.WindowsBakeryTablesView
 # import Windows.WindowsBakeryTablesRedact
 # import Windows.WindowsBakeryTablesDayWeekEdit
 # import Windows.WindowsBakeryTablesDayWeekView
@@ -59,10 +59,10 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.ui.btn_path_dayWeek.clicked.connect(self.olap_dayWeek_xlsx)
         self.ui.btn_set_prognoz.clicked.connect(self.koeff_prognoz)
         self.ui.btn_set_dayWeek.clicked.connect(self.koeff_dayWeek)
-        # self.ui.btn_prosmotrPrognoz.clicked.connect(self.prognozTablesView)
+        self.ui.btn_prosmotr_prognoz.clicked.connect(self.prognozTablesView)
         # self.ui.btn_editPrognoz.clicked.connect(self.prognozTablesRedact)
         # self.ui.btn_deletePrognoz.clicked.connect(self.dialogDeletePrognoz)
-        # self.ui.btn_prosmotr_koeff_DayWeek.clicked.connect(self.dayWeekTablesView)
+        self.ui.btn_prosmotr_dayWeek.clicked.connect(self.dayWeekTablesView)
         # self.ui.btn_edit_koeff_DayWeek.clicked.connect(self.dayWeekTablesRedact)
         # self.ui.btn_delete_koeff_DayWeek.clicked.connect(self.dialogDeleteKDayWeek)
         # self.ui.btn_Normativ.clicked.connect(self.normativ)
@@ -103,6 +103,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.signals.success_signal.connect(self.show_success_message)
         self.signals.failed_signal.connect(self.show_error_message)
         self.signals.error_DB_signal.connect(self.show_DB_error_message)
+
 
     # Получаем список кондитерских и устанавливаем чек-боксы
     def install_check_box(self):
@@ -160,11 +161,13 @@ class WindowBakery(QtWidgets.QMainWindow):
             funct_bakery(self)
         return wrapper
 
+
     # Функция нажатия кнопки "Установить" для OLAP отчета по продажам выпечки
     @check_prognoz_OLAP
     def koeff_prognoz(self):
         path_OLAP_prodagi = self.ui.lineEdit_OLAP_prodagi.text()
         self.prognoz_table_open(path_OLAP_prodagi)
+
 
     # Проверка на правильность OLAP отчета по продажам выпечки и запуск таблицы с коэффициентами
     def prognoz_table_open(self, path_OLAP_prodagi):
@@ -302,7 +305,7 @@ class WindowBakery(QtWidgets.QMainWindow):
             points = points_in_DB
         self.hide()
         global windows_koeff_day_week_set
-        windows_koeff_day_week_set = data.windows.windows_koeff_day_week_table.WindowKoeffDayWeek(wb_OLAP_dayWeek, self.periodDay, points)
+        windows_koeff_day_week_set = data.windows.windows_koeff_day_week_table.WindowKoeffDayWeekSet(wb_OLAP_dayWeek, self.periodDay, points)
         windows_koeff_day_week_set.showMaximized()
 
 
@@ -398,12 +401,13 @@ class WindowBakery(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
 
-    # def prognozTablesView(self):
-    #     self.hide()
-    #     periodDay = self.periodDay
-    #     global WindowBakeryTablesView
-    #     WindowBakeryTablesView = Windows.WindowsBakeryTablesView.WindowBakeryTableView(periodDay)
-    #     WindowBakeryTablesView.showMaximized()
+    def prognozTablesView(self):
+        self.hide()
+        periodDay = self.periodDay
+        category = 'Выпечка пекарни'
+        global WindowBakeryTablesView
+        WindowBakeryTablesView = data.windows.windows_prognoz_view.WindowPrognozTablesView(periodDay, category)
+        WindowBakeryTablesView.showMaximized()
     #
     # def prognozTablesRedact(self):
     #     self.normativTablesDelete()
@@ -478,12 +482,13 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     self.proverkaNormativaFunc()
     #
     #
-    # def dayWeekTablesView(self):
-    #     self.hide()
-    #     global WindowBakeryTablesDayWeekView
-    #     WindowBakeryTablesDayWeekView = Windows.WindowsBakeryTablesDayWeekView.WindowBakeryTableDayWeekView(
-    #         self.periodDay)
-    #     WindowBakeryTablesDayWeekView.showMaximized()
+    def dayWeekTablesView(self):
+        self.hide()
+        periodDay = self.periodDay
+        category = 'Выпечка пекарни'
+        global WindowBakeryTablesDayWeekView
+        WindowBakeryTablesDayWeekView = data.windows.windows_koeff_day_week_view.WindowKoeffDayWeekView(periodDay, category)
+        WindowBakeryTablesDayWeekView.showMaximized()
     #
     # def dayWeekTablesRedact(self):
     #     self.normativTablesDelete()

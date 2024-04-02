@@ -12,7 +12,7 @@ from data.active_session import Session
 from data.ui.autozakaz_table import Ui_autozakaz_table
 import data.windows.windows_bakery
 
-class WindowKoeffDayWeek(QtWidgets.QMainWindow):
+class WindowKoeffDayWeekSet(QtWidgets.QMainWindow):
     def __init__(self, wb_OLAP_dayWeek, periodDay, points):
         super().__init__()
         self.ui = Ui_autozakaz_table()

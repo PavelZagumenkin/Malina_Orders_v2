@@ -378,3 +378,15 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+    def get_prognoz_data_in_DB(self, start_day, end_day, category):
+        try:
+            with self.connection.cursor() as cursor:
+                period = DateRange(start_day, end_day)
+                cursor.execute(Queries.get_prognoz_data_in_DB(), (period, category))
+                result = cursor.fetchall()
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

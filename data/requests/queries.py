@@ -266,3 +266,11 @@ class Queries:
         return '''
         SELECT * FROM dishes WHERE name = %s;
         '''
+
+    @staticmethod
+    # Получить прогноз продаж за период, выбранной категории
+    def get_prognoz_data_in_DB():
+        return '''
+            SELECT * FROM prognoz
+            WHERE period = %s AND category = %s;
+            '''
