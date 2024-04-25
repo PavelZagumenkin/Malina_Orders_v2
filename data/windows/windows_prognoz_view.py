@@ -43,23 +43,30 @@ class WindowPrognozTablesView(QtWidgets.QMainWindow):
         self.ui.tableWidget.horizontalHeader().setFont(self.font)
         self.ui.tableWidget.setItem(0, 6, QTableWidgetItem("Кф. кондитерской"))
         self.ui.tableWidget.item(0, 6).setFont(self.font)
-        for row in range(1, self.ui.tableWidget.rowCount()):
-            self.ui.tableWidget.setItem(row, 4, QTableWidgetItem(str(unique_dishes[row-1])))
-            dishe_table_kod = self.ui.tableWidget.item(row, 4).text()
-            for spisok in prognoz_data:
-                if spisok[3] == dishe_table_kod:
-                    self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(str(spisok[5])))
-                    self.ui.tableWidget.setItem(row,1, QTableWidgetItem(str(spisok[6])))
-                    self.ui.tableWidget.setItem(row, 2, QTableWidgetItem(str(spisok[7])))
-                    self.ui.tableWidget.setItem(row, 3, QTableWidgetItem(str(spisok[8])))
-                    self.ui.tableWidget.setItem(row, 5, QTableWidgetItem(str(self.database.poisk_data_tovar(dishe_table_kod)[0][2])))
-                    self.ui.tableWidget.setItem(row, 6, QTableWidgetItem(str(spisok[4])))
-                    break
-            for col in range(7, self.ui.tableWidget.columnCount()):
+        for row in range(0, self.ui.tableWidget.rowCount()):
+            if row > 0:
+                self.ui.tableWidget.setItem(row, 4, QTableWidgetItem(str(unique_dishes[row-1])))
+                dishe_table_kod = self.ui.tableWidget.item(row, 4).text()
                 for spisok in prognoz_data:
-                    if spisok[3] == dishe_table_kod and spisok[2] == self.ui.tableWidget.horizontalHeaderItem(col).text():
-                        self.ui.tableWidget.setItem(row, col, QTableWidgetItem(str(spisok[11])))
+                    if spisok[3] == dishe_table_kod:
+                        self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(str(spisok[5])))
+                        self.ui.tableWidget.setItem(row,1, QTableWidgetItem(str(spisok[6])))
+                        self.ui.tableWidget.setItem(row, 2, QTableWidgetItem(str(spisok[7])))
+                        self.ui.tableWidget.setItem(row, 3, QTableWidgetItem(str(spisok[8])))
+                        self.ui.tableWidget.setItem(row, 5, QTableWidgetItem(str(self.database.poisk_data_tovar(dishe_table_kod)[0][2])))
+                        self.ui.tableWidget.setItem(row, 6, QTableWidgetItem(str(spisok[4])))
                         break
+                for col in range(7, self.ui.tableWidget.columnCount()):
+                    for spisok in prognoz_data:
+                        if spisok[3] == dishe_table_kod and spisok[2] == self.ui.tableWidget.horizontalHeaderItem(col).text():
+                            self.ui.tableWidget.setItem(row, col, QTableWidgetItem(str(spisok[11])))
+                            break
+            else:
+                for col in range(7, self.ui.tableWidget.columnCount()):
+                    for spisok in prognoz_data:
+                        if spisok[2] == self.ui.tableWidget.horizontalHeaderItem(col).text():
+                            self.ui.tableWidget.setItem(row, col, QTableWidgetItem(str(spisok[9])))
+                            break
         self.wrap = []
         for header in self.column_title:
             wrap = textwrap.fill(header, width=10)
@@ -74,8 +81,6 @@ class WindowPrognozTablesView(QtWidgets.QMainWindow):
                     item = QtWidgets.QTableWidgetItem()
                     self.ui.tableWidget.setItem(row, col, item)
                     self.ui.tableWidget.item(row, col).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-
-
 
 
         # Подключаем слоты к сигналам
