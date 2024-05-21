@@ -13,12 +13,12 @@ from data.signals import Signals
 from data.active_session import Session
 
 import data.windows.windows_autoorders
-import data.windows.windows_prognoz_table
-import data.windows.windows_koeff_day_week_table
+import data.windows.windows_prognoz_set
 import data.windows.windows_prognoz_view
-import data.windows.windows_koeff_day_week_view
 import data.windows.windows_prognoz_edit
-# import Windows.WindowsBakeryTablesRedact
+import data.windows.windows_koeff_day_week_set
+import data.windows.windows_koeff_day_week_view
+
 # import Windows.WindowsBakeryTablesDayWeekEdit
 # import Windows.WindowsBakeryTablesDayWeekView
 # import Windows.WindowsBakeryTablesDayWeekRedact
@@ -55,15 +55,15 @@ class WindowBakery(QtWidgets.QMainWindow):
 
         # Подключаем действия к функциям
         self.ui.dateEdit_startDay.userDateChanged['QDate'].connect(self.set_end_day)
-        self.ui.btn_exit_bakery.clicked.connect(self.show_windowAutoorders)
+        self.ui.btn_exit_bakery.clicked.connect(self.show_window_autoorders)
         self.ui.btn_path_OLAP_prodagi.clicked.connect(self.olap_prodagi_xlsx)
         self.ui.btn_path_dayWeek.clicked.connect(self.olap_dayWeek_xlsx)
-        self.ui.btn_set_prognoz.clicked.connect(self.koeff_prognoz)
-        self.ui.btn_set_dayWeek.clicked.connect(self.koeff_dayWeek)
-        self.ui.btn_prosmotr_prognoz.clicked.connect(self.prognozTablesView)
-        self.ui.btn_edit_prognoz.clicked.connect(self.prognozTablesEdit)
-        self.ui.btn_delete_prognoz.clicked.connect(self.dialogDeletePrognoz)
-        self.ui.btn_prosmotr_dayWeek.clicked.connect(self.dayWeekTablesView)
+        self.ui.btn_set_prognoz.clicked.connect(self.koeff_prognoz_set)
+        self.ui.btn_set_dayWeek.clicked.connect(self.koeff_day_week_set)
+        self.ui.btn_prosmotr_prognoz.clicked.connect(self.prognoz_tables_view)
+        self.ui.btn_edit_prognoz.clicked.connect(self.prognoz_tables_edit)
+        self.ui.btn_delete_prognoz.clicked.connect(self.dialog_delete_prognoz)
+        self.ui.btn_prosmotr_dayWeek.clicked.connect(self.koeff_day_week_view)
         # self.ui.btn_edit_koeff_DayWeek.clicked.connect(self.dayWeekTablesRedact)
         # self.ui.btn_delete_koeff_DayWeek.clicked.connect(self.dialogDeleteKDayWeek)
         # self.ui.btn_Normativ.clicked.connect(self.normativ)
@@ -165,7 +165,7 @@ class WindowBakery(QtWidgets.QMainWindow):
 
     # Функция нажатия кнопки "Установить" для OLAP отчета по продажам выпечки
     @check_prognoz_OLAP
-    def koeff_prognoz(self):
+    def koeff_prognoz_set(self):
         path_OLAP_prodagi = self.ui.lineEdit_OLAP_prodagi.text()
         self.prognoz_table_open(path_OLAP_prodagi)
 
@@ -217,7 +217,7 @@ class WindowBakery(QtWidgets.QMainWindow):
                 points = points_in_DB
             self.hide()
             global window_prognoz_set
-            window_prognoz_set = data.windows.windows_prognoz_table.WindowPrognozTablesSet(wb_OLAP_prodagi, self.periodDay, points)
+            window_prognoz_set = data.windows.windows_prognoz_set.WindowPrognozTablesSet(wb_OLAP_prodagi, self.periodDay, points)
             window_prognoz_set.showMaximized()
 
 
@@ -231,7 +231,7 @@ class WindowBakery(QtWidgets.QMainWindow):
 
     # Проверяем на пустоту поля для OLAP отчета по продажам по дням недели для выпечки
     @staticmethod
-    def check_dayWeek(funct_bakery):
+    def check_day_week(funct_bakery):
         def wrapper(self):
             if len(self.ui.lineEdit_OLAP_dayWeek.text()) == 0 or self.ui.lineEdit_OLAP_dayWeek.text() == 'Файл отчета неверный, укажите OLAP по продажам по дням недели для Выпечки за 7 дней':
                 self.ui.lineEdit_OLAP_dayWeek.setStyleSheet("padding-left: 5px; color: rgba(228, 107, 134, 1)")
@@ -244,14 +244,14 @@ class WindowBakery(QtWidgets.QMainWindow):
 
 
     # Обрабытываем кнопку "Установить" для OLAP отчета по продажам по дням недели для выпечки
-    @check_dayWeek
-    def koeff_dayWeek(self):
+    @check_day_week
+    def koeff_day_week_set(self):
         path_OLAP_DayWeek = self.ui.lineEdit_OLAP_dayWeek.text()
-        self.dayWeekTable(path_OLAP_DayWeek)
+        self.day_week_table(path_OLAP_DayWeek)
 
 
     # Проверка на правильность OLAP отчета по продажам по дням недели для выпечки и запуск таблици с коэффициентами
-    def dayWeekTable(self, path_OLAP_DayWeek):
+    def day_week_table(self, path_OLAP_DayWeek):
         wb_OLAP_dayWeek = pd.ExcelFile(path_OLAP_DayWeek)
         sheet_OLAP_dayWeek = wb_OLAP_dayWeek.sheet_names
         if sheet_OLAP_dayWeek[0] != "OLAP по дням недели для Выпечки":
@@ -259,10 +259,10 @@ class WindowBakery(QtWidgets.QMainWindow):
             self.ui.lineEdit_OLAP_dayWeek.setText(
                 'Файл отчета неверный, укажите OLAP по продажам по дням недели для Выпечки')
         else:
-            self.dayWeek_Table_Open(path_OLAP_DayWeek)
+            self.day_week_table_open(path_OLAP_DayWeek)
 
 
-    def dayWeek_Table_Open(self, pathOLAP_DayWeek):
+    def day_week_table_open(self, pathOLAP_DayWeek):
         wb_OLAP_dayWeek = pd.ExcelFile(pathOLAP_DayWeek)
         sheet_OLAP_dayWeek = wb_OLAP_dayWeek.sheet_names
         if sheet_OLAP_dayWeek[0] != "OLAP по дням недели для Выпечки":
@@ -306,7 +306,7 @@ class WindowBakery(QtWidgets.QMainWindow):
             points = points_in_DB
         self.hide()
         global windows_koeff_day_week_set
-        windows_koeff_day_week_set = data.windows.windows_koeff_day_week_table.WindowKoeffDayWeekSet(wb_OLAP_dayWeek, self.periodDay, points)
+        windows_koeff_day_week_set = data.windows.windows_koeff_day_week_set.WindowKoeffDayWeekSet(wb_OLAP_dayWeek, self.periodDay, points)
         windows_koeff_day_week_set.showMaximized()
 
 
@@ -379,7 +379,7 @@ class WindowBakery(QtWidgets.QMainWindow):
 
 
     # Закрываем окно настроек, открываем выбор раздела
-    def show_windowAutoorders(self):
+    def show_window_autoorders(self):
         self.close()
         global windowAutoorders
         windowAutoorders = data.windows.windows_autoorders.WindowAutoorders()
@@ -402,7 +402,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.information(self, "Ошибка", message)
 
 
-    def prognozTablesView(self):
+    def prognoz_tables_view(self):
         self.hide()
         periodDay = self.periodDay
         category = 'Выпечка пекарни'
@@ -410,7 +410,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         WindowBakeryTablesView = data.windows.windows_prognoz_view.WindowPrognozTablesView(periodDay, category)
         WindowBakeryTablesView.showMaximized()
 
-    def prognozTablesEdit(self):
+    def prognoz_tables_edit(self):
         # self.normativTablesDelete()
         self.hide()
         periodDay = self.periodDay
@@ -426,7 +426,7 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     WindowNormativTablesRedact = Windows.WindowsBakeryNormativRedact.WindowBakeryNormativRedact(periodDay)
     #     WindowNormativTablesRedact.showMaximized()
     #
-    def dialogDeletePrognoz(self):
+    def dialog_delete_prognoz(self):
         dialogBox = QMessageBox()
         dialogBox.setText("Вы действительно хотите удалить сформированный прогноз и норматив(если сформирован) с изначальными данными?")
         dialogBox.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
@@ -486,7 +486,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.check_normativ()
     #
     #
-    def dayWeekTablesView(self):
+    def koeff_day_week_view(self):
         self.hide()
         periodDay = self.periodDay
         category = 'Выпечка пекарни'
