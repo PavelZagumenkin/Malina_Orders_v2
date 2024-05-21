@@ -26,7 +26,7 @@ class Database:
 
     def check_version(self, version):
         try:
-            with self.connection, self.connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_version())
                 actual_version = cursor.fetchone()[0]
                 if actual_version == version:
@@ -40,7 +40,7 @@ class Database:
 
     def register(self, username, password, role):
         try:
-            with self.connection, self.connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_user_by_username(), (username,))
                 user = cursor.fetchone()
 
@@ -139,7 +139,7 @@ class Database:
 
     def add_log(self, date, time, log):
         try:
-            with self.connection, self.connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(Queries.log_entry(), (date, time, log))
                 self.connection.commit()
         except Exception as e:
@@ -197,7 +197,7 @@ class Database:
 
     def register_konditerskay(self, konditerskay_name, konditerskay_type, bakery, ice_sklad, vhod_group, tualet, tables, bakery_store):
         try:
-            with self.connection, self.connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(Queries.get_konditerskay_by_name(), (konditerskay_name,))
                 konditerskay = cursor.fetchone()
                 if konditerskay is not None:
@@ -264,7 +264,7 @@ class Database:
 
     def insert_data_tovar(self, kod, name, category, display, kvant, batch, koeff_ice_sklad):
         try:
-            with self.connection, self.connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(Queries.insert_data_tovar_in_DB(), (kod, name, category, display, kvant, batch, koeff_ice_sklad))
                 self.connection.commit()
         except Exception as e:
@@ -278,7 +278,7 @@ class Database:
         try:
             for row in matrix_table_prognoz:
                 try:
-                    with self.connection, self.connection.cursor() as cursor:
+                    with self.connection.cursor() as cursor:
                         period_range = DateRange(row[0], row[1])
                         cursor.execute(Queries.save_prognoz_in_DB(), (period_range, row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12]))
                 except Error as e:
@@ -294,13 +294,57 @@ class Database:
             self.connection.rollback()
             return f"Ошибка: {e}"
 
+    def update_prognoz(self, matrix_table_prognoz):
+        self.connection.autocommit = False
+        try:
+            period_range = DateRange(matrix_table_prognoz[0][0], matrix_table_prognoz[0][1])
+            category = matrix_table_prognoz[0][4]
+            try:
+                with self.connection.cursor() as cursor:
+                    # Удаление существующих данных для данного диапазона и категории
+                    cursor.execute(Queries.delete_prognoz_in_DB(), (period_range, category))
+                    # Вставка новых данных
+                    for row in matrix_table_prognoz:
+                        cursor.execute(Queries.save_prognoz_in_DB(), (
+                            period_range, row[2], row[3], row[4], row[5], row[6],
+                            row[7], row[8], row[9], row[10], row[11], row[12]
+                        ))
+                # Если все операции успешны, фиксируем транзакцию
+                self.connection.commit()
+                return "Все данные успешно вставлены в базу данных"
+            except Error as e:
+                # Откат транзакции в случае ошибки
+                self.connection.rollback()
+                return f"Ошибка при работе с БД: {e}"
+        except Exception as e:
+            # Откат транзакции в случае общей ошибки
+            self.connection.rollback()
+            return f"Ошибка: {e}"
+
+    def delete_prognoz(self, start_day, end_day, category):
+        try:
+            period = DateRange(start_day, end_day)
+            try:
+                with self.connection.cursor() as cursor:
+                    # Удаление существующих данных для данного диапазона и категории
+                    cursor.execute(Queries.delete_prognoz_in_DB(), (period, category))
+                self.connection.commit()
+                return "Данные успешно удалены из базы данных"
+            except Error as e:
+                # Откат транзакции в случае ошибки
+                self.connection.rollback()
+                return f"Ошибка при работе с БД: {e}"
+        except Exception as e:
+            # Откат транзакции в случае общей ошибки
+            self.connection.rollback()
+            return f"Ошибка: {e}"
 
     def save_koeff_day_week(self, matrix_table_koeff_day_week):
         self.connection.autocommit = False
         try:
             for row in matrix_table_koeff_day_week:
                 try:
-                    with self.connection, self.connection.cursor() as cursor:
+                    with self.connection.cursor() as cursor:
                         period_range = DateRange(row[0], row[1])
                         cursor.execute(Queries.save_koeff_day_week_in_DB(), (period_range, row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]))
                 except Error as e:

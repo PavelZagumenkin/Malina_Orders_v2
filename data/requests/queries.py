@@ -205,6 +205,14 @@ class Queries:
             '''
 
     @staticmethod
+    # Удалить прогноз из БД
+    def delete_prognoz_in_DB():
+        return '''
+        DELETE FROM prognoz
+        WHERE period = %s AND category = %s;
+        '''
+
+    @staticmethod
     # Сохранение прогноза в БД
     def save_koeff_day_week_in_DB():
         return '''

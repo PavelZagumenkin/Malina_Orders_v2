@@ -36,7 +36,7 @@ class WindowPrognozTablesView(QtWidgets.QMainWindow):
             if dishe not in unique_dishes:
                 unique_dishes.append(dishe)
         self.column_title = self.column_title + unique_points
-        self.ui.tableWidget.setRowCount(len(unique_dishes))
+        self.ui.tableWidget.setRowCount(len(unique_dishes)+1)
         self.ui.tableWidget.setColumnCount(len(self.column_title))
         self.ui.tableWidget.setHorizontalHeaderLabels(self.column_title)
         self.font = QtGui.QFont("Times", 10, QFont.Weight.Bold)
@@ -50,7 +50,7 @@ class WindowPrognozTablesView(QtWidgets.QMainWindow):
                 for spisok in prognoz_data:
                     if spisok[3] == dishe_table_kod:
                         self.ui.tableWidget.setItem(row, 0, QTableWidgetItem(str(spisok[5])))
-                        self.ui.tableWidget.setItem(row,1, QTableWidgetItem(str(spisok[6])))
+                        self.ui.tableWidget.setItem(row, 1, QTableWidgetItem(str(spisok[6])))
                         self.ui.tableWidget.setItem(row, 2, QTableWidgetItem(str(spisok[7])))
                         self.ui.tableWidget.setItem(row, 3, QTableWidgetItem(str(spisok[8])))
                         self.ui.tableWidget.setItem(row, 5, QTableWidgetItem(str(self.database.poisk_data_tovar(dishe_table_kod)[0][2])))

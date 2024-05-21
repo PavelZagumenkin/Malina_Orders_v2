@@ -2,7 +2,6 @@ import sys
 
 from PyQt6 import QtWidgets, QtGui, QtCore
 import textwrap
-import pandas as pd
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QTableWidgetItem
 from PyQt6.QtWidgets import QMessageBox
@@ -13,103 +12,102 @@ from data.ui.autozakaz_table import Ui_autozakaz_table
 import data.windows.windows_bakery
 
 
-class WindowPrognozTablesSet(QtWidgets.QMainWindow):
-    def __init__(self, wb_OLAP_prodagi, periodDay, points):
+class WindowPrognozTablesEdit(QtWidgets.QMainWindow):
+    def __init__(self, periodDay, category):
         super().__init__()
         self.ui = Ui_autozakaz_table()
         self.ui.setupUi(self)
         self.database = Database()
         self.signals = Signals()
-        self.session = Session.get_instance()  # Получение экземпляра класса Session
-        self.kod = ''
-        self.name = ''
+        self.category = category
         self.periodDay = periodDay
-        self.column_title = ['', '', 'Кф. товара', 'Выкладка', 'Квант поставки', 'Замес', 'Код блюда', 'Блюдо',
-                             'Категория блюда']
-        self.column_title = self.column_title + points
-        self.column_title_for_excel = ['Код блюда', 'Блюдо', 'Категория блюда'] + points
-        wb_OLAP_prodagi = wb_OLAP_prodagi[self.column_title_for_excel]
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
-        self.ui.tableWidget.setRowCount(wb_OLAP_prodagi.shape[0] + 1)
+        self.session = Session.get_instance()  # Получение экземпляра класса Session
+        self.column_title = ['', '', 'Кф. товара', 'Выкладка', 'Квант поставки', 'Замес', 'Код блюда', 'Блюдо',
+                             'Категория блюда']
+        prognoz_data = self.get_prognoz_data()
+        unique_points = []
+        unique_dishes = []
+        for row in prognoz_data:
+            point = row[2]
+            dishe = row[3]
+            if point not in unique_points:
+                unique_points.append(point)
+            if dishe not in unique_dishes:
+                unique_dishes.append(dishe)
+        self.column_title = self.column_title + unique_points
+        self.ui.tableWidget.setRowCount(len(unique_dishes)+1)
         self.ui.tableWidget.setColumnCount(len(self.column_title))
+        self.ui.tableWidget.setHorizontalHeaderLabels(self.column_title)
+        self.font = QtGui.QFont("Times", 10, QFont.Weight.Bold)
+        self.ui.tableWidget.horizontalHeader().setFont(self.font)
+        self.ui.tableWidget.setItem(0, 8, QTableWidgetItem("Кф. кондитерской"))
+        self.ui.tableWidget.item(0, 8).setFont(self.font)
+        global saveZnach
+        saveZnach = {}
+        for col in range(9, self.ui.tableWidget.columnCount()):
+            saveZnach[col] = {}
+        for row in range(0, self.ui.tableWidget.rowCount()):
+            if row > 0:
+                self.ui.tableWidget.setItem(row, 6, QTableWidgetItem(str(unique_dishes[row-1])))
+                self.ui.tableWidget.item(row, 6).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                dishe_table_kod = self.ui.tableWidget.item(row, 6).text()
+                for spisok in prognoz_data:
+                    if spisok[3] == dishe_table_kod:
+                        self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
+                        self.KFTovarDSpin.wheelEvent = lambda event: None
+                        self.DisplaySpin = QtWidgets.QSpinBox()
+                        self.DisplaySpin.wheelEvent = lambda event: None
+                        self.KvantSpin = QtWidgets.QSpinBox()
+                        self.KvantSpin.wheelEvent = lambda event: None
+                        self.BatchSpin = QtWidgets.QSpinBox()
+                        self.BatchSpin.wheelEvent = lambda event: None
+                        self.ui.tableWidget.setCellWidget(row, 2, self.KFTovarDSpin)
+                        self.ui.tableWidget.cellWidget(row, 2).setValue(float(spisok[5]))
+                        self.ui.tableWidget.cellWidget(row, 2).setSingleStep(0.01)
+                        self.ui.tableWidget.cellWidget(row, 2).valueChanged.connect(self.raschetPrognoz)
+                        self.ui.tableWidget.setCellWidget(row, 3, self.DisplaySpin)
+                        self.ui.tableWidget.cellWidget(row, 3).setMaximum(1000)
+                        self.ui.tableWidget.cellWidget(row, 3).setValue(int(spisok[6]))
+                        self.ui.tableWidget.cellWidget(row, 3).setSingleStep(1)
+                        self.ui.tableWidget.setCellWidget(row, 4, self.KvantSpin)
+                        self.ui.tableWidget.cellWidget(row, 4).setMaximum(1000)
+                        self.ui.tableWidget.cellWidget(row, 4).setValue(int(spisok[7]))
+                        self.ui.tableWidget.cellWidget(row, 4).setSingleStep(1)
+                        self.ui.tableWidget.setCellWidget(row, 5, self.BatchSpin)
+                        self.ui.tableWidget.cellWidget(row, 5).setMaximum(1000)
+                        self.ui.tableWidget.cellWidget(row, 5).setValue(int(spisok[8]))
+                        self.ui.tableWidget.cellWidget(row, 5).setSingleStep(1)
+                        self.ui.tableWidget.setItem(row, 7, QTableWidgetItem(str(self.database.poisk_data_tovar(dishe_table_kod)[0][2])))
+                        self.ui.tableWidget.item(row, 7).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                        self.ui.tableWidget.setItem(row, 8, QTableWidgetItem(str(spisok[4])))
+                        self.ui.tableWidget.item(row, 8).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                        break
+                for col in range(9, self.ui.tableWidget.columnCount()):
+                    for spisok in prognoz_data:
+                        if spisok[3] == dishe_table_kod and spisok[2] == self.ui.tableWidget.horizontalHeaderItem(col).text():
+                            self.ui.tableWidget.setItem(row, col, QTableWidgetItem(str(spisok[11])))
+                            saveZnach[col][row] = float(spisok[10])
+                            break
+            else:
+                for col in range(9, self.ui.tableWidget.columnCount()):
+                    for spisok in prognoz_data:
+                        if spisok[2] == self.ui.tableWidget.horizontalHeaderItem(col).text():
+                            self.KFStoreSpin = QtWidgets.QDoubleSpinBox()
+                            self.KFStoreSpin.wheelEvent = lambda event: None
+                            self.ui.tableWidget.setCellWidget(row, col, self.KFStoreSpin)
+                            self.ui.tableWidget.cellWidget(row, col).setValue(1.00)
+                            self.ui.tableWidget.cellWidget(row, col).setSingleStep(0.01)
+                            self.ui.tableWidget.cellWidget(row, col).valueChanged.connect(self.raschetPrognoz)
+                            self.ui.tableWidget.setItem(row, col, QTableWidgetItem(str(spisok[9])))
+                            break
         self.wrap = []
         for header in self.column_title:
             wrap = textwrap.fill(header, width=10)
             self.wrap.append(wrap)
         self.ui.tableWidget.setHorizontalHeaderLabels(self.wrap)
-        self.font = QtGui.QFont("Times", 10, QFont.Weight.Bold)
-        self.ui.tableWidget.horizontalHeader().setFont(self.font)
-        for col in range(0, wb_OLAP_prodagi.shape[1]):
-            for row in range(0, wb_OLAP_prodagi.shape[0]):
-                if pd.isna(wb_OLAP_prodagi.iloc[row, col]):
-                    item = QTableWidgetItem('0')
-                else:
-                    item = QTableWidgetItem(str(wb_OLAP_prodagi.iloc[row, col]))
-                self.ui.tableWidget.setItem(row + 1, col + 6, item)
-        global saveZnach
-        saveZnach = {}
-        for col in range(9, self.ui.tableWidget.columnCount()):
-            saveZnach[col] = {}
-            for row in range(1, self.ui.tableWidget.rowCount()):
-                saveZnach[col][row] = float(self.ui.tableWidget.item(row, col).text())
-        self.ui.tableWidget.setItem(0, 8, QTableWidgetItem("Кф. кондитерской"))
-        self.ui.tableWidget.item(0, 8).setFont(self.font)
-        for col_spin in range(9, self.ui.tableWidget.columnCount()):
-            self.KFStoreSpin = QtWidgets.QDoubleSpinBox()
-            self.KFStoreSpin.wheelEvent = lambda event: None
-            self.ui.tableWidget.setCellWidget(0, col_spin, self.KFStoreSpin)
-            self.ui.tableWidget.cellWidget(0, col_spin).setValue(1.00)
-            self.ui.tableWidget.cellWidget(0, col_spin).setSingleStep(0.01)
-            self.ui.tableWidget.cellWidget(0, col_spin).valueChanged.connect(self.raschetPrognoz)
-        for row_spin in range(1, self.ui.tableWidget.rowCount()):
-            if self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                              self.ui.tableWidget.item(row_spin, 7).text()) == 'Отмена':
-                self.ui.tableWidget.removeRow(row_spin)
-                for c in range(9, self.ui.tableWidget.columnCount()):
-                    del saveZnach[c][row_spin]
-                for c in range(9, self.ui.tableWidget.columnCount()):
-                    counter = row_spin + 1
-                    for r in range(row_spin, self.ui.tableWidget.rowCount()):
-                        saveZnach[c][r] = saveZnach[c].pop(counter)
-                        counter += 1
-                continue
-            self.ui.tableWidget.item(row_spin, 6).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.KFTovarDSpin = QtWidgets.QDoubleSpinBox()
-            self.DisplaySpin = QtWidgets.QSpinBox()
-            self.KvantSpin = QtWidgets.QSpinBox()
-            self.BatchSpin = QtWidgets.QSpinBox()
-            self.KFTovarDSpin.wheelEvent = lambda event: None
-            self.DisplaySpin.wheelEvent = lambda event: None
-            self.KvantSpin.wheelEvent = lambda event: None
-            self.BatchSpin.wheelEvent = lambda event: None
-            self.ui.tableWidget.setCellWidget(row_spin, 2, self.KFTovarDSpin)
-            self.ui.tableWidget.cellWidget(row_spin, 2).setValue(1.00)
-            self.ui.tableWidget.cellWidget(row_spin, 2).setSingleStep(0.01)
-            self.ui.tableWidget.cellWidget(row_spin, 2).valueChanged.connect(self.raschetPrognoz)
-            self.ui.tableWidget.setCellWidget(row_spin, 3, self.DisplaySpin)
-            self.ui.tableWidget.cellWidget(row_spin, 3).setMaximum(1000)
-            self.ui.tableWidget.cellWidget(row_spin, 3).setValue(
-                self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                               self.ui.tableWidget.item(row_spin, 7).text())[4])
-            self.ui.tableWidget.cellWidget(row_spin, 3).setSingleStep(1)
-            self.ui.tableWidget.setCellWidget(row_spin, 4, self.KvantSpin)
-            self.ui.tableWidget.cellWidget(row_spin, 4).setMaximum(1000)
-            self.ui.tableWidget.cellWidget(row_spin, 4).setValue(
-                self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                               self.ui.tableWidget.item(row_spin, 7).text())[5])
-            self.ui.tableWidget.cellWidget(row_spin, 4).setSingleStep(1)
-            self.ui.tableWidget.setCellWidget(row_spin, 5, self.BatchSpin)
-            self.ui.tableWidget.cellWidget(row_spin, 5).setMaximum(1000)
-            self.ui.tableWidget.cellWidget(row_spin, 5).setValue(
-                self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(),
-                                               self.ui.tableWidget.item(row_spin, 7).text())[6])
-            self.ui.tableWidget.cellWidget(row_spin, 5).setSingleStep(1)
-            self.ui.tableWidget.setItem(row_spin, 8, QTableWidgetItem(self.poisk_display_kvant_batch(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())[3]))
-            self.ui.tableWidget.item(row_spin, 8).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.tableWidget.setItem(row_spin, 7, QTableWidgetItem(self.sravnenie_name(self.ui.tableWidget.item(row_spin, 6).text(), self.ui.tableWidget.item(row_spin, 7).text())))
-            self.ui.tableWidget.item(row_spin, 7).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
         for row_button in range(1, self.ui.tableWidget.rowCount()):
             self.copyRowButton = QtWidgets.QPushButton()
             self.ui.tableWidget.setCellWidget(row_button, 0, self.copyRowButton)
@@ -139,11 +137,23 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
         self.ui.tableWidget.resizeColumnsToContents()
         self.ui.tableWidget.cellChanged.connect(lambda row, col: self.on_cell_changed(row, col))
 
+
         # Подключаем слоты к сигналам
         self.signals.success_signal.connect(self.show_success_message)
         self.signals.failed_signal.connect(self.show_error_message)
         self.signals.error_DB_signal.connect(self.show_DB_error_message)
 
+
+    def get_prognoz_data(self):
+        category = self.category
+        start_date = self.periodDay[0].toString('yyyy-MM-dd')
+        end_date = self.periodDay[1].toString('yyyy-MM-dd')
+        prognoz_data = self.database.get_prognoz_data_in_DB(start_date, end_date, category)
+        if "Ошибка" in prognoz_data:
+            self.show_DB_error_message(prognoz_data)
+            return
+        else:
+            return prognoz_data
 
     def on_cell_changed(self, row, col):
         if row >= 1 and col >= 9:
@@ -243,7 +253,7 @@ class WindowPrognozTablesSet(QtWidgets.QMainWindow):
                 row_data.append(author)
                 # Добавление строки в матрицу
                 matrix_table_prognoz.append(row_data)
-        save_result = self.database.save_prognoz(matrix_table_prognoz)
+        save_result = self.database.update_prognoz(matrix_table_prognoz)
         print(save_result)
         self.close()
 

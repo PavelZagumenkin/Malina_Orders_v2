@@ -5,7 +5,7 @@ import shutil
 from math import ceil
 
 from PyQt6 import QtCore, QtWidgets, QtGui
-from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QFileDialog, QMessageBox
 from data.ui.bakery import Ui_WindowBakery
 from data.requests.db_requests import Database
 from data.requests.queries import Queries
@@ -17,7 +17,7 @@ import data.windows.windows_prognoz_table
 import data.windows.windows_koeff_day_week_table
 import data.windows.windows_prognoz_view
 import data.windows.windows_koeff_day_week_view
-# import Windows.WindowsBakeryTablesEdit
+import data.windows.windows_prognoz_edit
 # import Windows.WindowsBakeryTablesRedact
 # import Windows.WindowsBakeryTablesDayWeekEdit
 # import Windows.WindowsBakeryTablesDayWeekView
@@ -48,6 +48,7 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.ui.dateEdit_startDay.setDate(TodayDate)
         self.ui.dateEdit_endDay.setDate(EndDay)
         self.periodDay = [self.ui.dateEdit_startDay.date(), self.ui.dateEdit_endDay.date()]
+        self.category = 'Выпечка пекарни'
 
         # Скрываем прогрессбар
         self.ui.progressBar.hide()
@@ -60,8 +61,8 @@ class WindowBakery(QtWidgets.QMainWindow):
         self.ui.btn_set_prognoz.clicked.connect(self.koeff_prognoz)
         self.ui.btn_set_dayWeek.clicked.connect(self.koeff_dayWeek)
         self.ui.btn_prosmotr_prognoz.clicked.connect(self.prognozTablesView)
-        # self.ui.btn_editPrognoz.clicked.connect(self.prognozTablesRedact)
-        # self.ui.btn_deletePrognoz.clicked.connect(self.dialogDeletePrognoz)
+        self.ui.btn_edit_prognoz.clicked.connect(self.prognozTablesEdit)
+        self.ui.btn_delete_prognoz.clicked.connect(self.dialogDeletePrognoz)
         self.ui.btn_prosmotr_dayWeek.clicked.connect(self.dayWeekTablesView)
         # self.ui.btn_edit_koeff_DayWeek.clicked.connect(self.dayWeekTablesRedact)
         # self.ui.btn_delete_koeff_DayWeek.clicked.connect(self.dialogDeleteKDayWeek)
@@ -408,14 +409,15 @@ class WindowBakery(QtWidgets.QMainWindow):
         global WindowBakeryTablesView
         WindowBakeryTablesView = data.windows.windows_prognoz_view.WindowPrognozTablesView(periodDay, category)
         WindowBakeryTablesView.showMaximized()
-    #
-    # def prognozTablesRedact(self):
-    #     self.normativTablesDelete()
-    #     self.hide()
-    #     periodDay = self.periodDay
-    #     global WindowBakeryTablesRedact
-    #     WindowBakeryTablesRedact = Windows.WindowsBakeryTablesRedact.WindowBakeryTablesRedact(periodDay)
-    #     WindowBakeryTablesRedact.showMaximized()
+
+    def prognozTablesEdit(self):
+        # self.normativTablesDelete()
+        self.hide()
+        periodDay = self.periodDay
+        category = 'Выпечка пекарни'
+        global WindowBakeryTablesEdit
+        WindowBakeryTablesEdit = data.windows.windows_prognoz_edit.WindowPrognozTablesEdit(periodDay, category)
+        WindowBakeryTablesEdit.showMaximized()
     #
     # def normativTablesRedact(self):
     #     self.hide()
@@ -424,20 +426,20 @@ class WindowBakery(QtWidgets.QMainWindow):
     #     WindowNormativTablesRedact = Windows.WindowsBakeryNormativRedact.WindowBakeryNormativRedact(periodDay)
     #     WindowNormativTablesRedact.showMaximized()
     #
-    # def dialogDeletePrognoz(self):
-    #     dialogBox = QMessageBox()
-    #     dialogBox.setText("Вы действительно хотите удалить сформированный прогноз и норматив(если сформирован) с изначальными данными?")
-    #     dialogBox.setWindowIcon(QtGui.QIcon("image/icon.png"))
-    #     dialogBox.setWindowTitle('Удаление прогноза продаж')
-    #     dialogBox.setIcon(QMessageBox.Icon.Critical)
-    #     dialogBox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
-    #     dialogBox.buttonClicked.connect(self.dialogButtonClickedPrognoz)
-    #     dialogBox.exec()
-    #
-    # def dialogButtonClickedPrognoz(self, button_clicked):
-    #     if button_clicked.text() == "OK":
-    #         self.prognozTablesDelete()
-    #         self.normativTablesDelete()
+    def dialogDeletePrognoz(self):
+        dialogBox = QMessageBox()
+        dialogBox.setText("Вы действительно хотите удалить сформированный прогноз и норматив(если сформирован) с изначальными данными?")
+        dialogBox.setWindowIcon(QtGui.QIcon("data/images/icon.png"))
+        dialogBox.setWindowTitle('Удаление прогноза продаж')
+        dialogBox.setIcon(QMessageBox.Icon.Critical)
+        dialogBox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        dialogBox.buttonClicked.connect(self.dialog_delete_prognoz_button_clicked)
+        dialogBox.exec()
+
+    def dialog_delete_prognoz_button_clicked(self, button_clicked):
+        if button_clicked.text() == "OK":
+            self.prognoz_tables_delete()
+            # self.normativTablesDelete()
     #
     # def dialogDeleteKDayWeek(self):
     #     dialogBox = QMessageBox()
@@ -475,11 +477,13 @@ class WindowBakery(QtWidgets.QMainWindow):
     #         self.proverkaNormativaFunc()
     #         self.proverkaPeriodaPrognozFunc()
     #
-    # def prognozTablesDelete(self):
-    #     period = self.periodDay
-    #     self.check_db.thr_deletePrognoz(period)
-    #     self.proverkaPeriodaPrognozFunc()
-    #     self.proverkaNormativaFunc()
+    def prognoz_tables_delete(self):
+        start_date = self.periodDay[0].toString('yyyy-MM-dd')
+        end_date = self.periodDay[1].toString('yyyy-MM-dd')
+        result_delete = self.database.delete_prognoz(start_date, end_date, self.category)
+        print(result_delete)
+        self.check_prognoz()
+        self.check_normativ()
     #
     #
     def dayWeekTablesView(self):
