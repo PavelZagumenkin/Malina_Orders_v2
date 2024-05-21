@@ -274,3 +274,11 @@ class Queries:
             SELECT * FROM prognoz
             WHERE period = %s AND category = %s;
             '''
+
+    @staticmethod
+    # Получить коэффициенты продаж по дням недели за период, выбранной категории
+    def get_koeff_day_week_data_in_DB():
+        return '''
+            SELECT * FROM koeff_day_week
+            WHERE period = %s AND category = %s;
+            '''
