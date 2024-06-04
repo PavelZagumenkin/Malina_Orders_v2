@@ -3,11 +3,11 @@ from PyQt6.QtWidgets import QTableWidgetItem, QInputDialog, QMessageBox
 from data.ui.mini_table_window import Ui_mini_table_window
 from data.requests.db_requests import Database
 from data.signals import Signals
-import data.windows.windows_logistics
+import data.windows.windows_nomenklatura
 from data.active_session import Session
 import datetime
 
-class WindowKonditerskie(QtWidgets.QMainWindow):
+class WindowDishes(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_mini_table_window()
@@ -15,8 +15,8 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         self.signals = Signals()
         self.database = Database()
         self.session = Session.get_instance()  # Получение экземпляра класса Session
-        self.ui.btn_back.clicked.connect(self.show_windowLogistik)
-        self.ui.label_windowName.setText('Список кондитерских')
+        self.ui.btn_back.clicked.connect(self.show_windowNomenklatura)
+        self.ui.label_windowName.setText('Список блюд')
         # Подключаем слоты к сигналам
         self.signals.success_signal.connect(self.show_success_message)
         self.signals.failed_signal.connect(self.show_error_message)
@@ -45,7 +45,7 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         self.ui.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.ui.tableWidget.setRowCount(self.get_count_rows())
         self.ui.tableWidget.setColumnCount(10)
-        self.columnName = ['НАЗВАНИЕ', 'ТИП', 'ПЕЧЬ', 'ВЫПЕЧКА', 'МОРОЗ/СКЛАД', 'ВХОД/ГР', 'ТУАЛЕТ', 'СТОЛИКИ', 'РАБОТАЕТ?', '']
+        self.columnName = ['АРТИКУЛ', 'НАИМЕНОВАНИЕ', 'КАТЕГОРИЯ БЛЮДА', 'ВЫКЛАДКА', 'КВАНТ', 'ЗАМЕС', 'СРОК ПО', 'ЦЕХ ПРОИЗВОДСТВА', 'ТЕХПРОЦЕСС', '', '']
         self.ui.tableWidget.setHorizontalHeaderLabels(self.columnName)
         self.font_table = QtGui.QFont()
         self.font_table.setFamily("Trebuchet MS")
@@ -54,37 +54,37 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
         self.font_table.setPointSize(9)
         self.ui.tableWidget.horizontalHeader().setFont(self.font_table)
         self.ui.tableWidget.verticalHeader().setFont(self.font_table)
-        self.ui.tableWidget.setColumnWidth(0, 110)
+        self.ui.tableWidget.setColumnWidth(0, 60)
         self.ui.tableWidget.setColumnWidth(1, 100)
         self.ui.tableWidget.setColumnWidth(2, 60)
-        self.ui.tableWidget.setColumnWidth(3, 80)
-        self.ui.tableWidget.setColumnWidth(4, 110)
+        self.ui.tableWidget.setColumnWidth(3, 60)
+        self.ui.tableWidget.setColumnWidth(4, 60)
         self.ui.tableWidget.setColumnWidth(5, 60)
         self.ui.tableWidget.setColumnWidth(6, 60)
-        self.ui.tableWidget.setColumnWidth(7, 70)
-        self.ui.tableWidget.setColumnWidth(8, 75)
-        self.ui.tableWidget.setColumnWidth(9, 115)
+        self.ui.tableWidget.setColumnWidth(7, 100)
+        self.ui.tableWidget.setColumnWidth(8, 60)
+        self.ui.tableWidget.setColumnWidth(9, 60)
         self.add_data_in_table()
 
 
     def create_form_add_konditerskay(self):
         # Создаем поле для названия кондитерской
-        self.label_name_konditerskay = QtWidgets.QLabel(self.ui.centralwidget)
-        self.label_name_konditerskay.setGeometry(QtCore.QRect(897, 80, 372, 20))
-        self.label_name_konditerskay.setFont(self.font)
-        self.label_name_konditerskay.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_name_konditerskay.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_name_konditerskay.setObjectName("label_add_konditerskay_text")
-        self.label_name_konditerskay.setText("Добавление кондитерской")
-        self.label_name_konditerskay.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_type_konditerskay = QtWidgets.QLabel(self.ui.centralwidget)
-        self.label_type_konditerskay.setGeometry(QtCore.QRect(897, 190, 372, 20))
-        self.label_type_konditerskay.setFont(self.font)
-        self.label_type_konditerskay.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.label_type_konditerskay.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_type_konditerskay.setObjectName("label_type_konditerskay_text")
-        self.label_type_konditerskay.setText("Тип кондитерской")
-        self.label_type_konditerskay.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labelName_dishe = QtWidgets.QLabel(self.ui.centralwidget)
+        self.labelName_dishe.setGeometry(QtCore.QRect(897, 80, 372, 20))
+        self.labelName_dishe.setFont(self.font)
+        self.labelName_dishe.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.labelName_dishe.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labelName_dishe.setObjectName("label_add_konditerskay_text")
+        self.labelName_dishe.setText("Добавление блюда")
+        self.labelName_dishe.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labelName_type_dishe = QtWidgets.QLabel(self.ui.centralwidget)
+        self.labelName_type_dishe.setGeometry(QtCore.QRect(897, 190, 372, 20))
+        self.labelName_type_dishe.setFont(self.font)
+        self.labelName_type_dishe.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.labelName_type_dishe.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labelName_type_dishe.setObjectName("labelName_type_dishe")
+        self.labelName_type_dishe.setText("Тип блюда")
+        self.labelName_type_dishe.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.line_name_konditeskay = QtWidgets.QLineEdit(self.ui.centralwidget)
         self.line_name_konditeskay.setGeometry(QtCore.QRect(910, 120, 346, 51))
         self.font = QtGui.QFont()
@@ -188,7 +188,7 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
 
 
     def add_data_in_table(self):
-        result = self.database.get_konditerskie()
+        result = self.database.get_dishe_in_DB("Блюдо")
         if len(result) >= 1:
             if isinstance(result, list):
                 for row in range(len(result)):
@@ -197,8 +197,11 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
                     font.setBold(False)
                     font.setWeight(50)
                     font.setPointSize(10)
+
+
                     self.button_save_changes = QtWidgets.QPushButton()
-                    self.button_save_changes.setFont(font)
+                    self.button_delete_dishes = QtWidgets.QPushButton()
+
                     self.line_combo_yes_no_bakery = QtWidgets.QComboBox()
                     self.line_combo_yes_no_ice_sklad = QtWidgets.QComboBox()
                     self.line_combo_yes_no_vhod_group = QtWidgets.QComboBox()
@@ -301,7 +304,7 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
 
 
     def get_count_rows(self):
-        count_rows = self.database.count_row_in_DB_konditerskie()
+        count_rows = self.database.count_row_in_DB_dishes("Блюдо")
         if isinstance(count_rows, int):
             return count_rows
         else:
@@ -349,12 +352,12 @@ class WindowKonditerskie(QtWidgets.QMainWindow):
                     self.signals.failed_signal.emit(result)
 
 
-    def show_windowLogistik(self):
+    def show_windowNomenklatura(self):
         # Отображаем главное окно приложения
         self.close()
-        global windowLogistik
-        windowLogistik = data.windows.windows_logistics.WindowLogistics()
-        windowLogistik.show()
+        global windowNomenklatura
+        windowNomenklatura = data.windows.windows_nomenklatura.WindowNomenklatura()
+        windowNomenklatura.show()
 
 
     def update_konditerskay(self):

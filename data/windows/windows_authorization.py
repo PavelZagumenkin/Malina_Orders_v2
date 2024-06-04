@@ -66,7 +66,7 @@ class WindowAuthorization(QtWidgets.QMainWindow):
         if button.text() == "OK":
             self.progress_bar.show()
             # URL, откуда нужно скачать исполняемый файл
-            url = 'http://88.147.144.216:55667/Malina64_Setup.exe'
+            url = 'http://88.147.144.216:55667/Malina64_Update/Malina64_Setup.exe'
             # Имя, под которым сохранить файл
             file_name = 'Malina64_Setup.exe'
             # Создаем сессию для управления соединением

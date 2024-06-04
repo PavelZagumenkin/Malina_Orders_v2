@@ -446,3 +446,27 @@ class Database:
             self.connection.rollback()
             return f"Ошибка работы с БД: {str(e)}"
         return result
+
+
+    def count_row_in_DB_dishes(self, type_dishe):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_rows_dishes(), (type_dishe))
+                count_rows = cursor.fetchone()[0]
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return count_rows
+
+
+    def get_dishe_in_DB(self, type_dishe):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(Queries.get_dishe_in_DB(), (type_dishe))
+                result = cursor.fetchall()
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            return f"Ошибка работы с БД: {str(e)}"
+        return result

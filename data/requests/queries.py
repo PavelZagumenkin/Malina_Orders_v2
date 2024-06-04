@@ -290,3 +290,19 @@ class Queries:
             SELECT * FROM koeff_day_week
             WHERE period = %s AND category = %s;
             '''
+
+    @staticmethod
+    # Получить список кондитерских со всеми данными
+    def get_dishe_in_DB():
+        return '''
+            SELECT * FROM dishes
+            WHERE category_production = %s;
+            '''
+
+    @staticmethod
+    # Получить количество строк в таблице dishes
+    def get_rows_dishes():
+        return '''
+        SELECT COUNT(*) FROM dishes
+        WHERE category_production = %s;
+        '''

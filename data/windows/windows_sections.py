@@ -4,6 +4,7 @@ from data.active_session import Session
 import data.windows.windows_authorization
 import data.windows.windows_control
 import data.windows.windows_logistics
+import data.windows.windows_production
 from data.requests.db_requests import Database
 from data.signals import Signals
 import datetime
@@ -36,6 +37,7 @@ class WindowSections(QtWidgets.QMainWindow):
         self.ui.btn_exit.clicked.connect(self.logout)
         self.ui.btn_logistics.clicked.connect(self.show_logistics)
         self.ui.btn_control.clicked.connect(self.show_control)
+        self.ui.btn_production.clicked.connect(self.show_production)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("data/images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.setWindowIcon(icon)
@@ -73,6 +75,13 @@ class WindowSections(QtWidgets.QMainWindow):
         global WindowLogistics
         WindowLogistics = data.windows.windows_logistics.WindowLogistics()
         WindowLogistics.show()
+
+    # Закрываем выбор раздела, открываем выпечку
+    def show_production(self):
+        self.close()
+        global WindowProduction
+        WindowProduction = data.windows.windows_production.WindowProduction()
+        WindowProduction.show()
 
 
     # Закрываем выбор раздела, открываем выпечку
